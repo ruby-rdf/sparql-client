@@ -1,0 +1,2 @@
+require 'sparql'
+require 'webrick'
