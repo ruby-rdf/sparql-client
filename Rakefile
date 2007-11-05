@@ -83,7 +83,7 @@ desc "Update the VERSION file."
 task :version do
   $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), 'lib')))
   require "#{PKG_LIBS.first}/version"
-  File.open('VERSION', 'w') { |f| f.puts RDF::VERSION::STRING }
+  File.open('VERSION', 'w') { |f| f.puts SPARQL::VERSION::STRING }
 end
 
 desc "Look for TODO and FIXME tags in the code base."
