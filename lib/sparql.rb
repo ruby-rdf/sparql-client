@@ -1,5 +1,6 @@
 require 'rdf'
 require 'sparql/version'
+require 'sparql/query'
 require 'sparql/engine'
 require 'sparql/parser'
 require 'sparql/client'
