@@ -25,4 +25,5 @@ The recommended installation method is via RubyGems:
 
 == License
 
-SPARQL.rb is released under the MIT license.
+SPARQL.rb is free and unencumbered public domain software. For more
+information, see <http://unlicense.org/> or the accompanying UNLICENSE file.
