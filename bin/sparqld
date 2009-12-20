@@ -1,8 +1,0 @@
-#!/usr/bin/env ruby -w
-require 'optparse'
-require 'sparql/server/webrick'
-
-server = WEBrick::HTTPServer.new(:Port => 3000)
-server.mount('/sparql', SPARQL::WEBrickHandler)
-trap('INT') { server.shutdown }
-server.start
