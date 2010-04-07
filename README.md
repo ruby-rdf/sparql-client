@@ -42,7 +42,7 @@ Examples
 Documentation
 -------------
 
-<http://sparql.rubyforge.org/>
+<http://sparql.rubyforge.org/client/>
 
 * {SPARQL::Client}
 
@@ -75,7 +75,7 @@ as follows:
 Resources
 ---------
 
-* <http://sparql.rubyforge.org/>
+* <http://sparql.rubyforge.org/client/>
 * <http://github.com/bendiken/sparql-client>
 * <http://rubygems.org/gems/sparql-client>
 * <http://rubyforge.org/projects/sparql/>
