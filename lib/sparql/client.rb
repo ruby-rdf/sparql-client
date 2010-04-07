@@ -75,7 +75,7 @@ module SPARQL
 
       case
         when json['boolean']
-          json['boolean'].to_s = 'true'
+          json['boolean']
         when json['results']
           json['results']['bindings'].map do |row|
             row = row.inject({}) do |cols, (name, value)|
