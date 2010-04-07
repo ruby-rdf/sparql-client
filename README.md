@@ -14,11 +14,51 @@ Examples
 --------
 
     require 'sparql/client'
+    
+    sparql = SPARQL::Client.new('http://dbpedia.org/sparql')
+
+### Executing a boolean query
+
+    result = sparql.query('ASK WHERE { ?s ?p ?o }')
+    
+    puts result.inspect   #=> true or false
+
+### Executing a tuple query
+
+    result = sparql.query('SELECT * WHERE { ?s ?p ?o } LIMIT 10')
+    
+    result.each do |bindings|
+      puts bindings.inspect
+    end
+
+### Executing a graph query
+
+    result = sparql.query('CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } LIMIT 10')
+    
+    result.each_statement do |statement|
+      puts statement.inspect
+    end
 
 Documentation
 -------------
 
-* <http://sparql.rubyforge.org/>
+<http://sparql.rubyforge.org/>
+
+* {SPARQL::Client}
+
+Dependencies
+------------
+
+* [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.1.5)
+* [JSON](http://rubygems.org/gems/json_pure) (>= 1.2.3)
+
+Installation
+------------
+
+The recommended installation method is via [RubyGems](http://rubygems.org/).
+To install the latest official release of the `SPARQL::Client` gem, do:
+
+    % [sudo] gem install sparql-client
 
 Download
 --------
@@ -32,14 +72,6 @@ as follows:
 
     % wget http://github.com/bendiken/sparql-client/tarball/master
 
-Installation
-------------
-
-The recommended installation method is via RubyGems. To install the latest
-official release from Gemcutter, do:
-
-    % [sudo] gem install sparql-client
-
 Resources
 ---------
 
@@ -47,7 +79,7 @@ Resources
 * <http://github.com/bendiken/sparql-client>
 * <http://rubygems.org/gems/sparql-client>
 * <http://rubyforge.org/projects/sparql/>
-* <http://raa.ruby-lang.org/project/sparql/>
+* <http://raa.ruby-lang.org/project/sparql-client/>
 * <http://www.ohloh.net/p/rdf>
 
 Authors
@@ -59,9 +91,9 @@ Authors
 License
 -------
 
-This is free and unencumbered public domain software. For more
+`SPARQL::Client` is free and unencumbered public domain software. For more
 information, see <http://unlicense.org/> or the accompanying UNLICENSE file.
 
-[RDF]:    http://www.w3.org/RDF/
-[SPARQL]: http://en.wikipedia.org/wiki/SPARQL
-[RDF.rb]: http://rdf.rubyforge.org/
+[RDF]:      http://www.w3.org/RDF/
+[SPARQL]:   http://en.wikipedia.org/wiki/SPARQL
+[RDF.rb]:   http://rdf.rubyforge.org/
