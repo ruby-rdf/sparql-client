@@ -2,8 +2,8 @@ module SPARQL; class Client
   module VERSION
     MAJOR = 0
     MINOR = 0
-    TINY  = 0
-    EXTRA = :pre
+    TINY  = 1
+    EXTRA = nil
 
     STRING = [MAJOR, MINOR, TINY].join('.')
     STRING << ".#{EXTRA}" if EXTRA
