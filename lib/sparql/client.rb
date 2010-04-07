@@ -1,13 +1,15 @@
 require 'net/http'
-require 'json'
 require 'rdf'
 require 'sparql/version'
 
 module SPARQL
   ##
   class Client
-    ACCEPT_JSON = {'Accept' => 'application/sparql-results+json'}.freeze
-    ACCEPT_XML  = {'Accept' => 'application/sparql-results+xml'}.freeze
+    RESULT_BOOL = 'text/boolean'.freeze # Sesame-specific
+    RESULT_JSON = 'application/sparql-results+json'.freeze
+    RESULT_XML  = 'application/sparql-results+xml'.freeze
+    ACCEPT_JSON = {'Accept' => RESULT_JSON}.freeze
+    ACCEPT_XML  = {'Accept' => RESULT_XML}.freeze
 
     attr_reader :url
     attr_reader :options
@@ -17,7 +19,7 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options
-      @headers = ACCEPT_JSON
+      @headers = ACCEPT_XML.dup
 
       if block_given?
         case block.arity
@@ -34,9 +36,9 @@ module SPARQL
       get(query.to_s) do |response|
         case response
           when Net::HTTPClientError
-            # TODO
+            abort response.inspect # FIXME
           when Net::HTTPServerError
-            # TODO
+            abort response.inspect # FIXME
           when Net::HTTPSuccess
             parse_response(response)
         end
@@ -47,26 +49,42 @@ module SPARQL
     # @param  [Net::HTTPSuccess] response
     # @return [Object]
     def parse_response(response)
-      parse_json_bindings(response.body) # FIXME
-    end
-
-    ##
-    # @param  [Hash, String] json
-    # @return [Enumerable<RDF::Query::Solution>]
-    def parse_json_bindings(json)
-      json = JSON.parse(json.to_s) unless json.is_a?(Hash)
-      json['results']['bindings'].map do |row|
-        row = row.inject({}) do |cols, (name, value)|
-          cols.merge(name => parse_value(value))
-        end
-        RDF::Query::Solution.new(row)
+      case content_type = response.content_type
+        when RESULT_BOOL
+          response.body == 'true'
+        when RESULT_JSON
+          parse_json_bindings(response.body)
+        when RESULT_XML
+          parse_xml_bindings(response.body)
+        else
+          parse_rdf_serialization(response)
       end
     end
 
     ##
-    # @param  [Hash] value
+    # @param  [String, Hash] json
+    # @return [Enumerable<RDF::Query::Solution>]
+    def parse_json_bindings(json)
+      require 'json' unless defined?(::JSON)
+      json = JSON.parse(json.to_s) unless json.is_a?(Hash)
+
+      case
+        when json['boolean']
+          json['boolean'].to_s = 'true'
+        when json['results']
+          json['results']['bindings'].map do |row|
+            row = row.inject({}) do |cols, (name, value)|
+              cols.merge(name => parse_json_value(value))
+            end
+            RDF::Query::Solution.new(row)
+          end
+      end
+    end
+
+    ##
+    # @param  [Hash{String => String}] value
     # @return [RDF::Value]
-    def parse_value(value)
+    def parse_json_value(value)
       case value['type'].to_sym
         when :bnode
           @nodes ||= {}
@@ -74,9 +92,57 @@ module SPARQL
         when :uri
           RDF::URI.new(value['value'])
         when :literal
-          RDF::Literal.new(value['value']) # TODO
-        else nil # FIXME
+          RDF::Literal.new(value['value'], :language => value['xml:lang'])
+        when :'typed-literal'
+          RDF::Literal.new(value['value'], :datatype => value['datatype'])
+        else nil
       end
+    end
+
+    ##
+    # @param  [String, REXML::Element] xml
+    # @return [Enumerable<RDF::Query::Solution>]
+    def parse_xml_bindings(xml)
+      require 'rexml/document' unless defined?(::REXML::Document)
+      xml = REXML::Document.new(xml).root unless xml.is_a?(REXML::Element)
+
+      case
+        when boolean = xml.elements['boolean']
+          boolean.text == 'true'
+        when results = xml.elements['results']
+          results.elements.map do |result|
+            row = {}
+            result.elements.each do |binding|
+              name  = binding.attributes['name'].to_sym
+              value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
+              row[name] = parse_xml_value(value)
+            end
+            RDF::Query::Solution.new(row)
+          end
+      end
+    end
+
+    ##
+    # @param  [REXML::Element] value
+    # @return [RDF::Value]
+    def parse_xml_value(value)
+      case value.name.to_sym
+        when :bnode
+          @nodes ||= {}
+          @nodes[id = value.text] ||= RDF::Node.new(id)
+        when :uri
+          RDF::URI.new(value.text)
+        when :literal
+          RDF::Literal.new(value.text, :language => value.attributes['xml:lang'], :datatype => value.attributes['datatype'])
+        else nil
+      end
+    end
+
+    ##
+    # @param  [Net::HTTPSuccess] response
+    # @return [RDF::Enumerable]
+    def parse_rdf_serialization(response)
+      # TODO
     end
 
     protected
