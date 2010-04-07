@@ -21,7 +21,7 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options
-      @headers = {'Accept' => "#{RESULT_XML}, #{RESULT_JSON}, text/plain"}
+      @headers = {'Accept' => "#{RESULT_JSON}, #{RESULT_XML}, text/plain"}
 
       if block_given?
         case block.arity
@@ -79,7 +79,7 @@ module SPARQL
         when json['results']
           json['results']['bindings'].map do |row|
             row = row.inject({}) do |cols, (name, value)|
-              cols.merge(name => parse_json_value(value))
+              cols.merge(name.to_sym => parse_json_value(value))
             end
             RDF::Query::Solution.new(row)
           end
