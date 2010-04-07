@@ -158,6 +158,22 @@ module SPARQL
       end
     end
 
+    ##
+    # Outputs a developer-friendly representation of this object to `stderr`.
+    #
+    # @return [void]
+    def inspect!
+      warn(inspect)
+    end
+
+    ##
+    # Returns a developer-friendly representation of this object.
+    #
+    # @return [String]
+    def inspect
+      sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, url.to_s)
+    end
+
     protected
 
     ##
