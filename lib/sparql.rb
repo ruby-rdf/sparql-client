@@ -1,1 +1,3 @@
-require 'sparql/client'
+module SPARQL
+  autoload :Client, 'sparql/client'
+end
