@@ -1,4 +1,4 @@
-module SPARQL; module Client
+module SPARQL; class Client
   module VERSION
     MAJOR = 0
     MINOR = 0
