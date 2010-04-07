@@ -1,12 +1,14 @@
 require 'net/http'
 require 'rdf'
 require 'rdf/ntriples'
-require 'sparql/version'
 
 module SPARQL
   ##
   # A SPARQL client for RDF.rb.
   class Client
+    autoload :Query,   'sparql/client/query'
+    autoload :VERSION, 'sparql/client/version'
+
     RESULT_BOOL = 'text/boolean'.freeze # Sesame-specific
     RESULT_JSON = 'application/sparql-results+json'.freeze
     RESULT_XML  = 'application/sparql-results+xml'.freeze
