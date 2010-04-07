@@ -1,9 +1,11 @@
 require 'net/http'
 require 'rdf'
+require 'rdf/ntriples'
 require 'sparql/version'
 
 module SPARQL
   ##
+  # A SPARQL client for RDF.rb.
   class Client
     RESULT_BOOL = 'text/boolean'.freeze # Sesame-specific
     RESULT_JSON = 'application/sparql-results+json'.freeze
@@ -19,7 +21,7 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options
-      @headers = ACCEPT_XML.dup
+      @headers = {'Accept' => "#{RESULT_XML}, #{RESULT_JSON}, text/plain"}
 
       if block_given?
         case block.arity
@@ -30,6 +32,8 @@ module SPARQL
     end
 
     ##
+    # Executes a SPARQL query.
+    #
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
     def query(query, options = {})
@@ -50,7 +54,7 @@ module SPARQL
     # @return [Object]
     def parse_response(response)
       case content_type = response.content_type
-        when RESULT_BOOL
+        when RESULT_BOOL # Sesame-specific
           response.body == 'true'
         when RESULT_JSON
           parse_json_bindings(response.body)
@@ -64,6 +68,7 @@ module SPARQL
     ##
     # @param  [String, Hash] json
     # @return [Enumerable<RDF::Query::Solution>]
+    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
     def parse_json_bindings(json)
       require 'json' unless defined?(::JSON)
       json = JSON.parse(json.to_s) unless json.is_a?(Hash)
@@ -84,6 +89,7 @@ module SPARQL
     ##
     # @param  [Hash{String => String}] value
     # @return [RDF::Value]
+    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
     def parse_json_value(value)
       case value['type'].to_sym
         when :bnode
@@ -102,6 +108,7 @@ module SPARQL
     ##
     # @param  [String, REXML::Element] xml
     # @return [Enumerable<RDF::Query::Solution>]
+    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
     def parse_xml_bindings(xml)
       require 'rexml/document' unless defined?(::REXML::Document)
       xml = REXML::Document.new(xml).root unless xml.is_a?(REXML::Element)
@@ -125,6 +132,7 @@ module SPARQL
     ##
     # @param  [REXML::Element] value
     # @return [RDF::Value]
+    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
     def parse_xml_value(value)
       case value.name.to_sym
         when :bnode
@@ -133,7 +141,10 @@ module SPARQL
         when :uri
           RDF::URI.new(value.text)
         when :literal
-          RDF::Literal.new(value.text, :language => value.attributes['xml:lang'], :datatype => value.attributes['datatype'])
+          RDF::Literal.new(value.text, {
+            :language => value.attributes['xml:lang'],
+            :datatype => value.attributes['datatype'],
+          })
         else nil
       end
     end
@@ -142,7 +153,9 @@ module SPARQL
     # @param  [Net::HTTPSuccess] response
     # @return [RDF::Enumerable]
     def parse_rdf_serialization(response)
-      # TODO
+      if reader = RDF::Reader.for(:content_type => response.content_type)
+        reader.new(response.body)
+      end
     end
 
     protected
