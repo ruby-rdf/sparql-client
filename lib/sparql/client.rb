@@ -34,12 +34,40 @@ module SPARQL
     end
 
     ##
+    # Executes an `ASK` query.
+    #
+    # @return [Query]
+    def ask(*args)
+      client = self
+      result = Query.ask(*args)
+      (class << result; self; end).send(:define_method, :execute) do
+        @solutions = client.query(self)
+      end
+      result
+    end
+
+    ##
+    # Executes a `SELECT` query.
+    #
+    # @param  [Array<Symbol>] variables
+    # @return [Query]
+    def select(*args)
+      client = self
+      result = Query.select(*args)
+      (class << result; self; end).send(:define_method, :execute) do
+        @solutions = client.query(self)
+      end
+      result
+    end
+
+    ##
     # Executes a SPARQL query.
     #
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
+    # @return [Array<RDF::Query::Solution>]
     def query(query, options = {})
-      get(query.to_s) do |response|
+      get(query) do |response|
         case response
           when Net::HTTPClientError
             abort response.inspect # FIXME
