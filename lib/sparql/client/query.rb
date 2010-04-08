@@ -79,12 +79,14 @@ module SPARQL; class Client
       self
     end
 
+    alias_method :whether, :where
+
     ##
     # @param  [Array<Symbol>] variables
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#modOrderBy
     def order(*variables)
-      @options[:order_by] = variables
+      options[:order_by] = variables
       self
     end
 
@@ -94,7 +96,7 @@ module SPARQL; class Client
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#modDistinct
     def distinct(state = true)
-      @options[:distinct] = state
+      options[:distinct] = state
       self
     end
 
@@ -102,7 +104,7 @@ module SPARQL; class Client
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#modReduced
     def reduced(state = true)
-      @options[:reduced] = state
+      options[:reduced] = state
       self
     end
 
@@ -127,9 +129,43 @@ module SPARQL; class Client
     # @param  [Integer, #to_i] length
     # @return [Query]
     def slice(start, length)
-      @options[:offset] = start.to_i if start
-      @options[:limit] = length.to_i if length
+      options[:offset] = start.to_i if start
+      options[:limit] = length.to_i if length
       self
+    end
+
+    ##
+    # @return [Boolean]
+    def true?
+      case result
+        when TrueClass, FalseClass then result
+        when Enumerable then !result.empty?
+        else false
+      end
+    end
+
+    ##
+    # @return [Boolean]
+    def false?
+      !true?
+    end
+
+    ##
+    # @return [Enumerable<RDF::Query::Solution>]
+    def solutions
+      result
+    end
+
+    ##
+    # @return [Object]
+    def result
+      @result ||= execute
+    end
+
+    ##
+    # @return [Object]
+    def execute
+      raise NotImplementedError
     end
 
     ##
@@ -140,8 +176,8 @@ module SPARQL; class Client
       buffer = [form.to_s.upcase]
       case form
         when :select
-          buffer << 'DISTINCT' if @options[:distinct]
-          buffer << 'REDUCED'  if @options[:reduced]
+          buffer << 'DISTINCT' if options[:distinct]
+          buffer << 'REDUCED'  if options[:reduced]
           buffer << (variables.empty? ? '*' : variables.values.map(&:to_s).join(' '))
       end
 
@@ -149,13 +185,13 @@ module SPARQL; class Client
       buffer += patterns.map(&:to_s)
       buffer << '}'
 
-      if @options[:order_by]
+      if options[:order_by]
         buffer << 'ORDER BY'
-        buffer += @options[:order_by].map { |var| "?#{var}" }
+        buffer += options[:order_by].map { |var| "?#{var}" }
       end
 
-      buffer << "OFFSET #{@options[:offset]}" if @options[:offset]
-      buffer << "LIMIT #{@options[:limit]}"   if @options[:limit]
+      buffer << "OFFSET #{options[:offset]}" if options[:offset]
+      buffer << "LIMIT #{options[:limit]}"   if options[:limit]
 
       buffer.join(' ')
     end

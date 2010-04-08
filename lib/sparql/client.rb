@@ -41,7 +41,7 @@ module SPARQL
       client = self
       result = Query.ask(*args)
       (class << result; self; end).send(:define_method, :execute) do
-        @solutions = client.query(self)
+        client.query(self)
       end
       result
     end
@@ -55,7 +55,7 @@ module SPARQL
       client = self
       result = Query.select(*args)
       (class << result; self; end).send(:define_method, :execute) do
-        @solutions = client.query(self)
+        client.query(self)
       end
       result
     end
