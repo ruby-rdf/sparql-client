@@ -153,12 +153,19 @@ module SPARQL ; class Client
     # @return [Integer]
     # @see [RDF::Repository#count?]
     def count
-      binding = select("SELECT COUNT(*) WHERE { ?s ?p ?o }").first.to_hash
-      binding[binding.keys.first].value.to_i
+      begin
+        binding = select("SELECT COUNT(*) WHERE { ?s ?p ?o }").first.to_hash
+        binding[binding.keys.first].value.to_i
+      rescue SPARQL::Client::MalformedQuery => e
+        # SPARQL 1.0 does not include support for aggregate functions:
+        count = 0
+        each_statement { count += 1 } # TODO: optimize this
+        count
+      end
     end
     alias_method :size, :count
     alias_method :length, :count
-    
+
     ##
     # Returns true if this repository has no statements
     #

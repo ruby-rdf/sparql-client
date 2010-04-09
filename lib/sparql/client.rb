@@ -6,8 +6,13 @@ module SPARQL
   ##
   # A SPARQL client for RDF.rb.
   class Client
-    autoload :Query,   'sparql/client/query'
-    autoload :VERSION, 'sparql/client/version'
+    autoload :Query,      'sparql/client/query'
+    autoload :Repository, 'sparql/client/repository'
+    autoload :VERSION,    'sparql/client/version'
+
+    class ClientError < StandardError; end
+    class MalformedQuery < ClientError; end
+    class ServerError < StandardError; end
 
     RESULT_BOOL = 'text/boolean'.freeze # Sesame-specific
     RESULT_JSON = 'application/sparql-results+json'.freeze
@@ -69,11 +74,13 @@ module SPARQL
     def query(query, options = {})
       get(query) do |response|
         case response
-          when Net::HTTPClientError
-            abort response.inspect # FIXME
-          when Net::HTTPServerError
-            abort response.inspect # FIXME
-          when Net::HTTPSuccess
+          when Net::HTTPBadRequest  # 400 Bad Request
+            raise MalformedQuery.new(response.body)
+          when Net::HTTPClientError # 4xx
+            raise ClientError.new(response.body)
+          when Net::HTTPServerError # 5xx
+            raise ServerError.new(response.body)
+          when Net::HTTPSuccess     # 2xx
             parse_response(response)
         end
       end
