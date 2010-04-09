@@ -1,36 +1,44 @@
-require 'rdf'
-require 'enumerator'
-require 'addressable/uri'
-require 'sparql/client'
-
-module SPARQL ; class Client
+module SPARQL; class Client
+  ##
+  # A read-only repository view of a SPARQL endpoint.
+  #
+  # @see RDF::Repository
   class Repository < ::RDF::Repository
+    # @return [SPARQL::Client]
     attr_reader :client
 
-    def initialize(endpoint)
-      @client = SPARQL::Client.new(endpoint)
+    ##
+    # @param  [String, #to_s]          endpoint
+    # @param  [Hash{Symbol => Object}] options
+    def initialize(endpoint, options = {})
+      @options = options.dup
+      @client  = SPARQL::Client.new(endpoint, options)
     end
 
-    # Run a construct query
-    # @param [String] query
-    # @param [&block]
+    ##
+    # Executes a `CONSTRUCT` query and returns an `RDF::Reader` instance
+    # that iterates over the results.
     #
-    # Returns an RDF::Reader instance which iterates over the results.
-    # @see RDF::Reader#each_statement
+    # @param  [String, #to_s] query
+    # @return [RDF::Reader]
+    # @see    RDF::Reader#each_statement
     # @private
     def construct(query, &block)
       @client.query(query).each_statement(&block)
     end
 
-    # Run a select query
-    # @param [String] query
-    # @param [&block]
-    # @yieldparam [RDF::Value] value
+    ##
+    # Executes a `SELECT` query and returns an array of query solutions
+    # or yields the first binding from each solution to a block.
     #
-    # Returns an array of RDF::Query::Solutions or yields the first value from each binding to a block.
-    # Would require refactoring if a query needed to use more than one binding result
+    # Would require refactoring if a query needed to use more than one
+    # binding result from each solution.
+    #
+    # @param  [String, #to_s] query
+    # @yield  [value]
+    # @yieldparam [RDF::Value] value
     # @private
-    def select(query,&block)
+    def select(query, &block)
       result = @client.query(query)
       case block_given?
         when true
@@ -38,7 +46,7 @@ module SPARQL ; class Client
             yield bindings.each_value.to_a.first
           end
         when false
-          return result
+          result
       end
     end
 
@@ -48,99 +56,114 @@ module SPARQL ; class Client
     # @yield  [statement]
     # @yieldparam [RDF::Statement] statement
     # @return [Enumerator]
-    # @see [RDF::Repository#each]
+    # @see    RDF::Repository#each
     def each(&block)
       construct("CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }", &block)
     end
 
     ##
-    # Returns true if this repository contains the given subject.
+    # Returns `true` if this repository contains the given subject.
     #
     # @param  [RDF::Resource]
     # @return [Boolean]
-    # @see [RDF::Repository#has_subject?]
+    # @see    RDF::Repository#has_subject?
     def has_subject?(subject)
       @client.ask.whether([subject, :p, :o]).true?
     end
 
     ##
-    # Returns true if this repository contains the given predicate.
+    # Returns `true` if this repository contains the given predicate.
     #
-    # @param  [RDF::Resource]
+    # @param  [RDF::URI]
     # @return [Boolean]
-    # @see [RDF::Repository#has_predicate?]
+    # @see    RDF::Repository#has_predicate?
     def has_predicate?(predicate)
       @client.ask.whether([:s, predicate, :o]).true?
     end
 
     ##
-    # Returns true if this repository contains the given object.
+    # Returns `true` if this repository contains the given object.
     #
-    # @param  [RDF::Resource]
+    # @param  [RDF::Value]
     # @return [Boolean]
-    # @see [RDF::Repository#has_object?]
+    # @see    RDF::Repository#has_object?
     def has_object?(object)
       @client.ask.whether([:s, :p, object]).true?
     end
 
     ##
-    # Iterate over each subject in this repository
+    # Iterates over each subject in this repository.
     #
-    # @yieldparam [RDF::Resource]
-    # @return [Enumerable::Enumerator, nil]
-    # @see [RDF::Repository#each_subject?]
+    # @yield  [subject]
+    # @yieldparam [RDF::Resource] subject
+    # @return [Enumerator]
+    # @see    RDF::Repository#each_subject?
     def each_subject(&block)
-      return ::Enumerable::Enumerator.new(self,:each_subject) unless block_given?
-      ret = select("SELECT DISTINCT ?s WHERE { ?s ?p ?o }", &block)
+      unless block_given?
+        require 'enumerator' unless defined?(::Enumerable::Enumerator)
+        ::Enumerable::Enumerator.new(self, :each_subject)
+      else
+        select("SELECT DISTINCT ?s WHERE { ?s ?p ?o }", &block)
+      end
     end
 
     ##
-    # Iterate over each predicate in this repository
+    # Iterates over each predicate in this repository.
     #
-    # @yieldparam [RDF::Resource]
-    # @return [Enumerable::Enumerator, nil]
-    # @see [RDF::Repository#each_predicate?]
+    # @yield  [predicate]
+    # @yieldparam [RDF::URI] predicate
+    # @return [Enumerator]
+    # @see    RDF::Repository#each_predicate?
     def each_predicate(&block)
-      return ::Enumerable::Enumerator.new(self,:each_predicate) unless block_given?
-      select("SELECT DISTINCT ?p WHERE { ?s ?p ?o }", &block)
+      unless block_given?
+        require 'enumerator' unless defined?(::Enumerable::Enumerator)
+        ::Enumerable::Enumerator.new(self, :each_predicate)
+      else
+        select("SELECT DISTINCT ?p WHERE { ?s ?p ?o }", &block)
+      end
     end
 
     ##
-    # Iterate over each object in this repository
+    # Iterates over each object in this repository.
     #
-    # @yieldparam [RDF::Resource]
-    # @return [Enumerable::Enumerator, nil]
-    # @see [RDF::Repository#each_object?]
+    # @yield  [object]
+    # @yieldparam [RDF::Value] object
+    # @return [Enumerator]
+    # @see    RDF::Repository#each_object?
     def each_object(&block)
-      return ::Enumerable::Enumerator.new(self,:each_object) unless block_given?
-      select("SELECT DISTINCT ?o WHERE { ?s ?p ?o }", &block)
+      unless block_given?
+        require 'enumerator' unless defined?(::Enumerable::Enumerator)
+        ::Enumerable::Enumerator.new(self, :each_object)
+      else
+        select("SELECT DISTINCT ?o WHERE { ?s ?p ?o }", &block)
+      end
     end
 
     ##
-    # Returns true if this repository contains the given triple
+    # Returns `true` if this repository contains the given `triple`.
     #
-    # @param [Array]
+    # @param  [Array<RDF::Resource, RDF::URI, RDF::Value>] triple
     # @return [Boolean]
-    # @see [RDF::Repository#has_triple?]
+    # @see    RDF::Repository#has_triple?
     def has_triple?(triple)
       @client.ask.whether(triple.to_a[0...3]).true?
     end
 
     ##
-    # Returns true if this repository contains the given statement
+    # Returns `true` if this repository contains the given `statement`.
     #
-    # @param [RDF::Statement]
+    # @param  [RDF::Statement] statement
     # @return [Boolean]
-    # @see [RDF::Repository#has_statement?]
+    # @see    RDF::Repository#has_statement?
     def has_statement?(statement)
       has_triple?(statement.to_triple)
     end
 
     ##
-    # Returns the number of statements in this repository
+    # Returns the number of statements in this repository.
     #
     # @return [Integer]
-    # @see [RDF::Repository#count?]
+    # @see    RDF::Repository#count?
     def count
       begin
         binding = select("SELECT COUNT(*) WHERE { ?s ?p ?o }").first.to_hash
@@ -152,27 +175,26 @@ module SPARQL ; class Client
         count
       end
     end
-    alias_method :size, :count
+
+    alias_method :size,   :count
     alias_method :length, :count
 
     ##
-    # Returns true if this repository has no statements
+    # Returns `true` if this repository contains no statements.
     #
     # @return [Boolean]
-    # @see [RDF::Repository#empty?]
+    # @see    RDF::Repository#empty?
     def empty?
       @client.ask.whether([:s, :p, :o]).false?
     end
 
-    # @see RDF::Mutable#insert_statement
-    def insert_statement(statement)
-      raise NotImplementedError
+    ##
+    # Returns `false` to indicate that this is a read-only repository.
+    #
+    # @return [Boolean]
+    # @see    RDF::Mutable#mutable?
+    def writable?
+      false
     end
-
-    # @see RDF::Mutable#delete_statement
-    def delete_statement(statement)
-      raise NotImplementedError
-    end
-
   end
 end; end
