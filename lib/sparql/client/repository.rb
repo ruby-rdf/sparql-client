@@ -16,41 +16,6 @@ module SPARQL; class Client
     end
 
     ##
-    # Executes a `CONSTRUCT` query and returns an `RDF::Reader` instance
-    # that iterates over the results.
-    #
-    # @param  [String, #to_s] query
-    # @return [RDF::Reader]
-    # @see    RDF::Reader#each_statement
-    # @private
-    def construct(query, &block)
-      @client.query(query).each_statement(&block)
-    end
-
-    ##
-    # Executes a `SELECT` query and returns an array of query solutions
-    # or yields the first binding from each solution to a block.
-    #
-    # Would require refactoring if a query needed to use more than one
-    # binding result from each solution.
-    #
-    # @param  [String, #to_s] query
-    # @yield  [value]
-    # @yieldparam [RDF::Value] value
-    # @private
-    def select(query, &block)
-      result = @client.query(query)
-      case block_given?
-        when true
-          result.each do |bindings|
-            yield bindings.each_value.to_a.first
-          end
-        when false
-          result
-      end
-    end
-
-    ##
     # Enumerates each RDF statement in this repository.
     #
     # @yield  [statement]
@@ -58,7 +23,7 @@ module SPARQL; class Client
     # @return [Enumerator]
     # @see    RDF::Repository#each
     def each(&block)
-      construct("CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }", &block)
+      client.query("CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }").each_statement(&block)
     end
 
     ##
@@ -68,7 +33,7 @@ module SPARQL; class Client
     # @return [Boolean]
     # @see    RDF::Repository#has_subject?
     def has_subject?(subject)
-      @client.ask.whether([subject, :p, :o]).true?
+      client.ask.whether([subject, :p, :o]).true?
     end
 
     ##
@@ -78,7 +43,7 @@ module SPARQL; class Client
     # @return [Boolean]
     # @see    RDF::Repository#has_predicate?
     def has_predicate?(predicate)
-      @client.ask.whether([:s, predicate, :o]).true?
+      client.ask.whether([:s, predicate, :o]).true?
     end
 
     ##
@@ -88,7 +53,7 @@ module SPARQL; class Client
     # @return [Boolean]
     # @see    RDF::Repository#has_object?
     def has_object?(object)
-      @client.ask.whether([:s, :p, object]).true?
+      client.ask.whether([:s, :p, object]).true?
     end
 
     ##
@@ -103,7 +68,7 @@ module SPARQL; class Client
         require 'enumerator' unless defined?(::Enumerable::Enumerator)
         ::Enumerable::Enumerator.new(self, :each_subject)
       else
-        select("SELECT DISTINCT ?s WHERE { ?s ?p ?o }", &block)
+        client.select(:s, :distinct => true).where([:s, :p, :o]).each { |solution| block.call(solution[:s]) }
       end
     end
 
@@ -119,7 +84,7 @@ module SPARQL; class Client
         require 'enumerator' unless defined?(::Enumerable::Enumerator)
         ::Enumerable::Enumerator.new(self, :each_predicate)
       else
-        select("SELECT DISTINCT ?p WHERE { ?s ?p ?o }", &block)
+        client.select(:p, :distinct => true).where([:s, :p, :o]).each { |solution| block.call(solution[:p]) }
       end
     end
 
@@ -135,7 +100,7 @@ module SPARQL; class Client
         require 'enumerator' unless defined?(::Enumerable::Enumerator)
         ::Enumerable::Enumerator.new(self, :each_object)
       else
-        select("SELECT DISTINCT ?o WHERE { ?s ?p ?o }", &block)
+        client.select(:o, :distinct => true).where([:s, :p, :o]).each { |solution| block.call(solution[:o]) }
       end
     end
 
@@ -146,7 +111,7 @@ module SPARQL; class Client
     # @return [Boolean]
     # @see    RDF::Repository#has_triple?
     def has_triple?(triple)
-      @client.ask.whether(triple.to_a[0...3]).true?
+      client.ask.whether(triple.to_a[0...3]).true?
     end
 
     ##
@@ -166,7 +131,7 @@ module SPARQL; class Client
     # @see    RDF::Repository#count?
     def count
       begin
-        binding = select("SELECT COUNT(*) WHERE { ?s ?p ?o }").first.to_hash
+        binding = client.query("SELECT COUNT(*) WHERE { ?s ?p ?o }").first.to_hash
         binding[binding.keys.first].value.to_i
       rescue SPARQL::Client::MalformedQuery => e
         # SPARQL 1.0 does not include support for aggregate functions:
@@ -185,7 +150,7 @@ module SPARQL; class Client
     # @return [Boolean]
     # @see    RDF::Repository#empty?
     def empty?
-      @client.ask.whether([:s, :p, :o]).false?
+      client.ask.whether([:s, :p, :o]).false?
     end
 
     ##
