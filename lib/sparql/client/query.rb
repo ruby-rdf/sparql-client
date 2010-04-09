@@ -164,6 +164,13 @@ module SPARQL; class Client
     end
 
     ##
+    # @private
+    def filter(string)
+      (options[:filters] ||= []) << string
+      self
+    end
+
+    ##
     # @return [Boolean]
     def true?
       case result
@@ -224,6 +231,9 @@ module SPARQL; class Client
 
       buffer << 'WHERE {'
       buffer += patterns.map(&:to_s)
+      if options[:filters]
+        buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
+      end
       buffer << '}'
 
       if options[:order_by]
