@@ -23,7 +23,12 @@ module SPARQL; class Client
     # @return [Enumerator]
     # @see    RDF::Repository#each
     def each(&block)
-      client.construct([:s, :p, :o]).where([:s, :p, :o]).each_statement(&block)
+      unless block_given?
+        require 'enumerator' unless defined?(::Enumerable::Enumerator)
+        ::Enumerable::Enumerator.new(self, :each)
+      else
+        client.construct([:s, :p, :o]).where([:s, :p, :o]).each_statement(&block)
+      end
     end
 
     ##
