@@ -8,36 +8,53 @@ This is a pure-Ruby implementation of a [SPARQL][] client for [RDF.rb][].
 Features
 --------
 
-* Queries SPARQL HTTP endpoints.
+* Executes queries against any SPARQL 1.0-compatible endpoints over HTTP.
+* Provides a query builder [DSL][] for `ASK`, `SELECT`, `DESCRIBE` and
+  `CONSTRUCT` queries.
+* Supports tuple result sets in both XML and JSON formats, with JSON being
+  the preferred default for content negotiation purposes.
+* Supports graph results in any RDF serialization format understood by RDF.rb.
+* Returns results using the [RDF.rb object model][RDF.rb model].
+* Supports accessing endpoints as read-only [`RDF::Repository`][RDF::Repository]
+  instances.
 
 Examples
 --------
 
     require 'sparql/client'
     
-    sparql = SPARQL::Client.new('http://dbpedia.org/sparql')
+    sparql = SPARQL::Client.new("http://dbpedia.org/sparql")
 
-### Executing a boolean query
+### Executing a boolean query and outputting the result
 
-    result = sparql.query('ASK WHERE { ?s ?p ?o }')
+    # ASK WHERE { ?s ?p ?o }
+    result = sparql.ask.whether([:s, :p, :o]).true?
     
     puts result.inspect   #=> true or false
 
-### Executing a tuple query
+### Executing a tuple query and iterating over the returned solutions
 
-    result = sparql.query('SELECT * WHERE { ?s ?p ?o } LIMIT 10')
+    # SELECT * WHERE { ?s ?p ?o } OFFSET 100 LIMIT 10
+    query = sparql.select.where([:s, :p, :o]).offset(100).limit(10)
     
-    result.each do |bindings|
-      puts bindings.inspect
+    query.each_solution do |solution|
+      puts solution.inspect
     end
 
-### Executing a graph query
+### Executing a graph query and iterating over the returned statements
 
-    result = sparql.query('CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } LIMIT 10')
+    # CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } LIMIT 10
+    query = sparql.construct([:s, :p, :o]).where([:s, :p, :o]).limit(10)
     
-    result.each_statement do |statement|
+    query.each_statement do |statement|
       puts statement.inspect
     end
+
+### Executing an arbitrary textual SPARQL query string
+
+    result = sparql.query("ASK WHERE { ?s ?p ?o }")
+    
+    puts result.inspect   #=> true or false
 
 Documentation
 -------------
@@ -45,6 +62,8 @@ Documentation
 <http://sparql.rubyforge.org/client/>
 
 * {SPARQL::Client}
+  * {SPARQL::Client::Query}
+  * {SPARQL::Client::Repository}
 
 Dependencies
 ------------
@@ -94,6 +113,11 @@ License
 `SPARQL::Client` is free and unencumbered public domain software. For more
 information, see <http://unlicense.org/> or the accompanying UNLICENSE file.
 
-[RDF]:      http://www.w3.org/RDF/
-[SPARQL]:   http://en.wikipedia.org/wiki/SPARQL
-[RDF.rb]:   http://rdf.rubyforge.org/
+[RDF]:             http://www.w3.org/RDF/
+[SPARQL]:          http://en.wikipedia.org/wiki/SPARQL
+[SPARQL JSON]:     http://www.w3.org/TR/rdf-sparql-json-res/
+[RDF.rb]:          http://rdf.rubyforge.org/
+[RDF.rb model]:    http://blog.datagraph.org/2010/03/rdf-for-ruby
+[RDF::Repository]: http://rdf.rubyforge.org/RDF/Repository.html
+[DSL]:             http://en.wikipedia.org/wiki/Domain-specific_language
+                   "domain-specific language"
