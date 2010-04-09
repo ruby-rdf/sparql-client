@@ -253,6 +253,7 @@ module SPARQL; class Client
     # @return [void]
     def inspect!
       warn(inspect)
+      self
     end
 
     ##
