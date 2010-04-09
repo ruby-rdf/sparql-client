@@ -39,7 +39,7 @@ module SPARQL
     end
 
     ##
-    # Executes an `ASK` query.
+    # Executes a boolean `ASK` query.
     #
     # @return [Query]
     def ask(*args)
@@ -52,13 +52,27 @@ module SPARQL
     end
 
     ##
-    # Executes a `SELECT` query.
+    # Executes a tuple `SELECT` query.
     #
     # @param  [Array<Symbol>] variables
     # @return [Query]
     def select(*args)
       client = self
       result = Query.select(*args)
+      (class << result; self; end).send(:define_method, :execute) do
+        client.query(self)
+      end
+      result
+    end
+
+    ##
+    # Executes a graph `CONSTRUCT` query.
+    #
+    # @param  [Array<Symbol>] pattern
+    # @return [Query]
+    def construct(*args)
+      client = self
+      result = Query.construct(*args)
       (class << result; self; end).send(:define_method, :execute) do
         client.query(self)
       end

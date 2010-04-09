@@ -23,7 +23,7 @@ module SPARQL; class Client
     # @return [Enumerator]
     # @see    RDF::Repository#each
     def each(&block)
-      client.query("CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o }").each_statement(&block)
+      client.construct([:s, :p, :o]).where([:s, :p, :o]).each_statement(&block)
     end
 
     ##

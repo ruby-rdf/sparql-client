@@ -16,6 +16,8 @@ module SPARQL; class Client
     attr_reader :options
 
     ##
+    # Creates a boolean `ASK` query.
+    #
     # @param  [Hash{Symbol => Object}] options
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#ask
@@ -24,13 +26,27 @@ module SPARQL; class Client
     end
 
     ##
+    # Creates a tuple `SELECT` query.
+    #
     # @param  [Array<Symbol>]          variables
     # @param  [Hash{Symbol => Object}] options
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#select
     def self.select(*variables)
-      options = variables.last.respond_to?(:to_hash) ? variables.pop.to_hash : {}
+      options = variables.last.is_a?(Hash) ? variables.pop : {}
       self.new(:select, options).select(*variables) # FIXME
+    end
+
+    ##
+    # Creates a graph `CONSTRUCT` query.
+    #
+    # @param  [Array<RDF::Query::Pattern, Array>] patterns
+    # @param  [Hash{Symbol => Object}]            options
+    # @return [Query]
+    # @see    http://www.w3.org/TR/rdf-sparql-query/#construct
+    def self.construct(*patterns)
+      options = patterns.last.is_a?(Hash) ? patterns.pop : {}
+      self.new(:construct, options).construct(*patterns) # FIXME
     end
 
     ##
@@ -58,9 +74,22 @@ module SPARQL; class Client
     # @see    http://www.w3.org/TR/rdf-sparql-query/#select
     def select(*variables)
       @form = :select
-      options = variables.last.respond_to?(:to_hash) ? variables.pop.to_hash : {}
+      options = variables.last.is_a?(Hash) ? variables.pop : {}
       @variables = variables.inject({}) do |vars, var|
         vars.merge(var.to_sym => RDF::Query::Variable.new(var))
+      end
+      self
+    end
+
+    ##
+    # @param  [Array<RDF::Query::Pattern, Array>] patterns
+    # @return [Query]
+    def construct(*patterns)
+      options[:template] = patterns.map do |pattern|
+        case pattern
+          when RDF::Query::Pattern then pattern
+          else RDF::Query::Pattern.new(*pattern.to_a)
+        end
       end
       self
     end
@@ -157,6 +186,14 @@ module SPARQL; class Client
     end
 
     ##
+    # @yield  [statement]
+    # @yieldparam [RDF::Statement]
+    # @return [Enumerator]
+    def each_statement(&block)
+      result.each_statement(&block)
+    end
+
+    ##
     # @return [Object]
     def result
       @result ||= execute
@@ -179,6 +216,10 @@ module SPARQL; class Client
           buffer << 'DISTINCT' if options[:distinct]
           buffer << 'REDUCED'  if options[:reduced]
           buffer << (variables.empty? ? '*' : variables.values.map(&:to_s).join(' '))
+        when :construct
+          buffer << '{'
+          buffer += options[:template].map(&:to_s)
+          buffer << '}'
       end
 
       buffer << 'WHERE {'
