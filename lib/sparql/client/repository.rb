@@ -5,18 +5,10 @@ require 'sparql/client'
 
 module SPARQL ; class Client
   class Repository < ::RDF::Repository
+    attr_reader :client
 
     def initialize(endpoint)
       @client = SPARQL::Client.new(endpoint)
-    end
-
-    # Run an ASK query
-    # @param [String] query
-    #
-    # @return [Boolean]
-    # @private
-    def ask(query)
-      @client.query(query)
     end
 
     # Run a construct query
@@ -68,7 +60,7 @@ module SPARQL ; class Client
     # @return [Boolean]
     # @see [RDF::Repository#has_subject?]
     def has_subject?(subject)
-      ask "ASK { #{RDF::NTriples.serialize(subject)} ?p ?o }"
+      @client.ask.whether([subject, :p, :o]).true?
     end
 
     ##
@@ -78,7 +70,7 @@ module SPARQL ; class Client
     # @return [Boolean]
     # @see [RDF::Repository#has_predicate?]
     def has_predicate?(predicate)
-      ask "ASK { ?s #{RDF::NTriples.serialize(predicate)} ?o }"
+      @client.ask.whether([:s, predicate, :o]).true?
     end
 
     ##
@@ -88,7 +80,7 @@ module SPARQL ; class Client
     # @return [Boolean]
     # @see [RDF::Repository#has_object?]
     def has_object?(object)
-      ask "ASK { ?s ?p #{RDF::NTriples.serialize(object)}}"
+      @client.ask.whether([:s, :p, object]).true?
     end
 
     ##
@@ -130,11 +122,8 @@ module SPARQL ; class Client
     # @param [Array]
     # @return [Boolean]
     # @see [RDF::Repository#has_triple?]
-    def has_triple?(array)
-      subject   = RDF::NTriples.serialize(array[0])  
-      predicate = RDF::NTriples.serialize(array[1])  
-      object    = RDF::NTriples.serialize(array[2])
-      ask "ASK { #{subject} #{predicate} #{object} }"
+    def has_triple?(triple)
+      @client.ask.whether(triple.to_a[0...3]).true?
     end
 
     ##
@@ -172,7 +161,7 @@ module SPARQL ; class Client
     # @return [Boolean]
     # @see [RDF::Repository#empty?]
     def empty?
-      !(ask "ASK { ?s ?p ?o }")
+      @client.ask.whether([:s, :p, :o]).false?
     end
 
     # @see RDF::Mutable#insert_statement
