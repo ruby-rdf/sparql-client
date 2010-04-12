@@ -27,10 +27,10 @@ GEMSPEC = Gem::Specification.new do |gem|
 
   gem.required_ruby_version      = '>= 1.8.2'
   gem.requirements               = []
-  gem.add_development_dependency 'rdf-spec',  '>= 0.1.4'
+  gem.add_development_dependency 'rdf-spec',  '>= 0.1.6'
   gem.add_development_dependency 'rspec',     '>= 1.3.0'
   gem.add_development_dependency 'yard' ,     '>= 0.5.3'
-  gem.add_runtime_dependency     'rdf',       '>= 0.1.5'
+  gem.add_runtime_dependency     'rdf',       '>= 0.1.6'
   gem.add_runtime_dependency     'json_pure', '>= 1.2.3'
   gem.post_install_message       = nil
 end
