@@ -1,3 +1,4 @@
+
 module SPARQL; class Client
   ##
   # A SPARQL query builder.
@@ -222,15 +223,19 @@ module SPARQL; class Client
         when :select
           buffer << 'DISTINCT' if options[:distinct]
           buffer << 'REDUCED'  if options[:reduced]
-          buffer << (variables.empty? ? '*' : variables.values.map(&:to_s).join(' '))
+          buffer << (variables.empty? ? '*' : variables.values.map {|v| serialize_value(v) }.join(' '))
         when :construct
           buffer << '{'
-          buffer += options[:template].map(&:to_s)
+          buffer += options[:template].map do |p|
+            p.to_a.map {|v| serialize_value(v) }.join(' ') + " . "
+          end
           buffer << '}'
       end
 
       buffer << 'WHERE {'
-      buffer += patterns.map(&:to_s)
+      buffer += patterns.map do |p|
+        p.to_a.map {|v| serialize_value(v) }.join(' ') + " . "
+      end
       if options[:filters]
         buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
       end
@@ -262,6 +267,26 @@ module SPARQL; class Client
     # @return [String]
     def inspect
       sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, to_s)
+    end
+
+    ##
+    # Serializes an RDF::Value into a format appropriate for select, construct, and where clauses
+    #
+    # @param [RDF::Value]
+    # @return [String]
+    # @private
+    def serialize_value(value)
+      # We don't want to use the NTriples serializer, which is ASCII, as SPARQL is utf-8
+      case
+        when value.is_a?(RDF::Query::Variable)
+          value.to_s
+        when value.variable?
+          value.to_s
+        when value.literal?
+          value.to_s
+        else
+          "<" + value.to_s + ">"
+      end
     end
   end
 end; end
