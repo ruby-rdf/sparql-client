@@ -68,7 +68,7 @@ Documentation
 Dependencies
 ------------
 
-* [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.1.5)
+* [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.1.7)
 * [JSON](http://rubygems.org/gems/json_pure) (>= 1.2.3)
 
 Installation
