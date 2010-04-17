@@ -276,14 +276,11 @@ module SPARQL; class Client
     # @return [String]
     # @private
     def serialize_value(value)
-      require 'rdf/ntriples' unless defined?(RDF::NTriples)
-      # SPARQL queries are utf-8, but support ascii-style unicode escapes, so
-      # the ntriples serializer is fine unless its a variable.
+      # SPARQL queries are UTF-8, but support ASCII-style Unicode escapes, so
+      # the N-Triples serializer is fine unless it's a variable:
       case
-        when value.variable?
-          value.to_s
-        else
-          RDF::NTriples.serialize(value)
+        when value.variable? then "?#{value.name}"
+        else RDF::NTriples.serialize(value)
       end
     end
   end
