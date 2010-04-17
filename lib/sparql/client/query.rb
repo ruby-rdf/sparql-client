@@ -223,18 +223,18 @@ module SPARQL; class Client
         when :select
           buffer << 'DISTINCT' if options[:distinct]
           buffer << 'REDUCED'  if options[:reduced]
-          buffer << (variables.empty? ? '*' : variables.values.map {|v| serialize_value(v) }.join(' '))
+          buffer << (variables.empty? ? '*' : variables.values.map { |v| serialize_value(v) }.join(' '))
         when :construct
           buffer << '{'
           buffer += options[:template].map do |p|
-            p.to_a.map {|v| serialize_value(v) }.join(' ') + " . "
+            p.to_triple.map { |v| serialize_value(v) }.join(' ') + " . "
           end
           buffer << '}'
       end
 
       buffer << 'WHERE {'
       buffer += patterns.map do |p|
-        p.to_a.map {|v| serialize_value(v) }.join(' ') + " . "
+        p.to_triple.map { |v| serialize_value(v) }.join(' ') + " . "
       end
       if options[:filters]
         buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
@@ -272,20 +272,18 @@ module SPARQL; class Client
     ##
     # Serializes an RDF::Value into a format appropriate for select, construct, and where clauses
     #
-    # @param [RDF::Value]
+    # @param  [RDF::Value]
     # @return [String]
     # @private
     def serialize_value(value)
-      # We don't want to use the NTriples serializer, which is ASCII, as SPARQL is utf-8
+      require 'rdf/ntriples' unless defined?(RDF::NTriples)
+      # SPARQL queries are utf-8, but support ascii-style unicode escapes, so
+      # the ntriples serializer is fine unless its a variable.
       case
-        when value.is_a?(RDF::Query::Variable)
-          value.to_s
         when value.variable?
           value.to_s
-        when value.literal?
-          value.to_s
         else
-          "<" + value.to_s + ">"
+          RDF::NTriples.serialize(value)
       end
     end
   end
