@@ -176,7 +176,7 @@ module SPARQL; class Client
           if block_given?
             query.each_statement(&block)
           else
-            query.solutions.to_a
+            query.solutions.to_a.extend(RDF::Enumerable, RDF::Queryable)
           end
         when RDF::Statement
           query(RDF::Query::Pattern.new(
