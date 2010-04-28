@@ -157,6 +157,37 @@ module SPARQL; class Client
     def empty?
       client.ask.whether([:s, :p, :o]).false?
     end
+    
+    ##
+    # Queries `self` for RDF statements matching the given `pattern`.
+    #
+    # @example
+    #     repository.query([nil, RDF::DOAP.developer, nil])
+    #     repository.query(:predicate => RDF::DOAP.developer)
+    #
+    # @param  [Query, Statement, Array(Value), Hash] pattern
+    # @yield  [statement]
+    # @yieldparam [Statement]
+    # @return [Array<Statement>]
+    def query(pattern, &block)
+      case pattern
+        when RDF::Query::Pattern
+          query = client.construct(pattern).where(pattern)
+          if block_given?
+            query.each_statement(&block)
+          else
+            query.solutions.to_a
+          end
+        when RDF::Statement
+          query(RDF::Query::Pattern.new(
+            pattern.subject || :s,
+            pattern.predicate || :p,
+            pattern.object || :o
+          ), &block)
+        else
+          super(pattern, &block)
+      end
+    end
 
     ##
     # Returns `false` to indicate that this is a read-only repository.
