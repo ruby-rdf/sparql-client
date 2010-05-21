@@ -3,7 +3,7 @@ module SPARQL; class Client
   # A read-only repository view of a SPARQL endpoint.
   #
   # @see RDF::Repository
-  class Repository < ::RDF::Repository
+  class Repository < RDF::Repository
     # @return [SPARQL::Client]
     attr_reader :client
 
@@ -24,8 +24,7 @@ module SPARQL; class Client
     # @see    RDF::Repository#each
     def each(&block)
       unless block_given?
-        require 'enumerator' unless defined?(::Enumerable::Enumerator)
-        ::Enumerable::Enumerator.new(self, :each)
+        RDF::Enumerator.new(self, :each)
       else
         client.construct([:s, :p, :o]).where([:s, :p, :o]).each_statement(&block)
       end
@@ -70,8 +69,7 @@ module SPARQL; class Client
     # @see    RDF::Repository#each_subject?
     def each_subject(&block)
       unless block_given?
-        require 'enumerator' unless defined?(::Enumerable::Enumerator)
-        ::Enumerable::Enumerator.new(self, :each_subject)
+        RDF::Enumerator.new(self, :each_subject)
       else
         client.select(:s, :distinct => true).where([:s, :p, :o]).each { |solution| block.call(solution[:s]) }
       end
@@ -86,8 +84,7 @@ module SPARQL; class Client
     # @see    RDF::Repository#each_predicate?
     def each_predicate(&block)
       unless block_given?
-        require 'enumerator' unless defined?(::Enumerable::Enumerator)
-        ::Enumerable::Enumerator.new(self, :each_predicate)
+        RDF::Enumerator.new(self, :each_predicate)
       else
         client.select(:p, :distinct => true).where([:s, :p, :o]).each { |solution| block.call(solution[:p]) }
       end
@@ -102,8 +99,7 @@ module SPARQL; class Client
     # @see    RDF::Repository#each_object?
     def each_object(&block)
       unless block_given?
-        require 'enumerator' unless defined?(::Enumerable::Enumerator)
-        ::Enumerable::Enumerator.new(self, :each_object)
+        RDF::Enumerator.new(self, :each_object)
       else
         client.select(:o, :distinct => true).where([:s, :p, :o]).each { |solution| block.call(solution[:o]) }
       end
@@ -157,7 +153,7 @@ module SPARQL; class Client
     def empty?
       client.ask.whether([:s, :p, :o]).false?
     end
-    
+
     ##
     # Queries `self` for RDF statements matching the given `pattern`.
     #
@@ -168,7 +164,7 @@ module SPARQL; class Client
     # @param  [Query, Statement, Array(Value), Hash] pattern
     # @yield  [statement]
     # @yieldparam [Statement]
-    # @return [Array<Statement>]
+    # @return [Enumerable<Statement>]
     def query(pattern, &block)
       case pattern
         when RDF::Query::Pattern
@@ -179,11 +175,11 @@ module SPARQL; class Client
             query.solutions.to_a.extend(RDF::Enumerable, RDF::Queryable)
           end
         when RDF::Statement
-          query(RDF::Query::Pattern.new(
-            pattern.subject || :s,
-            pattern.predicate || :p,
-            pattern.object || :o
-          ), &block)
+          query(RDF::Query::Pattern.new({
+            :subject   => pattern.subject   || :s,
+            :predicate => pattern.predicate || :p,
+            :object    => pattern.object    || :o,
+          }), &block)
         else
           super(pattern, &block)
       end
