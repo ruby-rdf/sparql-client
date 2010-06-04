@@ -78,6 +78,11 @@ describe SPARQL::Client::Query do
       SPARQL::Client::Query.select.prefix(prefixes[0]).prefix(prefixes[1]).where([:s, :p, :o]).to_s.should ==
         "PREFIX #{prefixes[0]} PREFIX #{prefixes[1]} SELECT * WHERE { ?s ?p ?o . }"
     end
+
+    it "should support OPTIONAL" do
+      SPARQL::Client::Query.select.where([:s, :p, :o]).optional([:s, RDF.type, :o]).to_s.should ==
+        "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s <#{RDF.type}> ?o . } }"
+    end
   end
 
   context "when building DESCRIBE queries" do

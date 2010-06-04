@@ -171,6 +171,26 @@ module SPARQL; class Client
     end
 
     ##
+    # @return [Query]
+    # @see    http://www.w3.org/TR/rdf-sparql-query/#optionals
+    def optional(*patterns)
+      options[:optionals] ||= []
+      options[:optionals] += build_patterns(patterns)
+      self
+    end
+
+    ##
+    # @private
+    def build_patterns(patterns)
+      patterns.map do |pattern|
+        case pattern
+          when RDF::Query::Pattern then pattern
+          else RDF::Query::Pattern.new(*pattern.to_a)
+        end
+      end
+    end
+
+    ##
     # @private
     def filter(string)
       (options[:filters] ||= []) << string
@@ -241,6 +261,13 @@ module SPARQL; class Client
       buffer << 'WHERE {'
       buffer += patterns.map do |p|
         p.to_triple.map { |v| serialize_value(v) }.join(' ') + " ."
+      end
+      if options[:optionals]
+        buffer << 'OPTIONAL {'
+        buffer += options[:optionals].map do |p|
+          p.to_triple.map { |v| serialize_value(v) }.join(' ') + " ."
+        end
+        buffer << '}'
       end
       if options[:filters]
         buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
