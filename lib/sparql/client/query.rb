@@ -84,12 +84,7 @@ module SPARQL; class Client
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
     def construct(*patterns)
-      options[:template] = patterns.map do |pattern|
-        case pattern
-          when RDF::Query::Pattern then pattern
-          else RDF::Query::Pattern.new(*pattern.to_a)
-        end
-      end
+      options[:template] = build_patterns(patterns)
       self
     end
 
@@ -98,12 +93,7 @@ module SPARQL; class Client
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#GraphPattern
     def where(*patterns)
-      @patterns += patterns.map do |pattern|
-        case pattern
-          when RDF::Query::Pattern then pattern
-          else RDF::Query::Pattern.new(*pattern.to_a)
-        end
-      end
+      @patterns += build_patterns(patterns)
       self
     end
 
@@ -252,21 +242,15 @@ module SPARQL; class Client
           buffer << (variables.empty? ? '*' : variables.map { |v| serialize_value(v[1]) }.join(' '))
         when :construct
           buffer << '{'
-          buffer += options[:template].map do |p|
-            p.to_triple.map { |v| serialize_value(v) }.join(' ') + " ."
-          end
+          buffer += serialize_patterns(options[:template])
           buffer << '}'
       end
 
       buffer << 'WHERE {'
-      buffer += patterns.map do |p|
-        p.to_triple.map { |v| serialize_value(v) }.join(' ') + " ."
-      end
+      buffer += serialize_patterns(patterns)
       if options[:optionals]
         buffer << 'OPTIONAL {'
-        buffer += options[:optionals].map do |p|
-          p.to_triple.map { |v| serialize_value(v) }.join(' ') + " ."
-        end
+        buffer += serialize_patterns(options[:optionals])
         buffer << '}'
       end
       if options[:filters]
@@ -284,6 +268,14 @@ module SPARQL; class Client
       options[:prefixes].reverse.each {|e| buffer.unshift("PREFIX #{e}") } if options[:prefixes]
 
       buffer.join(' ')
+    end
+
+    ##
+    # @private
+    def serialize_patterns(patterns)
+      patterns.map do |p|
+        p.to_triple.map { |v| serialize_value(v) }.join(' ') + " ."
+      end
     end
 
     ##
