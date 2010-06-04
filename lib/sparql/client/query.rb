@@ -235,7 +235,7 @@ module SPARQL; class Client
         when :construct
           buffer << '{'
           buffer += options[:template].map do |p|
-            p.to_triple.map { |v| serialize_value(v) }.join(' ') + " . "
+            p.to_triple.map { |v| serialize_value(v) }.join(' ') + " ."
           end
           buffer << '}'
       end
