@@ -112,7 +112,7 @@ module SPARQL; class Client
     alias_method :whether, :where
 
     ##
-    # @param  [Array<Symbol>] variables
+    # @param  [Array<Symbol, String>] variables
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#modOrderBy
     def order(*variables)
@@ -251,7 +251,7 @@ module SPARQL; class Client
 
       if options[:order_by]
         buffer << 'ORDER BY'
-        buffer += options[:order_by].map { |var| "?#{var}" }
+        buffer += options[:order_by].map { |var| var.is_a?(String) ? var : "?#{var}" }
       end
 
       buffer << "OFFSET #{options[:offset]}" if options[:offset]

@@ -54,9 +54,9 @@ describe SPARQL::Client::Query do
     it "should support ORDER BY" do
       @query.select.where([:s, :p, :o]).order_by(:o).to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
       @query.select.where([:s, :p, :o]).order_by('?o').to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
-      @query.select.where([:s, :p, :o]).order_by(:o => :asc).to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ASC"
+      # @query.select.where([:s, :p, :o]).order_by(:o => :asc).to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ASC"
       @query.select.where([:s, :p, :o]).order_by('?o ASC').to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ASC"
-      @query.select.where([:s, :p, :o]).order_by(:o => :desc).to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o DESC"
+      # @query.select.where([:s, :p, :o]).order_by(:o => :desc).to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o DESC"
       @query.select.where([:s, :p, :o]).order_by('?o DESC').to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o DESC"
     end
 
