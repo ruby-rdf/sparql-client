@@ -242,7 +242,7 @@ module SPARQL; class Client
 
       buffer << 'WHERE {'
       buffer += patterns.map do |p|
-        p.to_triple.map { |v| serialize_value(v) }.join(' ') + " . "
+        p.to_triple.map { |v| serialize_value(v) }.join(' ') + " ."
       end
       if options[:filters]
         buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
