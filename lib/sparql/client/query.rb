@@ -76,9 +76,7 @@ module SPARQL; class Client
     def select(*variables)
       @form = :select
       options = variables.last.is_a?(Hash) ? variables.pop : {}
-      @variables = variables.inject({}) do |vars, var|
-        vars.merge(var.to_sym => RDF::Query::Variable.new(var))
-      end
+      @variables = variables.map { |var| [var, RDF::Query::Variable.new(var)] }
       self
     end
 
@@ -231,7 +229,7 @@ module SPARQL; class Client
         when :select
           buffer << 'DISTINCT' if options[:distinct]
           buffer << 'REDUCED'  if options[:reduced]
-          buffer << (variables.empty? ? '*' : variables.values.map { |v| serialize_value(v) }.join(' '))
+          buffer << (variables.empty? ? '*' : variables.map { |v| serialize_value(v[1]) }.join(' '))
         when :construct
           buffer << '{'
           buffer += options[:template].map do |p|
