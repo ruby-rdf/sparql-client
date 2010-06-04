@@ -164,8 +164,7 @@ module SPARQL; class Client
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#optionals
     def optional(*patterns)
-      options[:optionals] ||= []
-      options[:optionals] += build_patterns(patterns)
+      (options[:optionals] ||= []) << build_patterns(patterns)
       self
     end
 
@@ -249,9 +248,11 @@ module SPARQL; class Client
       buffer << 'WHERE {'
       buffer += serialize_patterns(patterns)
       if options[:optionals]
-        buffer << 'OPTIONAL {'
-        buffer += serialize_patterns(options[:optionals])
-        buffer << '}'
+        options[:optionals].each do |patterns|
+          buffer << 'OPTIONAL {'
+          buffer += serialize_patterns(patterns)
+          buffer << '}'
+        end
       end
       if options[:filters]
         buffer += options[:filters].map { |filter| "FILTER(#{filter})" }

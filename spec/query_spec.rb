@@ -80,8 +80,13 @@ describe SPARQL::Client::Query do
     end
 
     it "should support OPTIONAL" do
-      SPARQL::Client::Query.select.where([:s, :p, :o]).optional([:s, RDF.type, :o]).to_s.should ==
-        "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s <#{RDF.type}> ?o . } }"
+      SPARQL::Client::Query.select.where([:s, :p, :o]).optional([:s, RDF.type, :o], [:s, RDF::DC.abstract, :o]).to_s.should ==
+        "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s <#{RDF.type}> ?o . ?s <#{RDF::DC.abstract}> ?o . } }"
+    end
+
+    it "should support multiple OPTIONALs" do
+      SPARQL::Client::Query.select.where([:s, :p, :o]).optional([:s, RDF.type, :o]).optional([:s, RDF::DC.abstract, :o]).to_s.should ==
+        "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s <#{RDF.type}> ?o . } OPTIONAL { ?s <#{RDF::DC.abstract}> ?o . } }"
     end
   end
 
