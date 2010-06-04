@@ -165,6 +165,14 @@ module SPARQL; class Client
     end
 
     ##
+    # @return [Query]
+    # @see    http://www.w3.org/TR/rdf-sparql-query/#prefNames
+    def prefix(string)
+      (options[:prefixes] ||= []) << string
+      self
+    end
+
+    ##
     # @private
     def filter(string)
       (options[:filters] ||= []) << string
@@ -248,6 +256,7 @@ module SPARQL; class Client
 
       buffer << "OFFSET #{options[:offset]}" if options[:offset]
       buffer << "LIMIT #{options[:limit]}"   if options[:limit]
+      options[:prefixes].reverse.each {|e| buffer.unshift("PREFIX #{e}") } if options[:prefixes]
 
       buffer.join(' ')
     end
