@@ -43,12 +43,7 @@ module SPARQL
     #
     # @return [Query]
     def ask(*args)
-      client = self
-      result = Query.ask(*args)
-      (class << result; self; end).send(:define_method, :execute) do
-        client.query(self)
-      end
-      result
+      call_query_method(:ask, *args)
     end
 
     ##
@@ -57,12 +52,16 @@ module SPARQL
     # @param  [Array<Symbol>] variables
     # @return [Query]
     def select(*args)
-      client = self
-      result = Query.select(*args)
-      (class << result; self; end).send(:define_method, :execute) do
-        client.query(self)
-      end
-      result
+      call_query_method(:select, *args)
+    end
+
+    ##
+    # Executes a `DESCRIBE` query.
+    #
+    # @param  [Array<Symbol, RDF::URI>] variables
+    # @return [Query]
+    def describe(*args)
+      call_query_method(:describe, *args)
     end
 
     ##
@@ -71,8 +70,14 @@ module SPARQL
     # @param  [Array<Symbol>] pattern
     # @return [Query]
     def construct(*args)
+      call_query_method(:construct, *args)
+    end
+
+    ##
+    # @private
+    def call_query_method(meth, *args)
       client = self
-      result = Query.construct(*args)
+      result = Query.send(meth, *args)
       (class << result; self; end).send(:define_method, :execute) do
         client.query(self)
       end
