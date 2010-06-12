@@ -109,6 +109,8 @@ Authors
 
 Contributors
 ------------
+
+* [Gabriel Horner](mailto:gabriel.horner@gmail.com) - <http://tagaholic.me/>
 * [Nicholas Humfrey](mailto:njh@aelius.com) - <http://www.aelius.com/njh/>
 
 License
