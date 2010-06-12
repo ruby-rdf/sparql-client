@@ -112,6 +112,14 @@ module SPARQL; class Client
       self
     end
 
+    # @param RDF::URI uri
+    # @return [Query]
+    # @see http://www.w3.org/TR/rdf-sparql-query/#specDataset
+    def from(uri)
+      options[:from] = uri
+      self
+    end
+
     ##
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
@@ -268,6 +276,8 @@ module SPARQL; class Client
           buffer += serialize_patterns(options[:template])
           buffer << '}'
       end
+
+      buffer << "FROM #{serialize_value(options[:from])}" if options[:from]
 
       unless patterns.empty? && form == :describe
         buffer << 'WHERE {'

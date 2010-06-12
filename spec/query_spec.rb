@@ -41,6 +41,12 @@ describe SPARQL::Client::Query do
       @query.select(:s, :p, :o).where([:s, :p, :o]).to_s.should == "SELECT ?s ?p ?o WHERE { ?s ?p ?o . }"
     end
 
+    it "should support FROM" do
+      uri = "http://example.org/dft.ttl"
+      @query.select.from(RDF::URI.new(uri)).where([:s, :p, :o]).to_s.should ==
+        "SELECT * FROM <#{uri}> WHERE { ?s ?p ?o . }"
+    end
+
     it "should support DISTINCT" do
       @query.select(:s, :distinct => true).where([:s, :p, :o]).to_s.should == "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
       @query.select(:s).distinct.where([:s, :p, :o]).to_s.should == "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
