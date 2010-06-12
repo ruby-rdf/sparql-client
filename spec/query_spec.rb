@@ -100,6 +100,12 @@ describe SPARQL::Client::Query do
       @query.describe(:s, :p).where([:s, :p, :o]).to_s.should == "DESCRIBE ?s ?p WHERE { ?s ?p ?o . }"
       @query.describe(:s, :p, :o).where([:s, :p, :o]).to_s.should == "DESCRIBE ?s ?p ?o WHERE { ?s ?p ?o . }"
     end
+
+    it "should support RDF::URI arguments" do
+      uris = ['http://www.bbc.co.uk/programmes/b007stmh#programme', 'http://www.bbc.co.uk/programmes/b00lg2xb#programme']
+      @query.describe(RDF::URI.new(uris[0]),RDF::URI.new(uris[1])).to_s.should ==
+        "DESCRIBE <#{uris[0]}> <#{uris[1]}>"
+    end
   end
 
   context "when building CONSTRUCT queries" do

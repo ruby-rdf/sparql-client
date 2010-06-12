@@ -17,6 +17,10 @@ module SPARQL; class Client
     attr_reader :options
 
     ##
+    # @return [Array<[key, RDF::Value]>]
+    attr_reader :values
+
+    ##
     # Creates a boolean `ASK` query.
     #
     # @param  [Hash{Symbol => Object}] options
@@ -41,8 +45,8 @@ module SPARQL; class Client
     ##
     # Creates a `DESCRIBE` query.
     #
-    # @param  [Array<Symbol>]          variables
-    # @param  [Hash{Symbol => Object}] options
+    # @param  [Array<Symbol, RDF::URI>] variables
+    # @param  [Hash{Symbol => Object}]  options
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#describe
     def self.describe(*variables)
@@ -82,15 +86,23 @@ module SPARQL; class Client
 
     ##
     # @param  [Array<Symbol>] variables
-    # @param  [Hash{Symbol => Object}] options
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#select
     def select(*variables)
-      @variables = variables.map { |var| [var, RDF::Query::Variable.new(var)] }
+      @values = variables.map { |var| [var, RDF::Query::Variable.new(var)] }
       self
     end
 
-    alias_method :describe, :select
+    ##
+    # @param  [Array<Symbol>] variables
+    # @return [Query]
+    # @see    http://www.w3.org/TR/rdf-sparql-query/#describe
+    def describe(*variables)
+      @values = variables.map { |var|
+        [var, var.is_a?(RDF::URI) ? var : RDF::Query::Variable.new(var)]
+      }
+      self
+    end
 
     ##
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
@@ -250,26 +262,28 @@ module SPARQL; class Client
         when :select, :describe
           buffer << 'DISTINCT' if options[:distinct]
           buffer << 'REDUCED'  if options[:reduced]
-          buffer << (variables.empty? ? '*' : variables.map { |v| serialize_value(v[1]) }.join(' '))
+          buffer << (values.empty? ? '*' : values.map { |v| serialize_value(v[1]) }.join(' '))
         when :construct
           buffer << '{'
           buffer += serialize_patterns(options[:template])
           buffer << '}'
       end
 
-      buffer << 'WHERE {'
-      buffer += serialize_patterns(patterns)
-      if options[:optionals]
-        options[:optionals].each do |patterns|
-          buffer << 'OPTIONAL {'
-          buffer += serialize_patterns(patterns)
-          buffer << '}'
+      unless patterns.empty? && form == :describe
+        buffer << 'WHERE {'
+        buffer += serialize_patterns(patterns)
+        if options[:optionals]
+          options[:optionals].each do |patterns|
+            buffer << 'OPTIONAL {'
+            buffer += serialize_patterns(patterns)
+            buffer << '}'
+          end
         end
+        if options[:filters]
+          buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
+        end
+        buffer << '}'
       end
-      if options[:filters]
-        buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
-      end
-      buffer << '}'
 
       if options[:order_by]
         buffer << 'ORDER BY'
