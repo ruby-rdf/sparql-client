@@ -35,7 +35,19 @@ module SPARQL; class Client
     # @see    http://www.w3.org/TR/rdf-sparql-query/#select
     def self.select(*variables)
       options = variables.last.is_a?(Hash) ? variables.pop : {}
-      self.new(:select, options).select(*variables) # FIXME
+      self.new(:select, options).select(*variables)
+    end
+
+    ##
+    # Creates a `DESCRIBE` query.
+    #
+    # @param  [Array<Symbol>]          variables
+    # @param  [Hash{Symbol => Object}] options
+    # @return [Query]
+    # @see    http://www.w3.org/TR/rdf-sparql-query/#describe
+    def self.describe(*variables)
+      options = variables.last.is_a?(Hash) ? variables.pop : {}
+      self.new(:describe, options).describe(*variables)
     end
 
     ##
@@ -74,11 +86,11 @@ module SPARQL; class Client
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#select
     def select(*variables)
-      @form = :select
-      options = variables.last.is_a?(Hash) ? variables.pop : {}
       @variables = variables.map { |var| [var, RDF::Query::Variable.new(var)] }
       self
     end
+
+    alias_method :describe, :select
 
     ##
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
@@ -235,7 +247,7 @@ module SPARQL; class Client
     def to_s
       buffer = [form.to_s.upcase]
       case form
-        when :select
+        when :select, :describe
           buffer << 'DISTINCT' if options[:distinct]
           buffer << 'REDUCED'  if options[:reduced]
           buffer << (variables.empty? ? '*' : variables.map { |v| serialize_value(v[1]) }.join(' '))

@@ -75,23 +75,31 @@ describe SPARQL::Client::Query do
 
     it "should support PREFIX" do
       prefixes = ["dc: <http://purl.org/dc/elements/1.1/>", "foaf: <http://xmlns.com/foaf/0.1/>"]
-      SPARQL::Client::Query.select.prefix(prefixes[0]).prefix(prefixes[1]).where([:s, :p, :o]).to_s.should ==
+      @query.select.prefix(prefixes[0]).prefix(prefixes[1]).where([:s, :p, :o]).to_s.should ==
         "PREFIX #{prefixes[0]} PREFIX #{prefixes[1]} SELECT * WHERE { ?s ?p ?o . }"
     end
 
     it "should support OPTIONAL" do
-      SPARQL::Client::Query.select.where([:s, :p, :o]).optional([:s, RDF.type, :o], [:s, RDF::DC.abstract, :o]).to_s.should ==
+      @query.select.where([:s, :p, :o]).optional([:s, RDF.type, :o], [:s, RDF::DC.abstract, :o]).to_s.should ==
         "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s <#{RDF.type}> ?o . ?s <#{RDF::DC.abstract}> ?o . } }"
     end
 
     it "should support multiple OPTIONALs" do
-      SPARQL::Client::Query.select.where([:s, :p, :o]).optional([:s, RDF.type, :o]).optional([:s, RDF::DC.abstract, :o]).to_s.should ==
+      @query.select.where([:s, :p, :o]).optional([:s, RDF.type, :o]).optional([:s, RDF::DC.abstract, :o]).to_s.should ==
         "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s <#{RDF.type}> ?o . } OPTIONAL { ?s <#{RDF::DC.abstract}> ?o . } }"
     end
   end
 
   context "when building DESCRIBE queries" do
-    # TODO
+    it "should support basic graph patterns" do
+      @query.describe.where([:s, :p, :o]).to_s.should == "DESCRIBE * WHERE { ?s ?p ?o . }"
+    end
+
+    it "should support projection" do
+      @query.describe(:s).where([:s, :p, :o]).to_s.should == "DESCRIBE ?s WHERE { ?s ?p ?o . }"
+      @query.describe(:s, :p).where([:s, :p, :o]).to_s.should == "DESCRIBE ?s ?p WHERE { ?s ?p ?o . }"
+      @query.describe(:s, :p, :o).where([:s, :p, :o]).to_s.should == "DESCRIBE ?s ?p ?o WHERE { ?s ?p ?o . }"
+    end
   end
 
   context "when building CONSTRUCT queries" do
