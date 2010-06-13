@@ -89,6 +89,7 @@ module SPARQL
     #
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
+    # @option options [String] :content_type
     # @return [Array<RDF::Query::Solution>]
     def query(query, options = {})
       get(query) do |response|
@@ -100,16 +101,17 @@ module SPARQL
           when Net::HTTPServerError # 5xx
             raise ServerError.new(response.body)
           when Net::HTTPSuccess     # 2xx
-            parse_response(response)
+            parse_response(response, options)
         end
       end
     end
 
     ##
     # @param  [Net::HTTPSuccess] response
+    # @param  [Hash{Symbol => Object}] options
     # @return [Object]
-    def parse_response(response)
-      case content_type = response.content_type
+    def parse_response(response, options = {})
+      case content_type = options[:content_type] || response.content_type
         when RESULT_BOOL # Sesame-specific
           response.body == 'true'
         when RESULT_JSON
@@ -117,7 +119,7 @@ module SPARQL
         when RESULT_XML
           parse_xml_bindings(response.body)
         else
-          parse_rdf_serialization(response)
+          parse_rdf_serialization(response, options)
       end
     end
 
@@ -207,9 +209,11 @@ module SPARQL
 
     ##
     # @param  [Net::HTTPSuccess] response
+    # @param  [Hash{Symbol => Object}] options
     # @return [RDF::Enumerable]
-    def parse_rdf_serialization(response)
-      if reader = RDF::Reader.for(:content_type => response.content_type)
+    def parse_rdf_serialization(response, options = {})
+      options = {:content_type => response.content_type} if options.empty?
+      if reader = RDF::Reader.for(options)
         reader.new(response.body)
       end
     end

@@ -36,5 +36,17 @@ describe SPARQL::Client do
       @client.should_receive(:parse_xml_bindings)
       @client.query(@query)
     end
+
+    it "should handle successful response with overridden xml header" do
+      @client.should_receive(:get).and_yield response(SPARQL::Client::RESULT_XML)
+      @client.should_receive(:parse_json_bindings)
+      @client.query(@query, :content_type=>SPARQL::Client::RESULT_JSON)
+    end
+
+    it "should handle successful response with overridden plain header" do
+      @client.should_receive(:get).and_yield response('text/plain')
+      RDF::Reader.should_receive(:for).with(:content_type=>'text/turtle')
+      @client.query(@query, :content_type=>'text/turtle')
+    end
   end
 end
