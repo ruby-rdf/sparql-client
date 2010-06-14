@@ -342,7 +342,7 @@ module SPARQL; class Client
       # SPARQL queries are UTF-8, but support ASCII-style Unicode escapes, so
       # the N-Triples serializer is fine unless it's a variable:
       case
-        when value.variable? then "?#{value.name}"
+        when value.variable? then value.to_s
         else RDF::NTriples.serialize(value)
       end
     end
