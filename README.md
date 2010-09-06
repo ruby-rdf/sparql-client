@@ -1,7 +1,7 @@
 SPARQL Client for RDF.rb
 ========================
 
-This is a pure-Ruby implementation of a [SPARQL][] client for [RDF.rb][].
+This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
 * <http://github.com/bendiken/sparql-client>
 
@@ -68,6 +68,7 @@ Documentation
 Dependencies
 ------------
 
+* [Ruby](http://ruby-lang.org/) (>= 1.8.7) or (>= 1.8.1 with [Backports][])
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.2.0)
 * [JSON](http://rubygems.org/gems/json_pure) (>= 1.4.0)
 
@@ -91,16 +92,6 @@ as follows:
 
     % wget http://github.com/bendiken/sparql-client/tarball/master
 
-Resources
----------
-
-* <http://sparql.rubyforge.org/client/>
-* <http://github.com/bendiken/sparql-client>
-* <http://rubygems.org/gems/sparql-client>
-* <http://rubyforge.org/projects/sparql/>
-* <http://raa.ruby-lang.org/project/sparql-client/>
-* <http://www.ohloh.net/p/rdf>
-
 Authors
 -------
 
@@ -115,12 +106,38 @@ Contributors
 * [David Nielsen](http://github.com/drankard) - <http://github.com/drankard>
 * [Thamaraiselvan Poomalai](http://github.com/selvan) - <http://softonaut.blogspot.com/>
 
+Contributing
+------------
+
+* Do your best to adhere to the existing coding conventions and idioms.
+* Don't use hard tabs, and don't leave trailing whitespace on any line.
+* Do document every method you add using [YARD][] annotations. Read the
+  [tutorial][YARD-GS] or just look at the existing code for examples.
+* Don't touch the `.gemspec`, `VERSION` or `AUTHORS` files. If you need to
+  change them, do so on your private branch only.
+* Do feel free to add yourself to the `CREDITS` file and the corresponding
+  list in the the `README`. Alphabetical order applies.
+* Do note that in order for us to merge any non-trivial changes (as a rule
+  of thumb, additions larger than about 15 lines of code), we need an
+  explicit [public domain dedication][PDD] on record from you.
+
+Resources
+---------
+
+* <http://sparql.rubyforge.org/client/>
+* <http://github.com/bendiken/sparql-client>
+* <http://rubygems.org/gems/sparql-client>
+* <http://rubyforge.org/projects/sparql/>
+* <http://raa.ruby-lang.org/project/sparql-client/>
+* <http://www.ohloh.net/p/rdf>
+
 License
 -------
 
-`SPARQL::Client` is free and unencumbered public domain software. For more
-information, see <http://unlicense.org/> or the accompanying UNLICENSE file.
+This is free and unencumbered public domain software. For more information,
+see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 
+[Ruby]:            http://ruby-lang.org/
 [RDF]:             http://www.w3.org/RDF/
 [SPARQL]:          http://en.wikipedia.org/wiki/SPARQL
 [SPARQL JSON]:     http://www.w3.org/TR/rdf-sparql-json-res/
@@ -129,3 +146,7 @@ information, see <http://unlicense.org/> or the accompanying UNLICENSE file.
 [RDF::Repository]: http://rdf.rubyforge.org/RDF/Repository.html
 [DSL]:             http://en.wikipedia.org/wiki/Domain-specific_language
                    "domain-specific language"
+[YARD]:            http://yardoc.org/
+[YARD-GS]:         http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
+[PDD]:             http://unlicense.org/#unlicensing-contributions
+[Backports]:       http://rubygems.org/gems/backports
