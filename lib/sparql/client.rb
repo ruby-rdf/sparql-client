@@ -237,6 +237,24 @@ module SPARQL
     protected
 
     ##
+    # Returns an HTTP class or HTTP proxy class based on environment http_proxy & https_proxy settings
+    # @return [Net::HTTP::Proxy]
+    def http_klass(scheme)
+      proxy_uri = nil
+      case scheme
+        when "http"
+          proxy_uri = URI.parse(ENV['http_proxy']) unless ENV['http_proxy'].nil?
+        when "https"
+          proxy_uri = URI.parse(ENV['https_proxy']) unless ENV['https_proxy'].nil?
+      end
+      return Net::HTTP if proxy_uri.nil? 
+
+      proxy_host, proxy_port = proxy_uri.host, proxy_uri.port
+      proxy_user, proxy_pass = proxy_uri.userinfo.split(/:/) if proxy_uri.userinfo
+      Net::HTTP::Proxy(proxy_host, proxy_port, proxy_user, proxy_pass)
+    end
+
+    ##
     # Performs an HTTP GET request against the SPARQL endpoint.
     #
     # @param  [String, #to_s]          query
@@ -248,7 +266,7 @@ module SPARQL
       url = self.url.dup
       url.query_values = {:query => query.to_s}
 
-      Net::HTTP.start(url.host, url.port) do |http|
+      http_klass(url.scheme).start(url.host, url.port) do |http|
         response = http.get(url.path + "?#{url.query}", @headers.merge(headers))
         if block_given?
           block.call(response)
