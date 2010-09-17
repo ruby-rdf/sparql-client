@@ -169,6 +169,7 @@ module SPARQL
     # @return [Enumerable<RDF::Query::Solution>]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
     def parse_xml_bindings(xml)
+      xml.force_encoding(encoding) if xml.respond_to?(:force_encoding)
       require 'rexml/document' unless defined?(::REXML::Document)
       xml = REXML::Document.new(xml).root unless xml.is_a?(REXML::Element)
 
@@ -217,6 +218,12 @@ module SPARQL
       if reader = RDF::Reader.for(options)
         reader.new(response.body)
       end
+    end
+
+    ##
+    # @return [Encoding]
+    def encoding
+      @encoding ||= ::Encoding::UTF_8
     end
 
     ##
