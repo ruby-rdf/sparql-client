@@ -103,6 +103,7 @@ Contributors
 
 * [Gabriel Horner](http://github.com/cldwalker) - <http://tagaholic.me/>
 * [Nicholas Humfrey](http://github.com/njh) - <http://www.aelius.com/njh/>
+* [Fumihiro Kato](http://github.com/fumi) - <http://fumi.me/>
 * [David Nielsen](http://github.com/drankard) - <http://github.com/drankard>
 * [Thamaraiselvan Poomalai](http://github.com/selvan) - <http://softonaut.blogspot.com/>
 
