@@ -92,6 +92,7 @@ module SPARQL
     # @option options [String] :content_type
     # @return [Array<RDF::Query::Solution>]
     def query(query, options = {})
+      @headers['Accept'] = options[:content_type] if options[:content_type]
       get(query) do |response|
         case response
           when Net::HTTPBadRequest  # 400 Bad Request
