@@ -167,13 +167,13 @@ module SPARQL; class Client
     # @yieldparam [Statement]
     # @return [Enumerable<Statement>]
     def query_pattern(pattern, &block)
-      pattern.subject ||= :s
-      pattern.predicate ||= :p
-      pattern.object ||= :o
+      pattern = pattern.dup
+      pattern.subject   ||= RDF::Query::Variable.new
+      pattern.predicate ||= RDF::Query::Variable.new
+      pattern.object    ||= RDF::Query::Variable.new
       pattern.initialize!
       query = client.construct(pattern).where(pattern)
 
-      p pattern
       if block_given?
         query.each_statement(&block)
       else
