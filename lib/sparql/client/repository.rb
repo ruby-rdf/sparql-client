@@ -161,27 +161,23 @@ module SPARQL; class Client
     #     repository.query([nil, RDF::DOAP.developer, nil])
     #     repository.query(:predicate => RDF::DOAP.developer)
     #
-    # @param  [Query, Statement, Array(Value), Hash] pattern
+    # @param  [Pattern] pattern
+    # @see    RDF::Queryable#query_pattern
     # @yield  [statement]
     # @yieldparam [Statement]
     # @return [Enumerable<Statement>]
-    def query(pattern, &block)
-      case pattern
-        when RDF::Query::Pattern
-          query = client.construct(pattern).where(pattern)
-          if block_given?
-            query.each_statement(&block)
-          else
-            query.solutions.to_a.extend(RDF::Enumerable, RDF::Queryable)
-          end
-        when RDF::Statement
-          query(RDF::Query::Pattern.new({
-            :subject   => pattern.subject   || :s,
-            :predicate => pattern.predicate || :p,
-            :object    => pattern.object    || :o,
-          }), &block)
-        else
-          super(pattern, &block)
+    def query_pattern(pattern, &block)
+      pattern.subject ||= :s
+      pattern.predicate ||= :p
+      pattern.object ||= :o
+      pattern.initialize!
+      query = client.construct(pattern).where(pattern)
+
+      p pattern
+      if block_given?
+        query.each_statement(&block)
+      else
+        query.solutions.to_a.extend(RDF::Enumerable, RDF::Queryable)
       end
     end
 
