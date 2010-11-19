@@ -87,16 +87,21 @@ To get a local working copy of the development repository, do:
 
     % git clone git://github.com/bendiken/sparql-client.git
 
-Alternatively, you can download the latest development version as a tarball
-as follows:
+Alternatively, download the latest development version as a tarball as
+follows:
 
     % wget http://github.com/bendiken/sparql-client/tarball/master
+
+Mailing List
+------------
+
+* <http://lists.w3.org/Archives/Public/public-rdf-ruby/>
 
 Authors
 -------
 
-* [Arto Bendiken](mailto:arto.bendiken@gmail.com) - <http://ar.to/>
-* [Ben Lavender](mailto:blavender@gmail.com) - <http://bhuga.net/>
+* [Arto Bendiken](http://github.com/bendiken) - <http://ar.to/>
+* [Ben Lavender](http://github.com/bhuga) - <http://bhuga.net/>
 
 Contributors
 ------------
