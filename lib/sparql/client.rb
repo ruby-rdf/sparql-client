@@ -1,10 +1,13 @@
 require 'net/http'
-require 'rdf'
+require 'rdf' # @see http://rubygems.org/gems/rdf
 require 'rdf/ntriples'
 
 module SPARQL
   ##
   # A SPARQL client for RDF.rb.
+  #
+  # @see http://www.w3.org/TR/rdf-sparql-protocol/
+  # @see http://www.w3.org/TR/rdf-sparql-json-res/
   class Client
     autoload :Query,      'sparql/client/query'
     autoload :Repository, 'sparql/client/repository'
@@ -283,5 +286,5 @@ module SPARQL
         end
       end
     end
-  end
-end
+  end # Client
+end # SPARQL
