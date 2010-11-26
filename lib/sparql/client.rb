@@ -31,7 +31,8 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options
-      @headers = {'Accept' => "#{RESULT_JSON}, #{RESULT_XML}, text/plain"}
+      #@headers = {'Accept' => "#{RESULT_JSON}, #{RESULT_XML}, text/plain"}
+      @headers = {'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.collect { |k,v| k.to_s }].join(', ')}
 
       if block_given?
         case block.arity
