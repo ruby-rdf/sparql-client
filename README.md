@@ -106,6 +106,8 @@ Authors
 Contributors
 ------------
 
+* [Christoph Badura](http://github.com/b4d) - <http://github.com/b4d>
+* [James Hetherington](http://github.com/jamespjh) - <http://twitter.com/jamespjh>
 * [Gabriel Horner](http://github.com/cldwalker) - <http://tagaholic.me/>
 * [Nicholas Humfrey](http://github.com/njh) - <http://www.aelius.com/njh/>
 * [Fumihiro Kato](http://github.com/fumi) - <http://fumi.me/>
