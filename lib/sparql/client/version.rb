@@ -2,7 +2,7 @@ module SPARQL; class Client
   module VERSION
     MAJOR = 0
     MINOR = 0
-    TINY  = 7
+    TINY  = 8
     EXTRA = nil
 
     STRING = [MAJOR, MINOR, TINY, EXTRA].compact.join('.')
