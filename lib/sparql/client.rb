@@ -96,13 +96,24 @@ module SPARQL
     end
 
     ##
-    # Executes a SPARQL query.
+    # Executes a SPARQL query and returns parsed results.
     #
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
     # @return [Array<RDF::Query::Solution>]
     def query(query, options = {})
+      parse_response(response(query, options), options)
+    end
+
+    ##
+    # Executes a SPARQL query and returns the Net::HTTP::Response of the result.
+    #
+    # @param [String, #to_s]   url
+    # @param  [Hash{Symbol => Object}] options
+    # @option options [String] :content_type
+    # @return [String]
+    def response(query, options = {})
       @headers['Accept'] = options[:content_type] if options[:content_type]
       get(query) do |response|
         case response
@@ -113,9 +124,10 @@ module SPARQL
           when Net::HTTPServerError # 5xx
             raise ServerError.new(response.body)
           when Net::HTTPSuccess     # 2xx
-            parse_response(response, options)
+            response
         end
       end
+
     end
 
     ##
