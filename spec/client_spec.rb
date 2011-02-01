@@ -28,25 +28,25 @@ describe SPARQL::Client do
 
     it "should handle successful response with json header" do
       @client.should_receive(:get).and_yield response(SPARQL::Client::RESULT_JSON)
-      @client.should_receive(:parse_json_bindings)
+      @client.class.should_receive(:parse_json_bindings)
       @client.query(@query)
     end
 
     it "should handle successful response with xml header" do
       @client.should_receive(:get).and_yield response(SPARQL::Client::RESULT_XML)
-      @client.should_receive(:parse_xml_bindings)
+      @client.class.should_receive(:parse_xml_bindings)
       @client.query(@query)
     end
 
     it "should handle successful response with overridden xml header" do
       @client.should_receive(:get).and_yield response(SPARQL::Client::RESULT_XML)
-      @client.should_receive(:parse_json_bindings)
+      @client.class.should_receive(:parse_json_bindings)
       @client.query(@query, :content_type=>SPARQL::Client::RESULT_JSON)
     end
 
     it "should handle successful response with overridden json header" do
       @client.should_receive(:get).and_yield response(SPARQL::Client::RESULT_JSON)
-      @client.should_receive(:parse_xml_bindings)
+      @client.class.should_receive(:parse_xml_bindings)
       @client.query(@query, :content_type=>SPARQL::Client::RESULT_XML)
     end
 
