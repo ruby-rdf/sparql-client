@@ -1,4 +1,4 @@
-require 'net/http'
+require 'net/http/persistent'
 require 'rdf' # @see http://rubygems.org/gems/rdf
 require 'rdf/ntriples'
 
@@ -33,6 +33,7 @@ module SPARQL
       @url, @options = RDF::URI.new(url.to_s), options
       #@headers = {'Accept' => "#{RESULT_JSON}, #{RESULT_XML}, text/plain"}
       @headers = {'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.collect { |k,v| k.to_s }].join(', ')}
+      @http = http_klass(@url.scheme)
 
       if block_given?
         case block.arity
@@ -270,11 +271,9 @@ module SPARQL
         when "https"
           proxy_uri = URI.parse(ENV['https_proxy']) unless ENV['https_proxy'].nil?
       end
-      return Net::HTTP if proxy_uri.nil? 
-
-      proxy_host, proxy_port = proxy_uri.host, proxy_uri.port
-      proxy_user, proxy_pass = proxy_uri.userinfo.split(/:/) if proxy_uri.userinfo
-      Net::HTTP::Proxy(proxy_host, proxy_port, proxy_user, proxy_pass)
+      klass = Net::HTTP::Persistent.new(self.class.to_s, proxy_uri)
+      klass.keep_alive = 120	# increase to 2 minutes
+      klass
     end
 
     ##
@@ -289,13 +288,12 @@ module SPARQL
       url = self.url.dup
       url.query_values = {:query => query.to_s}
 
-      http_klass(url.scheme).start(url.host, url.port) do |http|
-        response = http.get(url.path + "?#{url.query}", @headers.merge(headers))
-        if block_given?
-          block.call(response)
-        else
-          response
-        end
+      request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
+      response = @http.request url, request
+      if block_given?
+	block.call(response)
+      else
+	response
       end
     end
   end # Client
