@@ -62,6 +62,14 @@ describe SPARQL::Client do
       @client.query(@query, :headers => {"Authorization" => "Basic XXX=="})
     end
 
+    it "should handle successful response with initial custom headers" do
+      options = {:headers => {"Authorization" => "Basic XXX=="}}
+      @client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', options)
+      @client.instance_variable_set :@http, mock(:request => response('text/plain'))
+      Net::HTTP::Get.should_receive(:new).with(anything, hash_including(options[:headers]))
+      @client.query(@query)
+    end
+
     it "should support international characters in response body" do
       @client = SPARQL::Client.new('http://dbpedia.org/sparql')
       @query = "SELECT ?name WHERE { <http://dbpedia.org/resource/Tokyo> <http://dbpedia.org/property/nativeName> ?name }"

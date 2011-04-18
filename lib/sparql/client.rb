@@ -29,10 +29,13 @@ module SPARQL
     ##
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
+    # @option options [Hash] :headers
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options
       #@headers = {'Accept' => "#{RESULT_JSON}, #{RESULT_XML}, text/plain"}
-      @headers = {'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.collect { |k,v| k.to_s }].join(', ')}
+      @headers = {
+        'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.keys.map(&:to_s)].join(', ')
+      }.merge @options[:headers] || {}
       @http = http_klass(@url.scheme)
 
       if block_given?
@@ -102,7 +105,7 @@ module SPARQL
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
-    # @option options [String] :headers
+    # @option options [Hash] :headers
     # @return [Array<RDF::Query::Solution>]
     def query(query, options = {})
       parse_response(response(query, options), options)
@@ -114,7 +117,7 @@ module SPARQL
     # @param [String, #to_s]   url
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
-    # @option options [String] :headers
+    # @option options [Hash] :headers
     # @return [String]
     def response(query, options = {})
       @headers['Accept'] = options[:content_type] if options[:content_type]
