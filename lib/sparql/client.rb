@@ -102,6 +102,7 @@ module SPARQL
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
+    # @option options [String] :headers
     # @return [Array<RDF::Query::Solution>]
     def query(query, options = {})
       parse_response(response(query, options), options)
@@ -113,10 +114,11 @@ module SPARQL
     # @param [String, #to_s]   url
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
+    # @option options [String] :headers
     # @return [String]
     def response(query, options = {})
       @headers['Accept'] = options[:content_type] if options[:content_type]
-      get(query) do |response|
+      get(query, options[:headers] || {}) do |response|
         case response
           when Net::HTTPBadRequest  # 400 Bad Request
             raise MalformedQuery.new(response.body)

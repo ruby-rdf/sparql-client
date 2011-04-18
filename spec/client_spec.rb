@@ -56,6 +56,12 @@ describe SPARQL::Client do
       @client.query(@query, :content_type=>'text/turtle')
     end
 
+    it "should handle successful response with custom headers" do
+      @client.should_receive(:get).with(anything, "Authorization" => "Basic XXX==").
+        and_yield response('text/plain')
+      @client.query(@query, :headers => {"Authorization" => "Basic XXX=="})
+    end
+
     it "should support international characters in response body" do
       @client = SPARQL::Client.new('http://dbpedia.org/sparql')
       @query = "SELECT ?name WHERE { <http://dbpedia.org/resource/Tokyo> <http://dbpedia.org/property/nativeName> ?name }"
