@@ -365,7 +365,9 @@ module SPARQL
         :host => proxy_uri.host,
         :port => proxy_uri.port,
         :type => proxy_uri.scheme.to_sym
-        } 
+        },
+        :connect_timeout=> 60,
+        :inactivity_timeout => 0 
       }
     else
       connection_options={}
