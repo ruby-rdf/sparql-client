@@ -248,6 +248,16 @@ module SPARQL; class Client
       result.each_statement(&block)
     end
 
+    # Enumerates over each matching query solution.
+    #
+    # @yield  [solution]
+    # @yieldparam [RDF::Query::Solution] solution
+    # @return [Enumerator]
+    def each_solution(&block)
+      @solutions = result
+      super
+    end
+
     ##
     # @return [Object]
     def result
