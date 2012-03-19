@@ -1,10 +1,7 @@
 module SPARQL; class Client
   module VERSION
-    MAJOR = 0
-    MINOR = 0
-    TINY  = 11
-    EXTRA = nil
-
+    VERSION_FILE = File.expand_path("../../../../VERSION", __FILE__)
+    MAJOR, MINOR, TINY, EXTRA = File.read(VERSION_FILE).chop.split(".")
     STRING = [MAJOR, MINOR, TINY, EXTRA].compact.join('.')
 
     ##
