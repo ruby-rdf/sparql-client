@@ -1,4 +1,6 @@
 require 'net/http/persistent'
+require 'eventmachine'
+require 'em-http-request'
 require 'rdf' # @see http://rubygems.org/gems/rdf
 require 'rdf/ntriples'
 
@@ -40,8 +42,8 @@ module SPARQL
 
       if block_given?
         case block.arity
-          when 1 then block.call(self)
-          else instance_eval(&block)
+        when 1 then block.call(self)
+        else instance_eval(&block)
         end
       end
     end
@@ -111,6 +113,10 @@ module SPARQL
       parse_response(response(query, options), options)
     end
 
+    def async_query(query, callback, errback, options={})
+        async_response(query, callback, errback, options)
+    end
+
     ##
     # Executes a SPARQL query and returns the Net::HTTP::Response of the result.
     #
@@ -136,6 +142,27 @@ module SPARQL
 
     end
 
+
+  def async_response(query, callback, errback, options)
+    @headers['Accept'] = options[:content_type] if options[:content_type]
+    http = em_get(query, options[:headers] || {})
+    http.errback do
+      errback.call(http)
+    end
+    http.callback do 
+      case http.response_header.status.to_s
+      when /200/
+        callback.call(parse_em_response(http))
+      when /400/
+        callback.call(MalformedQuery.new(http.response))
+      when /^4\d+$/
+        callback.call(ClientError.new(http.response))
+      when /^5\d+$/
+        callback.call(ServerError.new(http.response))
+      end
+    end
+  end
+
     ##
     # @param  [Net::HTTPSuccess] response
     # @param  [Hash{Symbol => Object}] options
@@ -152,6 +179,20 @@ module SPARQL
           parse_rdf_serialization(response, options)
       end
     end
+
+  def parse_em_response(http, options ={})
+    case content_type = options[:content_type] || http.response_header["CONTENT_TYPE"][/(.*?);/, 1]
+    when RESULT_BOOL # Sesame-specific
+      http.response == 'true'
+    when RESULT_JSON
+      self.class.parse_json_bindings(http.response, nodes)
+    when RESULT_XML
+      self.class.parse_xml_bindings(http.response, nodes)
+    else
+      em_parse_rdf_serialization(http, options)
+    end
+
+  end
 
     ##
     # @param  [String, Hash] json
@@ -247,6 +288,13 @@ module SPARQL
       end
     end
 
+    def em_parse_rdf_serialization(http, options= {})
+      options = {:content_type => http.response_header["CONTENT_TYPE"]} if options.empty?
+      if reader = RDF::Reader.for(options)
+        reader.new(http.response)
+      end
+    end
+
     ##
     # Outputs a developer-friendly representation of this object to `stderr`.
     #
@@ -294,13 +342,64 @@ module SPARQL
       url.query_values = {:query => query.to_s}
 
       request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
+      response = @http.request url, request
+      if block_given?
+        block.call(response)
+      else
+        response
+      end
+    end
+
+    ##
+    # Performs an HTTP GET request against the SPARQL endpoint.
+    #
+    # @param  [String, #to_s]          query
+    # @param  [Hash{String => String}] headers
+    # @yield  [response]
+    # @yieldparam [Net::HTTPResponse] response
+    # @return [Net::HTTPResponse]
+    def get(query, headers = {}, &block)
+      url = self.url.dup
+      url.query_values = {:query => query.to_s}
+
+      request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
       request.basic_auth url.user, url.password if url.user && !url.user.empty?
       response = @http.request url, request
       if block_given?
-	block.call(response)
+	    block.call(response)
       else
-	response
+	    response
       end
+    end
+
+    def em_get(query, headers={})
+      url = self.url.dup
+      url.query_values = {:query => query.to_s}
+      @headers.merge(headers)
+      request_options={
+        :keepalive => true,
+        :head => @headers
+      }
+      case url.scheme
+      when "http"
+        proxy_uri = URI.parse(ENV['http_proxy']) unless ENV['http_proxy'].nil?
+      when "https"
+        proxy_uri = URI.parse(ENV['https_proxy']) unless ENV['https_proxy'].nil?
+      end
+      unless proxy_uri.nil?
+        connection_options = {
+          :proxy => {
+          :host => proxy_uri.host,
+          :port => proxy_uri.port,
+          :type => proxy_uri.scheme.to_sym
+          },
+          :connect_timeout=> 60,
+          :inactivity_timeout => 0 
+        }
+      else
+        connection_options={}
+      end
+      http = EventMachine::HttpRequest.new("#{url}", connection_options).get request_options
     end
   end # Client
 end # SPARQL

@@ -30,6 +30,8 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'json_pure', '>= 1.6.5' # included in Ruby 1.9.2
   gem.add_runtime_dependency     'rdf',       '>= 0.3.5'
   gem.add_runtime_dependency     'net-http-persistent',       '~> 1.4.1'
+  gem.add_runtime_dependency     'em-http-request'
+  gem.add_runtime_dependency     'eventmachine'
   gem.add_development_dependency 'yard' ,     '>= 0.7.5'
   gem.add_development_dependency 'rspec',     '>= 2.8.0'
   gem.add_development_dependency 'rdf-spec',  '>= 0.3.5'

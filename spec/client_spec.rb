@@ -79,4 +79,28 @@ describe SPARQL::Client do
       result[:name].to_s.should == "東京"
     end
   end
+
+  describe "async query" do
+    it "should handle async query" do
+      airlines_query = 'PREFIX dbo: <http://dbpedia.org/ontology/>
+                  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                  SELECT * WHERE {
+                  ?airline a dbo:Airline. 
+                  }'
+      sparql = SPARQL::Client.new("http://dbpedia.org/sparql")
+      EM.run do 
+        callback = Proc.new do |response|
+          puts response.inspect
+          EM.stop
+        end
+        errback = Proc.new do |response|
+          puts "Error"
+          EM.stop
+        end
+        sparql.async_query(airlines_query, callback, errback)
+      end
+
+
+    end
+  end
 end
