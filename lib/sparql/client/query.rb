@@ -73,7 +73,7 @@ module SPARQL; class Client
     # @yieldparam [Query]
     def initialize(form = :ask, options = {}, &block)
       @form = form.respond_to?(:to_sym) ? form.to_sym : form.to_s.to_sym
-      super(options.dup, &block)
+      super([], options, &block)
     end
 
     ##

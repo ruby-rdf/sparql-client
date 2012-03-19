@@ -113,6 +113,7 @@ Contributors
 * [Fumihiro Kato](http://github.com/fumi) - <http://fumi.me/>
 * [David Nielsen](http://github.com/drankard) - <http://github.com/drankard>
 * [Thamaraiselvan Poomalai](http://github.com/selvan) - <http://softonaut.blogspot.com/>
+* [Gregg Kellogg](http://github.com/gkellogg) - <http://kellogg-assoc.com/>
 
 Contributing
 ------------
