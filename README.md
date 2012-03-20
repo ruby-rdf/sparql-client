@@ -114,6 +114,7 @@ Contributors
 * [David Nielsen](http://github.com/drankard) - <http://github.com/drankard>
 * [Thamaraiselvan Poomalai](http://github.com/selvan) - <http://softonaut.blogspot.com/>
 * [Gregg Kellogg](http://github.com/gkellogg) - <http://kellogg-assoc.com/>
+* [Michael Sokol](http://github.com/mikaa123) - <http://sokolmichael.com/>
 
 Contributing
 ------------
