@@ -155,7 +155,7 @@ module SPARQL
 
     ##
     # @param  [String, Hash] json
-    # @return [Enumerable<RDF::Query::Solution>]
+    # @return [<RDF::Query::Solutions>]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
     def self.parse_json_bindings(json, nodes = {})
       require 'json' unless defined?(::JSON)
@@ -165,12 +165,13 @@ module SPARQL
         when json['boolean']
           json['boolean']
         when json['results']
-          json['results']['bindings'].map do |row|
+          solutions = json['results']['bindings'].map do |row|
             row = row.inject({}) do |cols, (name, value)|
               cols.merge(name.to_sym => parse_json_value(value))
             end
             RDF::Query::Solution.new(row)
           end
+          RDF::Query::Solutions.new(solutions)
       end
     end
 
@@ -194,7 +195,7 @@ module SPARQL
 
     ##
     # @param  [String, REXML::Element] xml
-    # @return [Enumerable<RDF::Query::Solution>]
+    # @return [<RDF::Query::Solutions>]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
     def self.parse_xml_bindings(xml, nodes = {})
       xml.force_encoding(::Encoding::UTF_8) if xml.respond_to?(:force_encoding)
@@ -205,7 +206,7 @@ module SPARQL
         when boolean = xml.elements['boolean']
           boolean.text == 'true'
         when results = xml.elements['results']
-          results.elements.map do |result|
+          solutions = results.elements.map do |result|
             row = {}
             result.elements.each do |binding|
               name  = binding.attributes['name'].to_sym
@@ -214,6 +215,7 @@ module SPARQL
             end
             RDF::Query::Solution.new(row)
           end
+          RDF::Query::Solutions.new(solutions)
       end
     end
 
