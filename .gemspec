@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name               = 'sparql-client'
-  gem.homepage           = 'http://sparql.rubyforge.org/client/'
+  gem.homepage           = 'http://github.com/ruby-rdf/sparql-client'
   gem.license            = 'Public Domain' if gem.respond_to?(:license=)
   gem.summary            = 'SPARQL client for RDF.rb.'
   gem.description        = gem.summary
