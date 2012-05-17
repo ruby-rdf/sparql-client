@@ -57,7 +57,7 @@ module SPARQL
     ##
     # Executes a tuple `SELECT` query.
     #
-    # @param  [Array<Symbol>] variables
+    # @param  [Array<Symbol>] args
     # @return [Query]
     def select(*args)
       call_query_method(:select, *args)
@@ -66,7 +66,7 @@ module SPARQL
     ##
     # Executes a `DESCRIBE` query.
     #
-    # @param  [Array<Symbol, RDF::URI>] variables
+    # @param  [Array<Symbol, RDF::URI>] args
     # @return [Query]
     def describe(*args)
       call_query_method(:describe, *args)
@@ -75,7 +75,7 @@ module SPARQL
     ##
     # Executes a graph `CONSTRUCT` query.
     #
-    # @param  [Array<Symbol>] pattern
+    # @param  [Array<Symbol>] args
     # @return [Query]
     def construct(*args)
       call_query_method(:construct, *args)
@@ -102,7 +102,7 @@ module SPARQL
     ##
     # Executes a SPARQL query and returns parsed results.
     #
-    # @param  [String, #to_s]          url
+    # @param  [String, #to_s]          query
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
     # @option options [Hash] :headers
@@ -114,7 +114,7 @@ module SPARQL
     ##
     # Executes a SPARQL query and returns the Net::HTTP::Response of the result.
     #
-    # @param [String, #to_s]   url
+    # @param [String, #to_s]   query
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
     # @option options [Hash] :headers

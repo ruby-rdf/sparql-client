@@ -33,7 +33,7 @@ module SPARQL; class Client
     ##
     # Returns `true` if this repository contains the given subject.
     #
-    # @param  [RDF::Resource]
+    # @param  [RDF::Resource] subject
     # @return [Boolean]
     # @see    RDF::Repository#has_subject?
     def has_subject?(subject)
@@ -43,7 +43,7 @@ module SPARQL; class Client
     ##
     # Returns `true` if this repository contains the given predicate.
     #
-    # @param  [RDF::URI]
+    # @param  [RDF::URI] predicate
     # @return [Boolean]
     # @see    RDF::Repository#has_predicate?
     def has_predicate?(predicate)
@@ -53,7 +53,7 @@ module SPARQL; class Client
     ##
     # Returns `true` if this repository contains the given object.
     #
-    # @param  [RDF::Value]
+    # @param  [RDF::Value] object
     # @return [Boolean]
     # @see    RDF::Repository#has_object?
     def has_object?(object)
