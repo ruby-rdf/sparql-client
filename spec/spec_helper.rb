@@ -1,3 +1,4 @@
+require "bundler/setup"
 require 'sparql/client'
 require 'rdf/spec'
 

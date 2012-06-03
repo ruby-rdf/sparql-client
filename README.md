@@ -113,6 +113,8 @@ Contributors
 * [Fumihiro Kato](http://github.com/fumi) - <http://fumi.me/>
 * [David Nielsen](http://github.com/drankard) - <http://github.com/drankard>
 * [Thamaraiselvan Poomalai](http://github.com/selvan) - <http://softonaut.blogspot.com/>
+* [Gregg Kellogg](http://github.com/gkellogg) - <http://kellogg-assoc.com/>
+* [Michael Sokol](http://github.com/mikaa123) - <http://sokolmichael.com/>
 
 Contributing
 ------------
@@ -149,9 +151,9 @@ see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [RDF]:             http://www.w3.org/RDF/
 [SPARQL]:          http://en.wikipedia.org/wiki/SPARQL
 [SPARQL JSON]:     http://www.w3.org/TR/rdf-sparql-json-res/
-[RDF.rb]:          http://rdf.rubyforge.org/
+[RDF.rb]:          http://rubygems.org/gems/rdf
 [RDF.rb model]:    http://blog.datagraph.org/2010/03/rdf-for-ruby
-[RDF::Repository]: http://rdf.rubyforge.org/RDF/Repository.html
+[RDF::Repository]: http://rubydoc.info/github/ruby-rdf/rdf/RDF/Repository
 [DSL]:             http://en.wikipedia.org/wiki/Domain-specific_language
                    "domain-specific language"
 [YARD]:            http://yardoc.org/
