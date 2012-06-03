@@ -29,10 +29,13 @@ module SPARQL
     ##
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
+    # @option options [Hash] :headers
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options
       #@headers = {'Accept' => "#{RESULT_JSON}, #{RESULT_XML}, text/plain"}
-      @headers = {'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.collect { |k,v| k.to_s }].join(', ')}
+      @headers = {
+        'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.keys.map(&:to_s)].join(', ')
+      }.merge @options[:headers] || {}
       @http = http_klass(@url.scheme)
 
       if block_given?
@@ -54,7 +57,7 @@ module SPARQL
     ##
     # Executes a tuple `SELECT` query.
     #
-    # @param  [Array<Symbol>] variables
+    # @param  [Array<Symbol>] args
     # @return [Query]
     def select(*args)
       call_query_method(:select, *args)
@@ -63,7 +66,7 @@ module SPARQL
     ##
     # Executes a `DESCRIBE` query.
     #
-    # @param  [Array<Symbol, RDF::URI>] variables
+    # @param  [Array<Symbol, RDF::URI>] args
     # @return [Query]
     def describe(*args)
       call_query_method(:describe, *args)
@@ -72,7 +75,7 @@ module SPARQL
     ##
     # Executes a graph `CONSTRUCT` query.
     #
-    # @param  [Array<Symbol>] pattern
+    # @param  [Array<Symbol>] args
     # @return [Query]
     def construct(*args)
       call_query_method(:construct, *args)
@@ -99,9 +102,10 @@ module SPARQL
     ##
     # Executes a SPARQL query and returns parsed results.
     #
-    # @param  [String, #to_s]          url
+    # @param  [String, #to_s]          query
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
+    # @option options [Hash] :headers
     # @return [Array<RDF::Query::Solution>]
     def query(query, options = {})
       parse_response(response(query, options), options)
@@ -110,13 +114,14 @@ module SPARQL
     ##
     # Executes a SPARQL query and returns the Net::HTTP::Response of the result.
     #
-    # @param [String, #to_s]   url
+    # @param [String, #to_s]   query
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
+    # @option options [Hash] :headers
     # @return [String]
     def response(query, options = {})
       @headers['Accept'] = options[:content_type] if options[:content_type]
-      get(query) do |response|
+      get(query, options[:headers] || {}) do |response|
         case response
           when Net::HTTPBadRequest  # 400 Bad Request
             raise MalformedQuery.new(response.body)
@@ -150,7 +155,7 @@ module SPARQL
 
     ##
     # @param  [String, Hash] json
-    # @return [Enumerable<RDF::Query::Solution>]
+    # @return [<RDF::Query::Solutions>]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
     def self.parse_json_bindings(json, nodes = {})
       require 'json' unless defined?(::JSON)
@@ -160,12 +165,13 @@ module SPARQL
         when json['boolean']
           json['boolean']
         when json['results']
-          json['results']['bindings'].map do |row|
+          solutions = json['results']['bindings'].map do |row|
             row = row.inject({}) do |cols, (name, value)|
               cols.merge(name.to_sym => parse_json_value(value))
             end
             RDF::Query::Solution.new(row)
           end
+          RDF::Query::Solutions.new(solutions)
       end
     end
 
@@ -189,7 +195,7 @@ module SPARQL
 
     ##
     # @param  [String, REXML::Element] xml
-    # @return [Enumerable<RDF::Query::Solution>]
+    # @return [<RDF::Query::Solutions>]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
     def self.parse_xml_bindings(xml, nodes = {})
       xml.force_encoding(::Encoding::UTF_8) if xml.respond_to?(:force_encoding)
@@ -200,7 +206,7 @@ module SPARQL
         when boolean = xml.elements['boolean']
           boolean.text == 'true'
         when results = xml.elements['results']
-          results.elements.map do |result|
+          solutions = results.elements.map do |result|
             row = {}
             result.elements.each do |binding|
               name  = binding.attributes['name'].to_sym
@@ -209,6 +215,7 @@ module SPARQL
             end
             RDF::Query::Solution.new(row)
           end
+          RDF::Query::Solutions.new(solutions)
       end
     end
 
@@ -286,9 +293,11 @@ module SPARQL
     # @return [Net::HTTPResponse]
     def get(query, headers = {}, &block)
       url = self.url.dup
-      url.query_values = {:query => query.to_s}
+      url.query_values ||= {}
+      url.query_values.merge!({:query => query.to_s})
 
       request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
+      request.basic_auth url.user, url.password if url.user && !url.user.empty?
       response = @http.request url, request
       if block_given?
 	block.call(response)

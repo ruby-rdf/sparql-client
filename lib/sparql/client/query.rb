@@ -34,8 +34,11 @@ module SPARQL; class Client
     # Creates a tuple `SELECT` query.
     #
     # @param  [Array<Symbol>]          variables
-    # @param  [Hash{Symbol => Object}] options
     # @return [Query]
+    #
+    # @overload self.select(*variables, options)
+    #   @param  [Array<Symbol>]          variables
+    #   @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#select
     def self.select(*variables)
       options = variables.last.is_a?(Hash) ? variables.pop : {}
@@ -46,8 +49,11 @@ module SPARQL; class Client
     # Creates a `DESCRIBE` query.
     #
     # @param  [Array<Symbol, RDF::URI>] variables
-    # @param  [Hash{Symbol => Object}]  options
     # @return [Query]
+    #
+    # @overload self.describe(*variables, options)
+    #   @param  [Array<Symbol, RDF::URI>] variables
+    #   @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#describe
     def self.describe(*variables)
       options = variables.last.is_a?(Hash) ? variables.pop : {}
@@ -58,8 +64,12 @@ module SPARQL; class Client
     # Creates a graph `CONSTRUCT` query.
     #
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
-    # @param  [Hash{Symbol => Object}]            options
     # @return [Query]
+    #
+    # @overload self.construct(*variables, options)
+    #   @param  [Array<RDF::Query::Pattern, Array>] patterns
+    #   @param  [Hash{Symbol => Object}]            options
+    #   @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#construct
     def self.construct(*patterns)
       options = patterns.last.is_a?(Hash) ? patterns.pop : {}
@@ -68,12 +78,14 @@ module SPARQL; class Client
 
     ##
     # @param  [Symbol, #to_s]          form
-    # @param  [Hash{Symbol => Object}] options
+    # @overload self.construct(*variables, options)
+    #   @param  [Symbol, #to_s]          form
+    #   @param  [Hash{Symbol => Object}] options
     # @yield  [query]
     # @yieldparam [Query]
     def initialize(form = :ask, options = {}, &block)
       @form = form.respond_to?(:to_sym) ? form.to_sym : form.to_s.to_sym
-      super(options.dup, &block)
+      super([], options, &block)
     end
 
     ##
@@ -112,7 +124,7 @@ module SPARQL; class Client
       self
     end
 
-    # @param RDF::URI uri
+    # @param [RDF::URI] uri
     # @return [Query]
     # @see http://www.w3.org/TR/rdf-sparql-query/#specDataset
     def from(uri)
@@ -248,6 +260,16 @@ module SPARQL; class Client
       result.each_statement(&block)
     end
 
+    # Enumerates over each matching query solution.
+    #
+    # @yield  [solution]
+    # @yieldparam [RDF::Query::Solution] solution
+    # @return [Enumerator]
+    def each_solution(&block)
+      @solutions = result
+      super
+    end
+
     ##
     # @return [Object]
     def result
@@ -335,7 +357,7 @@ module SPARQL; class Client
     ##
     # Serializes an RDF::Value into a format appropriate for select, construct, and where clauses
     #
-    # @param  [RDF::Value]
+    # @param  [RDF::Value] value
     # @return [String]
     # @private
     def serialize_value(value)
