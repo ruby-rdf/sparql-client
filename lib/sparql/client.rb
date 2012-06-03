@@ -293,7 +293,7 @@ module SPARQL
     # @return [Net::HTTPResponse]
     def get(query, headers = {}, &block)
       url = self.url.dup
-      url.query_values = {:query => query.to_s}
+      url.query_values.merge({:query => query.to_s})
 
       request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
       request.basic_auth url.user, url.password if url.user && !url.user.empty?
