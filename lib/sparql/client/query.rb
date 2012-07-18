@@ -1,4 +1,3 @@
-
 module SPARQL; class Client
   ##
   # A SPARQL query builder.
@@ -226,7 +225,7 @@ module SPARQL; class Client
     ##
     # @private
     def filter(string)
-      (options[:filters] ||= []) << string
+      (options[:filters] ||= []) << string if string
       self
     end
 
