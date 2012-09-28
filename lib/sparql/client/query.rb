@@ -291,7 +291,12 @@ module SPARQL; class Client
         when :select, :describe
           buffer << 'DISTINCT' if options[:distinct]
           buffer << 'REDUCED'  if options[:reduced]
+          buffer << '( COUNT'    if options[:count]
           buffer << (values.empty? ? '*' : values.map { |v| serialize_value(v[1]) }.join(' '))
+          if options[:count]
+            var = options[:count]
+            buffer << 'AS ' + (var.is_a?(String) ? var : "?#{var}") + ' )'
+          end
         when :construct
           buffer << '{'
           buffer += serialize_patterns(options[:template])
