@@ -154,6 +154,17 @@ module SPARQL; class Client
     alias_method :order_by, :order
 
     ##
+    # @param  [Array<Symbol, String>] variables
+    # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#groupby
+    def group(*variables)
+      options[:group_by] = variables
+      self
+    end
+
+    alias_method :group_by, :group
+
+    ##
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#modDistinct
     def distinct(state = true)
@@ -291,7 +302,12 @@ module SPARQL; class Client
         when :select, :describe
           buffer << 'DISTINCT' if options[:distinct]
           buffer << 'REDUCED'  if options[:reduced]
+          buffer << '( COUNT'    if options[:count]
           buffer << (values.empty? ? '*' : values.map { |v| serialize_value(v[1]) }.join(' '))
+          if options[:count]
+            var = options[:count]
+            buffer << 'AS ' + (var.is_a?(String) ? var : "?#{var}") + ' )'
+          end
         when :construct
           buffer << '{'
           buffer += serialize_patterns(options[:template])
@@ -314,6 +330,11 @@ module SPARQL; class Client
           buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
         end
         buffer << '}'
+      end
+
+      if options[:group_by]
+        buffer << 'GROUP BY'
+        buffer += options[:group_by].map { |var| var.is_a?(String) ? var : "?#{var}" }
       end
 
       if options[:order_by]
