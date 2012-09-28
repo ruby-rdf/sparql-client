@@ -62,6 +62,11 @@ describe SPARQL::Client::Query do
       @query.select(:s, :count => '?c').where([:s, :p, :o]).to_s.should == "SELECT ( COUNT ?s AS ?c ) WHERE { ?s ?p ?o . }"
     end
 
+    it "should support GROUP BY" do
+      @query.select(:s).where([:s, :p, :o]).group_by(:s).to_s.should == "SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s"
+      @query.select(:s).where([:s, :p, :o]).group_by('?s').to_s.should == "SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s"
+    end
+
     it "should support ORDER BY" do
       @query.select.where([:s, :p, :o]).order_by(:o).to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
       @query.select.where([:s, :p, :o]).order_by('?o').to_s.should == "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
