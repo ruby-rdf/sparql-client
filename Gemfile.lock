@@ -10,7 +10,10 @@ GEM
   remote: http://rubygems.org/
   specs:
     addressable (2.3.2)
+    bouncy-castle-java (1.5.0146.1)
     diff-lcs (1.1.3)
+    jruby-openssl (0.7.7)
+      bouncy-castle-java (>= 1.5.0146.1)
     json_pure (1.7.5)
     net-http-persistent (2.7)
     rack (1.4.1)
@@ -32,9 +35,11 @@ GEM
     yard (0.8.2.1)
 
 PLATFORMS
+  java
   ruby
 
 DEPENDENCIES
+  jruby-openssl
   rdf-spec (>= 0.3.5)
   rspec (>= 2.10.0)
   shotgun
