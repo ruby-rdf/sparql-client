@@ -2,7 +2,7 @@ source "http://rubygems.org"
 
 gemspec :name => ""
 
-group :development do
+group :debug do
   gem 'shotgun'
   gem "wirble"
 end

@@ -1,12 +1,10 @@
-SPARQL Client for RDF.rb
-========================
+#SPARQL Client for RDF.rb
 
 This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
 * <http://github.com/bendiken/sparql-client>
 
-Features
---------
+##Features
 
 * Executes queries against any SPARQL 1.0-compatible endpoints over HTTP.
 * Provides a query builder [DSL][] for `ASK`, `SELECT`, `DESCRIBE` and
@@ -18,8 +16,7 @@ Features
 * Supports accessing endpoints as read-only [`RDF::Repository`][RDF::Repository]
   instances.
 
-Examples
---------
+##Examples
 
     require 'sparql/client'
     
@@ -56,8 +53,7 @@ Examples
     
     puts result.inspect   #=> true or false
 
-Documentation
--------------
+##Documentation
 
 <http://sparql.rubyforge.org/client/>
 
@@ -65,23 +61,20 @@ Documentation
   * {SPARQL::Client::Query}
   * {SPARQL::Client::Repository}
 
-Dependencies
-------------
+##Dependencies
 
 * [Ruby](http://ruby-lang.org/) (>= 1.8.7) or (>= 1.8.1 with [Backports][])
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.0)
 * [JSON](http://rubygems.org/gems/json_pure) (>= 1.4.2)
 
-Installation
-------------
+##Installation
 
 The recommended installation method is via [RubyGems](http://rubygems.org/).
 To install the latest official release of the `SPARQL::Client` gem, do:
 
     % [sudo] gem install sparql-client
 
-Download
---------
+##Download
 
 To get a local working copy of the development repository, do:
 
@@ -92,19 +85,16 @@ follows:
 
     % wget http://github.com/bendiken/sparql-client/tarball/master
 
-Mailing List
-------------
+##Mailing List
 
 * <http://lists.w3.org/Archives/Public/public-rdf-ruby/>
 
-Authors
--------
+##Authors
 
 * [Arto Bendiken](http://github.com/bendiken) - <http://ar.to/>
 * [Ben Lavender](http://github.com/bhuga) - <http://bhuga.net/>
 
-Contributors
-------------
+##Contributors
 
 * [Christoph Badura](http://github.com/b4d) - <http://github.com/b4d>
 * [James Hetherington](http://github.com/jamespjh) - <http://twitter.com/jamespjh>
@@ -115,9 +105,9 @@ Contributors
 * [Thamaraiselvan Poomalai](http://github.com/selvan) - <http://softonaut.blogspot.com/>
 * [Gregg Kellogg](http://github.com/gkellogg) - <http://kellogg-assoc.com/>
 * [Michael Sokol](http://github.com/mikaa123) - <http://sokolmichael.com/>
+* [Yves Raimond](http://github.com/moustaki) - <http://moustaki.org/>
 
-Contributing
-------------
+##Contributing
 
 * Do your best to adhere to the existing coding conventions and idioms.
 * Don't use hard tabs, and don't leave trailing whitespace on any line.
@@ -131,8 +121,7 @@ Contributing
   of thumb, additions larger than about 15 lines of code), we need an
   explicit [public domain dedication][PDD] on record from you.
 
-Resources
----------
+##Resources
 
 * <http://sparql.rubyforge.org/client/>
 * <http://github.com/bendiken/sparql-client>
@@ -141,8 +130,7 @@ Resources
 * <http://raa.ruby-lang.org/project/sparql-client/>
 * <http://www.ohloh.net/p/rdf>
 
-License
--------
+##License
 
 This is free and unencumbered public domain software. For more information,
 see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
