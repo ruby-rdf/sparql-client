@@ -3,7 +3,7 @@
 This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 [![Build Status](https://secure.travis-ci.org/ruby-rdf/sparql-client.png?branch=master)](http://travis-ci.org/ruby-rdf/sparql-client)
 
-* <http://github.com/bendiken/sparql-client>
+* <http://ruby-rdf.github.com/sparql-client/>
 
 ##Features
 
