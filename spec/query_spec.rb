@@ -58,8 +58,10 @@ describe SPARQL::Client::Query do
     end
 
     it "should support COUNT" do
-      @query.select(:s, :count => :c).where([:s, :p, :o]).to_s.should == "SELECT ( COUNT( ?s ) AS ?c ) WHERE { ?s ?p ?o . }"
-      @query.select(:s, :count => '?c').where([:s, :p, :o]).to_s.should == "SELECT ( COUNT( ?s ) AS ?c ) WHERE { ?s ?p ?o . }"
+      @query.select(:count => { :s => :c }).where([:s, :p, :o]).to_s.should == "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
+      @query.select(:count => { :s => '?c' }).where([:s, :p, :o]).to_s.should == "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
+      @query.select(:count => { '?s' => '?c' }).where([:s, :p, :o]).to_s.should == "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
+      @query.select(:o, :count => { :s => :c }).where([:s, :p, :o]).to_s.should == "SELECT ?o ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
     end
 
     it "should support GROUP BY" do
