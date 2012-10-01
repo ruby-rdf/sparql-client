@@ -2,7 +2,9 @@ source "http://rubygems.org"
 
 gemspec :name => ""
 
-group :development do
+gem "jruby-openssl", :platforms => :jruby
+
+group :debug do
   gem 'shotgun'
   gem "wirble"
 end
