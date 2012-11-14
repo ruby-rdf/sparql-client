@@ -236,7 +236,7 @@ module SPARQL; class Client
     ##
     # @private
     def filter(string)
-      ((options[:filters] ||= []) << string) if string and not string.empty
+      ((options[:filters] ||= []) << string) if string and not string.empty?
       self
     end
 
