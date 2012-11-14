@@ -300,12 +300,13 @@ module SPARQL; class Client
       buffer = [form.to_s.upcase]
       case form
         when :select, :describe
-          buffer << 'DISTINCT' if options[:distinct]
+          only_count = values.empty? and options[:count]
+          buffer << 'DISTINCT' if options[:distinct] and not only_count
           buffer << 'REDUCED'  if options[:reduced]
           buffer << ((values.empty? and not options[:count]) ? '*' : values.map { |v| serialize_value(v[1]) }.join(' '))
           if options[:count]
             options[:count].each do |var, count|
-              buffer << '( COUNT(' + (var.is_a?(String) ? var : "?#{var}") + ') AS ' + (count.is_a?(String) ? count : "?#{count}") + ' )'
+              buffer << '( COUNT(' + (options[:distinct] ? 'DISTINCT ' : '') + (var.is_a?(String) ? var : "?#{var}") + ') AS ' + (count.is_a?(String) ? count : "?#{count}") + ' )'
             end
           end
         when :construct

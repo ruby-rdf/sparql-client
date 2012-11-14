@@ -59,6 +59,7 @@ describe SPARQL::Client::Query do
 
     it "should support COUNT" do
       @query.select(:count => { :s => :c }).where([:s, :p, :o]).to_s.should == "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
+      @query.select(:count => { :s => :c }, :distinct => true).where([:s, :p, :o]).to_s.should == "SELECT  ( COUNT(DISTINCT ?s) AS ?c ) WHERE { ?s ?p ?o . }"
       @query.select(:count => { :s => '?c' }).where([:s, :p, :o]).to_s.should == "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
       @query.select(:count => { '?s' => '?c' }).where([:s, :p, :o]).to_s.should == "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
       @query.select(:o, :count => { :s => :c }).where([:s, :p, :o]).to_s.should == "SELECT ?o ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
