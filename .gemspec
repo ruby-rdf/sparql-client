@@ -27,7 +27,7 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version      = '>= 1.8.1'
   gem.requirements               = []
-  gem.add_runtime_dependency     'json_pure', '>= 1.6.5' # included in Ruby 1.9.2
+  gem.add_runtime_dependency     'json_pure', '>= 1.4.6'
   gem.add_runtime_dependency     'rdf',       '>= 0.3.5'
   gem.add_runtime_dependency     'net-http-persistent',       '>= 1.4.1'
   gem.add_development_dependency 'yard' ,     '>= 0.7.5'
