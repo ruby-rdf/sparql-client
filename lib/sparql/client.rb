@@ -6,8 +6,8 @@ module SPARQL
   ##
   # A SPARQL client for RDF.rb.
   #
-  # @see http://www.w3.org/TR/rdf-sparql-protocol/
-  # @see http://www.w3.org/TR/rdf-sparql-json-res/
+  # @see http://www.w3.org/TR/sparql11-query/
+  # @see http://www.w3.org/TR/sparql11-results-json/
   class Client
     autoload :Query,      'sparql/client/query'
     autoload :Repository, 'sparql/client/repository'
@@ -32,10 +32,9 @@ module SPARQL
     # @option options [Hash] :headers
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options
-      #@headers = {'Accept' => "#{RESULT_JSON}, #{RESULT_XML}, text/plain"}
       @headers = {
         'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.keys.map(&:to_s)].join(', ')
-      }.merge @options[:headers] || {}
+      }.merge(@options[:headers] || {})
       @http = http_klass(@url.scheme)
 
       if block_given?
@@ -235,7 +234,8 @@ module SPARQL
     end
 
     ##
-    # A mapping of blank node results for this client
+    # Returns a mapping of blank node results for this client.
+    #
     # @private
     def nodes
       @nodes ||= {}
@@ -254,7 +254,8 @@ module SPARQL
     end
 
     ##
-    # Executes a SPARQL query and returns the Net::HTTP::Response of the result.
+    # Executes a SPARQL query and returns the Net::HTTP::Response of the
+    # result.
     #
     # @param [String, #to_s]   query
     # @param  [Hash{Symbol => Object}] options
@@ -301,7 +302,6 @@ module SPARQL
     def self.parse_json_bindings(json, nodes = {})
       require 'json' unless defined?(::JSON)
       json = JSON.parse(json.to_s) unless json.is_a?(Hash)
-
       case
         when json['boolean']
           json['boolean']
@@ -409,18 +409,23 @@ module SPARQL
     protected
 
     ##
-    # Returns an HTTP class or HTTP proxy class based on environment http_proxy & https_proxy settings
+    # Returns an HTTP class or HTTP proxy class based on the `http_proxy`
+    # and `https_proxy` environment variables.
+    #
+    # @param  [String] scheme
     # @return [Net::HTTP::Proxy]
     def http_klass(scheme)
-      proxy_uri = nil
+      proxy_url = nil
       case scheme
-        when "http"
-          proxy_uri = URI.parse(ENV['http_proxy']) unless ENV['http_proxy'].nil?
-        when "https"
-          proxy_uri = URI.parse(ENV['https_proxy']) unless ENV['https_proxy'].nil?
+        when 'http'
+          value = ENV['http_proxy']
+          proxy_url = URI.parse(value) unless value.nil? || value.empty?
+        when 'https'
+          value = ENV['https_proxy']
+          proxy_url = URI.parse(value) unless value.nil? || value.empty?
       end
-      klass = Net::HTTP::Persistent.new(self.class.to_s, proxy_uri)
-      klass.keep_alive = 120	# increase to 2 minutes
+      klass = Net::HTTP::Persistent.new(self.class.to_s, proxy_url)
+      klass.keep_alive = 120 # increase to 2 minutes
       klass
     end
 
@@ -437,12 +442,13 @@ module SPARQL
       url.query_values = (url.query_values || {}).merge(:query => query.to_s)
 
       request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
-      request.basic_auth url.user, url.password if url.user && !url.user.empty?
-      response = @http.request url, request
+      request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
+
+      response = @http.request(url, request)
       if block_given?
-	block.call(response)
+        block.call(response)
       else
-	response
+        response
       end
     end
   end # Client

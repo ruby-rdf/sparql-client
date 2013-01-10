@@ -298,6 +298,7 @@ module SPARQL; class Client
     # @return [String]
     def to_s
       buffer = [form.to_s.upcase]
+
       case form
         when :select, :describe
           only_count = values.empty? and options[:count]
@@ -306,7 +307,8 @@ module SPARQL; class Client
           buffer << ((values.empty? and not options[:count]) ? '*' : values.map { |v| serialize_value(v[1]) }.join(' '))
           if options[:count]
             options[:count].each do |var, count|
-              buffer << '( COUNT(' + (options[:distinct] ? 'DISTINCT ' : '') + (var.is_a?(String) ? var : "?#{var}") + ') AS ' + (count.is_a?(String) ? count : "?#{count}") + ' )'
+              buffer << '( COUNT(' + (options[:distinct] ? 'DISTINCT ' : '') +
+                (var.is_a?(String) ? var : "?#{var}") + ') AS ' + (count.is_a?(String) ? count : "?#{count}") + ' )'
             end
           end
         when :construct
@@ -345,7 +347,7 @@ module SPARQL; class Client
 
       buffer << "OFFSET #{options[:offset]}" if options[:offset]
       buffer << "LIMIT #{options[:limit]}"   if options[:limit]
-      options[:prefixes].reverse.each {|e| buffer.unshift("PREFIX #{e}") } if options[:prefixes]
+      options[:prefixes].reverse.each { |e| buffer.unshift("PREFIX #{e}") } if options[:prefixes]
 
       buffer.join(' ')
     end
