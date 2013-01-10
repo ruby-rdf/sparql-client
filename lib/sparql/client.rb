@@ -1,4 +1,6 @@
 require 'net/http/persistent'
+require 'eventmachine'
+require 'em-http-request'
 require 'rdf' # @see http://rubygems.org/gems/rdf
 require 'rdf/ntriples'
 
@@ -37,8 +39,8 @@ module SPARQL
 
       if block_given?
         case block.arity
-          when 1 then block.call(self)
-          else instance_eval(&block)
+        when 1 then block.call(self)
+        else instance_eval(&block)
         end
       end
     end
@@ -87,214 +89,290 @@ module SPARQL
         client.query(self)
       end
       result
+  end
+
+  ##
+  # A mapping of blank node results for this client
+  # @private
+  def nodes
+    @nodes ||= {}
+  end
+
+  ##
+  # Executes a SPARQL query and returns parsed results.
+  #
+  # @param  [String, #to_s]          url
+  # @param  [Hash{Symbol => Object}] options
+  # @option options [String] :content_type
+  # @return [Array<RDF::Query::Solution>]
+  def query(query, options = {})
+    parse_response(response(query, options), options)
+  end
+
+  def async_query(query, callback, errback, options={})
+      async_response(query, callback, errback, options)
+  end
+
+  ##
+  # Executes a SPARQL query and returns the Net::HTTP::Response of the result.
+  #
+  # @param [String, #to_s]   url
+  # @param  [Hash{Symbol => Object}] options
+  # @option options [String] :content_type
+  # @return [String]
+  def response(query, options = {})
+    @headers['Accept'] = options[:content_type] if options[:content_type]
+    get(query) do |response|
+      case response
+      when Net::HTTPBadRequest  # 400 Bad Request
+        raise MalformedQuery.new(response.body)
+      when Net::HTTPClientError # 4xx
+        raise ClientError.new(response.body)
+      when Net::HTTPServerError # 5xx
+        raise ServerError.new(response.body)
+      when Net::HTTPSuccess     # 2xx
+        response
+      end
     end
 
-    ##
-    # A mapping of blank node results for this client
-    # @private
-    def nodes
-      @nodes ||= {}
+  end
+
+
+  def async_response(query, callback, errback, options)
+    @headers['Accept'] = options[:content_type] if options[:content_type]
+    http = em_get(query)
+    http.errback do
+      errback.call(http)
+    end
+    http.callback do 
+      case http.response_header.status.to_s
+      when /200/
+        callback.call(parse_em_response(http))
+      when /400/
+        callback.call(MalformedQuery.new(http.response))
+      when /^4\d+$/
+        callback.call(ClientError.new(http.response))
+      when /^5\d+$/
+        callback.call(ServerError.new(http.response))
+      end
+    end
+  end
+
+  ##
+  # @param  [Net::HTTPSuccess] response
+  # @param  [Hash{Symbol => Object}] options
+  # @return [Object]
+  def parse_response(response, options = {})
+    case content_type = options[:content_type] || response.content_type
+    when RESULT_BOOL # Sesame-specific
+      response.body == 'true'
+    when RESULT_JSON
+      self.class.parse_json_bindings(response.body, nodes)
+    when RESULT_XML
+      self.class.parse_xml_bindings(response.body, nodes)
+    else
+      parse_rdf_serialization(response, options)
+    end
+  end
+
+  def parse_em_response(http, options ={})
+    case content_type = options[:content_type] || http.response_header["CONTENT_TYPE"][/(.*?);/, 1]
+    when RESULT_BOOL # Sesame-specific
+      http.response == 'true'
+    when RESULT_JSON
+      self.class.parse_json_bindings(http.response, nodes)
+    when RESULT_XML
+      self.class.parse_xml_bindings(http.response, nodes)
+    else
+      em_parse_rdf_serialization(http, options)
     end
 
-    ##
-    # Executes a SPARQL query and returns parsed results.
-    #
-    # @param  [String, #to_s]          url
-    # @param  [Hash{Symbol => Object}] options
-    # @option options [String] :content_type
-    # @return [Array<RDF::Query::Solution>]
-    def query(query, options = {})
-      parse_response(response(query, options), options)
-    end
+  end
 
-    ##
-    # Executes a SPARQL query and returns the Net::HTTP::Response of the result.
-    #
-    # @param [String, #to_s]   url
-    # @param  [Hash{Symbol => Object}] options
-    # @option options [String] :content_type
-    # @return [String]
-    def response(query, options = {})
-      @headers['Accept'] = options[:content_type] if options[:content_type]
-      get(query) do |response|
-        case response
-          when Net::HTTPBadRequest  # 400 Bad Request
-            raise MalformedQuery.new(response.body)
-          when Net::HTTPClientError # 4xx
-            raise ClientError.new(response.body)
-          when Net::HTTPServerError # 5xx
-            raise ServerError.new(response.body)
-          when Net::HTTPSuccess     # 2xx
-            response
+  ##
+  # @param  [String, Hash] json
+  # @return [Enumerable<RDF::Query::Solution>]
+  # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
+  def self.parse_json_bindings(json, nodes = {})
+    require 'json' unless defined?(::JSON)
+    json = JSON.parse(json.to_s) unless json.is_a?(Hash)
+
+    case
+    when json['boolean']
+      json['boolean']
+    when json['results']
+      json['results']['bindings'].map do |row|
+        row = row.inject({}) do |cols, (name, value)|
+          cols.merge(name.to_sym => parse_json_value(value))
         end
-      end
-
-    end
-
-    ##
-    # @param  [Net::HTTPSuccess] response
-    # @param  [Hash{Symbol => Object}] options
-    # @return [Object]
-    def parse_response(response, options = {})
-      case content_type = options[:content_type] || response.content_type
-        when RESULT_BOOL # Sesame-specific
-          response.body == 'true'
-        when RESULT_JSON
-          self.class.parse_json_bindings(response.body, nodes)
-        when RESULT_XML
-          self.class.parse_xml_bindings(response.body, nodes)
-        else
-          parse_rdf_serialization(response, options)
+        RDF::Query::Solution.new(row)
       end
     end
+  end
 
-    ##
-    # @param  [String, Hash] json
-    # @return [Enumerable<RDF::Query::Solution>]
-    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
-    def self.parse_json_bindings(json, nodes = {})
-      require 'json' unless defined?(::JSON)
-      json = JSON.parse(json.to_s) unless json.is_a?(Hash)
+  ##
+  # @param  [Hash{String => String}] value
+  # @return [RDF::Value]
+  # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
+  def self.parse_json_value(value, nodes = {})
+    case value['type'].to_sym
+    when :bnode
+      nodes[id = value['value']] ||= RDF::Node.new(id)
+    when :uri
+      RDF::URI.new(value['value'])
+    when :literal
+      RDF::Literal.new(value['value'], :language => value['xml:lang'])
+    when :'typed-literal'
+      RDF::Literal.new(value['value'], :datatype => value['datatype'])
+    else nil
+    end
+  end
 
-      case
-        when json['boolean']
-          json['boolean']
-        when json['results']
-          json['results']['bindings'].map do |row|
-            row = row.inject({}) do |cols, (name, value)|
-              cols.merge(name.to_sym => parse_json_value(value))
-            end
-            RDF::Query::Solution.new(row)
-          end
+  ##
+  # @param  [String, REXML::Element] xml
+  # @return [Enumerable<RDF::Query::Solution>]
+  # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
+  def self.parse_xml_bindings(xml, nodes = {})
+    xml.force_encoding(::Encoding::UTF_8) if xml.respond_to?(:force_encoding)
+    require 'rexml/document' unless defined?(::REXML::Document)
+    xml = REXML::Document.new(xml).root unless xml.is_a?(REXML::Element)
+
+    case
+    when boolean = xml.elements['boolean']
+      boolean.text == 'true'
+    when results = xml.elements['results']
+      results.elements.map do |result|
+        row = {}
+        result.elements.each do |binding|
+          name  = binding.attributes['name'].to_sym
+          value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
+          row[name] = parse_xml_value(value, nodes)
+        end
+        RDF::Query::Solution.new(row)
       end
     end
+  end
 
-    ##
-    # @param  [Hash{String => String}] value
-    # @return [RDF::Value]
-    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
-    def self.parse_json_value(value, nodes = {})
-      case value['type'].to_sym
-        when :bnode
-          nodes[id = value['value']] ||= RDF::Node.new(id)
-        when :uri
-          RDF::URI.new(value['value'])
-        when :literal
-          RDF::Literal.new(value['value'], :language => value['xml:lang'])
-        when :'typed-literal'
-          RDF::Literal.new(value['value'], :datatype => value['datatype'])
-        else nil
-      end
+  ##
+  # @param  [REXML::Element] value
+  # @return [RDF::Value]
+  # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
+  def self.parse_xml_value(value, nodes = {})
+    case value.name.to_sym
+    when :bnode
+      nodes[id = value.text] ||= RDF::Node.new(id)
+    when :uri
+      RDF::URI.new(value.text)
+    when :literal
+      RDF::Literal.new(value.text, {
+        :language => value.attributes['xml:lang'],
+        :datatype => value.attributes['datatype'],
+      })
+    else nil
     end
+  end
 
-    ##
-    # @param  [String, REXML::Element] xml
-    # @return [Enumerable<RDF::Query::Solution>]
-    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
-    def self.parse_xml_bindings(xml, nodes = {})
-      xml.force_encoding(::Encoding::UTF_8) if xml.respond_to?(:force_encoding)
-      require 'rexml/document' unless defined?(::REXML::Document)
-      xml = REXML::Document.new(xml).root unless xml.is_a?(REXML::Element)
-
-      case
-        when boolean = xml.elements['boolean']
-          boolean.text == 'true'
-        when results = xml.elements['results']
-          results.elements.map do |result|
-            row = {}
-            result.elements.each do |binding|
-              name  = binding.attributes['name'].to_sym
-              value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
-              row[name] = parse_xml_value(value, nodes)
-            end
-            RDF::Query::Solution.new(row)
-          end
-      end
+  ##
+  # @param  [Net::HTTPSuccess] response
+  # @param  [Hash{Symbol => Object}] options
+  # @return [RDF::Enumerable]
+  def parse_rdf_serialization(response, options = {})
+    options = {:content_type => response.content_type} if options.empty?
+    if reader = RDF::Reader.for(options)
+      reader.new(response.body)
     end
+  end
 
-    ##
-    # @param  [REXML::Element] value
-    # @return [RDF::Value]
-    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
-    def self.parse_xml_value(value, nodes = {})
-      case value.name.to_sym
-        when :bnode
-          nodes[id = value.text] ||= RDF::Node.new(id)
-        when :uri
-          RDF::URI.new(value.text)
-        when :literal
-          RDF::Literal.new(value.text, {
-            :language => value.attributes['xml:lang'],
-            :datatype => value.attributes['datatype'],
-          })
-        else nil
-      end
+  def em_parse_rdf_serialization(http, options= {})
+    options = {:content_type => http.response_header["CONTENT_TYPE"]} if options.empty?
+    if reader = RDF::Reader.for(options)
+      reader.new(http.response)
     end
+  end
 
-    ##
-    # @param  [Net::HTTPSuccess] response
-    # @param  [Hash{Symbol => Object}] options
-    # @return [RDF::Enumerable]
-    def parse_rdf_serialization(response, options = {})
-      options = {:content_type => response.content_type} if options.empty?
-      if reader = RDF::Reader.for(options)
-        reader.new(response.body)
-      end
+  ##
+  # Outputs a developer-friendly representation of this object to `stderr`.
+  #
+  # @return [void]
+  def inspect!
+    warn(inspect)
+  end
+
+  ##
+  # Returns a developer-friendly representation of this object.
+  #
+  # @return [String]
+  def inspect
+    sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, url.to_s)
+  end
+
+  protected
+
+  ##
+  # Returns an HTTP class or HTTP proxy class based on environment http_proxy & https_proxy settings
+  # @return [Net::HTTP::Proxy]
+  def http_klass(scheme)
+    proxy_uri = nil
+    case scheme
+    when "http"
+      proxy_uri = URI.parse(ENV['http_proxy']) unless ENV['http_proxy'].nil?
+    when "https"
+      proxy_uri = URI.parse(ENV['https_proxy']) unless ENV['https_proxy'].nil?
     end
+    klass = Net::HTTP::Persistent.new(self.class.to_s, proxy_uri)
+    klass.keep_alive = 120	# increase to 2 minutes
+    klass
+  end
 
-    ##
-    # Outputs a developer-friendly representation of this object to `stderr`.
-    #
-    # @return [void]
-    def inspect!
-      warn(inspect)
+  ##
+  # Performs an HTTP GET request against the SPARQL endpoint.
+  #
+  # @param  [String, #to_s]          query
+  # @param  [Hash{String => String}] headers
+  # @yield  [response]
+  # @yieldparam [Net::HTTPResponse] response
+  # @return [Net::HTTPResponse]
+  def get(query, headers = {}, &block)
+    url = self.url.dup
+    url.query_values = {:query => query.to_s}
+
+    request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
+    response = @http.request url, request
+    if block_given?
+      block.call(response)
+    else
+      response
     end
+  end
 
-    ##
-    # Returns a developer-friendly representation of this object.
-    #
-    # @return [String]
-    def inspect
-      sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, url.to_s)
+  def em_get(query, headers={})
+    url = self.url.dup
+    url.query_values = {:query => query.to_s}
+    @headers.merge(headers)
+    request_options={
+      :keepalive => true,
+      :head => @headers
+    }
+    case url.scheme
+    when "http"
+      proxy_uri = URI.parse(ENV['http_proxy']) unless ENV['http_proxy'].nil?
+    when "https"
+      proxy_uri = URI.parse(ENV['https_proxy']) unless ENV['https_proxy'].nil?
     end
-
-    protected
-
-    ##
-    # Returns an HTTP class or HTTP proxy class based on environment http_proxy & https_proxy settings
-    # @return [Net::HTTP::Proxy]
-    def http_klass(scheme)
-      proxy_uri = nil
-      case scheme
-        when "http"
-          proxy_uri = URI.parse(ENV['http_proxy']) unless ENV['http_proxy'].nil?
-        when "https"
-          proxy_uri = URI.parse(ENV['https_proxy']) unless ENV['https_proxy'].nil?
-      end
-      klass = Net::HTTP::Persistent.new(self.class.to_s, proxy_uri)
-      klass.keep_alive = 120	# increase to 2 minutes
-      klass
+    unless proxy_uri.nil?
+      connection_options = {
+        :proxy => {
+        :host => proxy_uri.host,
+        :port => proxy_uri.port,
+        :type => proxy_uri.scheme.to_sym
+        },
+        :connect_timeout=> 60,
+        :inactivity_timeout => 0 
+      }
+    else
+      connection_options={}
     end
-
-    ##
-    # Performs an HTTP GET request against the SPARQL endpoint.
-    #
-    # @param  [String, #to_s]          query
-    # @param  [Hash{String => String}] headers
-    # @yield  [response]
-    # @yieldparam [Net::HTTPResponse] response
-    # @return [Net::HTTPResponse]
-    def get(query, headers = {}, &block)
-      url = self.url.dup
-      url.query_values = {:query => query.to_s}
-
-      request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
-      response = @http.request url, request
-      if block_given?
-	block.call(response)
-      else
-	response
-      end
-    end
-  end # Client
+    http = EventMachine::HttpRequest.new("#{url}", connection_options).get request_options
+  end
+end # Client
 end # SPARQL
