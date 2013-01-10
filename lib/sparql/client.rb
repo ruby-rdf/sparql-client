@@ -84,7 +84,7 @@ module SPARQL
     ##
     # Executes an `INSERT DATA` operation.
     #
-    # This requires that the endpoint supports SPARQL 1.1 Update.
+    # This requires that the endpoint support SPARQL 1.1 Update.
     #
     # Note that for inserting non-trivial amounts of data, you probably
     # ought to consider using the RDF store's native bulk-loading facilities
@@ -107,10 +107,46 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     # @option options [RDF::URI, String] :graph
     # @return [void] `self`
-    # @see http://www.w3.org/TR/sparql11-update/#insertData
+    # @see    http://www.w3.org/TR/sparql11-update/#insertData
     def insert_data(data, options = {})
-      raise ArgumentError, "the graph does not contain any data" if data.empty?
+      raise ArgumentError, "no data given" if data.empty?
       query_text = 'INSERT DATA {'
+      if graph_uri = options[:graph]
+        case graph_uri
+          when String then graph_uri = RDF::URI(graph_uri)
+          when RDF::URI # all good
+          else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{graph_uri.inspect}"
+        end
+        query_text += ' GRAPH ' + RDF::NTriples.serialize(graph_uri) + ' {'
+      end
+      query_text += "\n"
+      query_text += RDF::NTriples::Writer.buffer { |writer| writer << data }
+      query_text += '}' if options[:graph]
+      query_text += "}\n"
+      query(query_text)
+      self
+    end
+
+    ##
+    # Executes a `DELETE DATA` operation.
+    #
+    # This requires that the endpoint support SPARQL 1.1 Update.
+    #
+    # @example Deleting data sourced from a file or URL
+    #   data = RDF::Graph.load("http://rdf.rubyforge.org/doap.nt")
+    #   client.delete_data(data)
+    #
+    # @example Deleting data from a named graph
+    #   client.delete_data(data, :graph => "http://example.org/")
+    #
+    # @param  [RDF::Graph] data
+    # @param  [Hash{Symbol => Object}] options
+    # @option options [RDF::URI, String] :graph
+    # @return [void] `self`
+    # @see    http://www.w3.org/TR/sparql11-update/#deleteData
+    def delete_data(data, options = {})
+      raise ArgumentError, "no data given" if data.empty?
+      query_text = 'DELETE DATA {'
       if graph_uri = options[:graph]
         case graph_uri
           when String then graph_uri = RDF::URI(graph_uri)
@@ -147,7 +183,7 @@ module SPARQL
     ##
     # Executes a `CLEAR` operation.
     #
-    # This requires that the endpoint supports SPARQL 1.1 Update.
+    # This requires that the endpoint support SPARQL 1.1 Update.
     #
     # @example `CLEAR GRAPH <http://example.org/>`
     #   client.clear(:graph, RDF::URI("http://example.org/"))
