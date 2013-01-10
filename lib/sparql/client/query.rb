@@ -181,6 +181,20 @@ module SPARQL; class Client
     end
 
     ##
+    # @param  [RDF::Value] graph_uri_or_var
+    # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#queryDataset
+    def graph(graph_uri_or_var)
+      options[:graph] = case graph_uri_or_var
+        when Symbol then RDF::Query::Variable.new(graph_uri_or_var)
+        when String then RDF::URI(graph_uri_or_var)
+        when RDF::Value then graph_uri_or_var
+        else raise ArgumentError
+      end
+      self
+    end
+
+    ##
     # @param  [Integer, #to_i] start
     # @return [Query]
     # @see    http://www.w3.org/TR/rdf-sparql-query/#modOffset
@@ -321,6 +335,11 @@ module SPARQL; class Client
 
       unless patterns.empty? && form == :describe
         buffer << 'WHERE {'
+
+        if options[:graph]
+          buffer << 'GRAPH ' + SPARQL::Client.serialize_value(options[:graph])
+          buffer << '{'
+        end
         buffer += serialize_patterns(patterns)
         if options[:optionals]
           options[:optionals].each do |patterns|
@@ -332,7 +351,11 @@ module SPARQL; class Client
         if options[:filters]
           buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
         end
-        buffer << '}'
+        if options[:graph]
+          buffer << '}' # GRAPH
+        end
+
+        buffer << '}' # WHERE
       end
 
       if options[:group_by]

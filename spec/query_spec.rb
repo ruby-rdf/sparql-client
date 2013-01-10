@@ -57,6 +57,11 @@ describe SPARQL::Client::Query do
       @query.select(:s).reduced.where([:s, :p, :o]).to_s.should == "SELECT REDUCED ?s WHERE { ?s ?p ?o . }"
     end
 
+    it "should support GRAPH" do
+      @query.select.graph(:g).where([:s, :p, :o]).to_s.should == "SELECT * WHERE { GRAPH ?g { ?s ?p ?o . } }"
+      @query.select.graph('http://example.org/').where([:s, :p, :o]).to_s.should == "SELECT * WHERE { GRAPH <http://example.org/> { ?s ?p ?o . } }"
+    end
+
     it "should support COUNT" do
       @query.select(:count => { :s => :c }).where([:s, :p, :o]).to_s.should == "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
       @query.select(:count => { :s => :c }, :distinct => true).where([:s, :p, :o]).to_s.should == "SELECT  ( COUNT(DISTINCT ?s) AS ?c ) WHERE { ?s ?p ?o . }"
