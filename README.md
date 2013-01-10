@@ -7,11 +7,12 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
 ##Features
 
-* Executes queries against any SPARQL 1.0-compatible endpoints over HTTP.
+* Executes queries against any SPARQL 1.0-compatible endpoint over HTTP.
 * Provides a query builder [DSL][] for `ASK`, `SELECT`, `DESCRIBE` and
   `CONSTRUCT` queries.
+* Includes preliminary support for some SPARQL 1.1 Update operations.
 * Supports tuple result sets in both XML and JSON formats, with JSON being
-  the preferred default for content negotiation purposes.
+  the preferred default for content-negotiation purposes.
 * Supports graph results in any RDF serialization format understood by RDF.rb.
 * Returns results using the [RDF.rb object model][RDF.rb model].
 * Supports accessing endpoints as read-only [`RDF::Repository`][RDF::Repository]
@@ -56,8 +57,6 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
 ##Documentation
 
-<http://sparql.rubyforge.org/client/>
-
 * {SPARQL::Client}
   * {SPARQL::Client::Query}
   * {SPARQL::Client::Repository}
@@ -65,8 +64,9 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 ##Dependencies
 
 * [Ruby](http://ruby-lang.org/) (>= 1.8.7) or (>= 1.8.1 with [Backports][])
-* [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.0)
-* [JSON](http://rubygems.org/gems/json_pure) (>= 1.4.2)
+* [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.5)
+* [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (>= 1.4.1)
+* [JSON](http://rubygems.org/gems/json_pure) (>= 1.4.6)
 
 ##Installation
 
@@ -79,12 +79,12 @@ To install the latest official release of the `SPARQL::Client` gem, do:
 
 To get a local working copy of the development repository, do:
 
-    % git clone git://github.com/bendiken/sparql-client.git
+    % git clone git://github.com/ruby-rdf/sparql-client.git
 
 Alternatively, download the latest development version as a tarball as
 follows:
 
-    % wget http://github.com/bendiken/sparql-client/tarball/master
+    % wget http://github.com/ruby-rdf/sparql-client/tarball/master
 
 ##Mailing List
 
@@ -94,6 +94,7 @@ follows:
 
 * [Arto Bendiken](http://github.com/bendiken) - <http://ar.to/>
 * [Ben Lavender](http://github.com/bhuga) - <http://bhuga.net/>
+* [Gregg Kellogg](http://github.com/gkellogg) - <http://kellogg-assoc.com/>
 
 ##Contributors
 
@@ -104,7 +105,6 @@ follows:
 * [Fumihiro Kato](http://github.com/fumi) - <http://fumi.me/>
 * [David Nielsen](http://github.com/drankard) - <http://github.com/drankard>
 * [Thamaraiselvan Poomalai](http://github.com/selvan) - <http://softonaut.blogspot.com/>
-* [Gregg Kellogg](http://github.com/gkellogg) - <http://kellogg-assoc.com/>
 * [Michael Sokol](http://github.com/mikaa123) - <http://sokolmichael.com/>
 * [Yves Raimond](http://github.com/moustaki) - <http://moustaki.org/>
 
@@ -124,8 +124,8 @@ follows:
 
 ##Resources
 
-* <http://sparql.rubyforge.org/client/>
-* <http://github.com/bendiken/sparql-client>
+* <http://ruby-rdf.github.com/sparql-client/>
+* <http://github.com/ruby-rdf/sparql-client>
 * <http://rubygems.org/gems/sparql-client>
 * <http://rubyforge.org/projects/sparql/>
 * <http://raa.ruby-lang.org/project/sparql-client/>
