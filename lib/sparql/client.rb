@@ -110,14 +110,7 @@ module SPARQL
     def insert_data(data, options = {})
       raise ArgumentError, "no data given" if data.empty?
       query_text = 'INSERT DATA {'
-      if graph_uri = options[:graph]
-        case graph_uri
-          when String then graph_uri = RDF::URI(graph_uri)
-          when RDF::URI # all good
-          else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{graph_uri.inspect}"
-        end
-        query_text += ' GRAPH ' + self.class.serialize_value(graph_uri) + ' {'
-      end
+      query_text += ' GRAPH ' + self.class.serialize_uri(options[:graph]) + ' {' if options[:graph]
       query_text += "\n"
       query_text += RDF::NTriples::Writer.buffer { |writer| writer << data }
       query_text += '}' if options[:graph]
@@ -146,14 +139,7 @@ module SPARQL
     def delete_data(data, options = {})
       raise ArgumentError, "no data given" if data.empty?
       query_text = 'DELETE DATA {'
-      if graph_uri = options[:graph]
-        case graph_uri
-          when String then graph_uri = RDF::URI(graph_uri)
-          when RDF::URI # all good
-          else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{graph_uri.inspect}"
-        end
-        query_text += ' GRAPH ' + self.class.serialize_value(graph_uri) + ' {'
-      end
+      query_text += ' GRAPH ' + self.class.serialize_uri(options[:graph]) + ' {' if options[:graph]
       query_text += "\n"
       query_text += RDF::NTriples::Writer.buffer { |writer| writer << data }
       query_text += '}' if options[:graph]
@@ -206,13 +192,7 @@ module SPARQL
       query_text = 'CLEAR '
       query_text += 'SILENT ' if options[:silent]
       case what.to_sym
-        when :graph
-          case graph_uri = arguments.pop
-            when String then graph_uri = RDF::URI(graph_uri)
-            when RDF::URI # all good
-            else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{graph_uri.inspect}"
-          end
-          query_text += 'GRAPH ' + self.class.serialize_value(graph_uri)
+        when :graph   then query_text += 'GRAPH ' + self.class.serialize_uri(arguments.pop)
         when :default then query_text += 'DEFAULT'
         when :named   then query_text += 'NAMED'
         when :all     then query_text += 'ALL'
@@ -387,6 +367,20 @@ module SPARQL
       options = {:content_type => response.content_type} if options.empty?
       if reader = RDF::Reader.for(options)
         reader.new(response.body)
+      end
+    end
+
+    ##
+    # Serializes a URI or URI string into SPARQL syntax.
+    #
+    # @param  [RDF::URI, String] uri
+    # @return [String]
+    # @private
+    def self.serialize_uri(uri)
+      case uri
+        when String then RDF::NTriples.serialize(RDF::URI(uri))
+        when RDF::URI then RDF::NTriples.serialize(uri)
+        else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{uri.inspect}"
       end
     end
 
