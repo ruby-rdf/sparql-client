@@ -82,26 +82,74 @@ module SPARQL
     end
 
     ##
-    # Executes a `CLEAR GRAPH` update query.
+    # Executes an `INSERT DATA` operation.
+    #
+    # This requires that the endpoint supports SPARQL 1.1 Update.
+    #
+    # Note that for inserting non-trivial amounts of data, you probably
+    # ought to consider using the RDF store's native bulk-loading facilities
+    # or APIs, as `INSERT DATA` operations entail comparably higher
+    # parsing overhead.
+    #
+    # @example Inserting data constructed ad-hoc
+    #   client.insert_data(RDF::Graph.new { |graph|
+    #     graph << [:jhacker, RDF::FOAF.name, "J. Random Hacker"]
+    #   })
+    #
+    # @example Inserting data sourced from a file or URL
+    #   data = RDF::Graph.load("http://rdf.rubyforge.org/doap.nt")
+    #   client.insert_data(data)
+    #
+    # @example Inserting data into a named graph
+    #   client.insert_data(data, :graph => "http://example.org/")
+    #
+    # @param  [RDF::Graph] data
+    # @param  [Hash{Symbol => Object}] options
+    # @option options [RDF::URI, String] :graph
+    # @return [void] `self`
+    # @see http://www.w3.org/TR/sparql11-update/#insertData
+    def insert_data(data, options = {})
+      raise ArgumentError, "the graph does not contain any data" if data.empty?
+      query_text = 'INSERT DATA {'
+      if graph_uri = options[:graph]
+        case graph_uri
+          when String then graph_uri = RDF::URI(graph_uri)
+          when RDF::URI # all good
+          else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{graph_uri.inspect}"
+        end
+        query_text += ' GRAPH ' + RDF::NTriples.serialize(graph_uri) + ' {'
+      end
+      query_text += "\n"
+      query_text += RDF::NTriples::Writer.buffer { |writer| writer << data }
+      query_text += '}' if options[:graph]
+      query_text += "}\n"
+      query(query_text)
+      self
+    end
+
+    ##
+    # Executes a `CLEAR GRAPH` operation.
     #
     # This is a convenience wrapper for the {#clear} method.
     #
-    # @example `CLEAR GRAPH`
+    # @example `CLEAR GRAPH <http://example.org/>`
     #   client.clear_graph("http://example.org/")
     #
-    # @param  [RDF::Value, String] graph_uri
+    # @param  [RDF::URI, String] graph_uri
     # @param  [Hash{Symbol => Object}] options
     # @option options [Boolean] :silent
-    # @return [Boolean]
+    # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#clear
     def clear_graph(graph_uri, options = {})
       self.clear(:graph, graph_uri, options)
     end
 
     ##
-    # Executes a `CLEAR` update query.
+    # Executes a `CLEAR` operation.
     #
-    # @example `CLEAR GRAPH`
+    # This requires that the endpoint supports SPARQL 1.1 Update.
+    #
+    # @example `CLEAR GRAPH <http://example.org/>`
     #   client.clear(:graph, RDF::URI("http://example.org/"))
     #
     # @example `CLEAR DEFAULT`
@@ -116,7 +164,7 @@ module SPARQL
     # @param  [Symbol, #to_sym] what
     # @param  [Hash{Symbol => Object}] options
     # @option options [Boolean] :silent
-    # @return [Boolean]
+    # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#clear
     def clear(what, *arguments)
       options = arguments.last.is_a?(Hash) ? arguments.pop : {}
@@ -126,8 +174,8 @@ module SPARQL
         when :graph
           case graph_uri = arguments.pop
             when String then graph_uri = RDF::URI(graph_uri)
-            when RDF::Value # all good
-            else raise ArgumentError, "expected a String or RDF::Value, but got #{graph_uri.inspect}"
+            when RDF::URI # all good
+            else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{graph_uri.inspect}"
           end
           query_text += 'GRAPH ' + RDF::NTriples.serialize(graph_uri)
         when :default then query_text += 'DEFAULT'
@@ -136,6 +184,7 @@ module SPARQL
         else raise ArgumentError, "invalid CLEAR operation: #{what.inspect}"
       end
       query(query_text)
+      self
     end
 
     ##
