@@ -304,7 +304,7 @@ module SPARQL; class Client
           only_count = values.empty? and options[:count]
           buffer << 'DISTINCT' if options[:distinct] and not only_count
           buffer << 'REDUCED'  if options[:reduced]
-          buffer << ((values.empty? and not options[:count]) ? '*' : values.map { |v| serialize_value(v[1]) }.join(' '))
+          buffer << ((values.empty? and not options[:count]) ? '*' : values.map { |v| SPARQL::Client.serialize_value(v[1]) }.join(' '))
           if options[:count]
             options[:count].each do |var, count|
               buffer << '( COUNT(' + (options[:distinct] ? 'DISTINCT ' : '') +
@@ -317,7 +317,7 @@ module SPARQL; class Client
           buffer << '}'
       end
 
-      buffer << "FROM #{serialize_value(options[:from])}" if options[:from]
+      buffer << "FROM #{SPARQL::Client.serialize_value(options[:from])}" if options[:from]
 
       unless patterns.empty? && form == :describe
         buffer << 'WHERE {'
@@ -356,7 +356,7 @@ module SPARQL; class Client
     # @private
     def serialize_patterns(patterns)
       patterns.map do |p|
-        p.to_triple.map { |v| serialize_value(v) }.join(' ') + " ."
+        p.to_triple.map { |v| SPARQL::Client.serialize_value(v) }.join(' ') + " ."
       end
     end
 
@@ -375,21 +375,6 @@ module SPARQL; class Client
     # @return [String]
     def inspect
       sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, to_s)
-    end
-
-    ##
-    # Serializes an RDF::Value into a format appropriate for select, construct, and where clauses
-    #
-    # @param  [RDF::Value] value
-    # @return [String]
-    # @private
-    def serialize_value(value)
-      # SPARQL queries are UTF-8, but support ASCII-style Unicode escapes, so
-      # the N-Triples serializer is fine unless it's a variable:
-      case
-        when value.variable? then value.to_s
-        else RDF::NTriples.serialize(value)
-      end
     end
   end
 end; end

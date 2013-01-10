@@ -116,7 +116,7 @@ module SPARQL
           when RDF::URI # all good
           else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{graph_uri.inspect}"
         end
-        query_text += ' GRAPH ' + RDF::NTriples.serialize(graph_uri) + ' {'
+        query_text += ' GRAPH ' + self.class.serialize_value(graph_uri) + ' {'
       end
       query_text += "\n"
       query_text += RDF::NTriples::Writer.buffer { |writer| writer << data }
@@ -152,7 +152,7 @@ module SPARQL
           when RDF::URI # all good
           else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{graph_uri.inspect}"
         end
-        query_text += ' GRAPH ' + RDF::NTriples.serialize(graph_uri) + ' {'
+        query_text += ' GRAPH ' + self.class.serialize_value(graph_uri) + ' {'
       end
       query_text += "\n"
       query_text += RDF::NTriples::Writer.buffer { |writer| writer << data }
@@ -212,7 +212,7 @@ module SPARQL
             when RDF::URI # all good
             else raise ArgumentError, "expected the graph URI to be a String or RDF::URI, but got #{graph_uri.inspect}"
           end
-          query_text += 'GRAPH ' + RDF::NTriples.serialize(graph_uri)
+          query_text += 'GRAPH ' + self.class.serialize_value(graph_uri)
         when :default then query_text += 'DEFAULT'
         when :named   then query_text += 'NAMED'
         when :all     then query_text += 'ALL'
@@ -387,6 +387,21 @@ module SPARQL
       options = {:content_type => response.content_type} if options.empty?
       if reader = RDF::Reader.for(options)
         reader.new(response.body)
+      end
+    end
+
+    ##
+    # Serializes an `RDF::Value` into SPARQL syntax.
+    #
+    # @param  [RDF::Value] value
+    # @return [String]
+    # @private
+    def self.serialize_value(value)
+      # SPARQL queries are UTF-8, but support ASCII-style Unicode escapes, so
+      # the N-Triples serializer is fine unless it's a variable:
+      case
+        when value.variable? then value.to_s
+        else RDF::NTriples.serialize(value)
       end
     end
 
