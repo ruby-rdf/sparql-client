@@ -289,6 +289,7 @@ module SPARQL
       url.query_values = {:query => query.to_s}
 
       request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
+      request.basic_auth url.user, url.password if url.user && !url.user.empty?
       response = @http.request url, request
       if block_given?
 	block.call(response)
