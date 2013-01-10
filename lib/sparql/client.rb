@@ -82,6 +82,21 @@ module SPARQL
     end
 
     ##
+    # Executes a `CLEAR GRAPH` update query.
+    #
+    # @param  [RDF::Value] graph_uri
+    # @param  [Hash{Symbol => Object}] options
+    # @option options [Boolean] :silent
+    # @return [Boolean]
+    # @see    http://www.w3.org/TR/sparql11-update/#clear
+    def clear_graph(graph_uri, options = {})
+      query_text = 'CLEAR '
+      query_text += 'SILENT ' if options[:silent]
+      query_text += 'GRAPH ' + RDF::NTriples.serialize(graph_uri)
+      query(query_text)
+    end
+
+    ##
     # @private
     def call_query_method(meth, *args)
       client = self
@@ -133,7 +148,6 @@ module SPARQL
             response
         end
       end
-
     end
 
     ##
