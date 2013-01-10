@@ -84,15 +84,57 @@ module SPARQL
     ##
     # Executes a `CLEAR GRAPH` update query.
     #
-    # @param  [RDF::Value] graph_uri
+    # This is a convenience wrapper for the {#clear} method.
+    #
+    # @example `CLEAR GRAPH`
+    #   client.clear_graph("http://example.org/")
+    #
+    # @param  [RDF::Value, String] graph_uri
     # @param  [Hash{Symbol => Object}] options
     # @option options [Boolean] :silent
     # @return [Boolean]
     # @see    http://www.w3.org/TR/sparql11-update/#clear
     def clear_graph(graph_uri, options = {})
+      self.clear(:graph, graph_uri, options)
+    end
+
+    ##
+    # Executes a `CLEAR` update query.
+    #
+    # @example `CLEAR GRAPH`
+    #   client.clear(:graph, RDF::URI("http://example.org/"))
+    #
+    # @example `CLEAR DEFAULT`
+    #   client.clear(:default)
+    #
+    # @example `CLEAR NAMED`
+    #   client.clear(:named)
+    #
+    # @example `CLEAR ALL`
+    #   client.clear(:all)
+    #
+    # @param  [Symbol, #to_sym] what
+    # @param  [Hash{Symbol => Object}] options
+    # @option options [Boolean] :silent
+    # @return [Boolean]
+    # @see    http://www.w3.org/TR/sparql11-update/#clear
+    def clear(what, *arguments)
+      options = arguments.last.is_a?(Hash) ? arguments.pop : {}
       query_text = 'CLEAR '
       query_text += 'SILENT ' if options[:silent]
-      query_text += 'GRAPH ' + RDF::NTriples.serialize(graph_uri)
+      case what.to_sym
+        when :graph
+          case graph_uri = arguments.pop
+            when String then graph_uri = RDF::URI(graph_uri)
+            when RDF::Value # all good
+            else raise ArgumentError, "expected a String or RDF::Value, but got #{graph_uri.inspect}"
+          end
+          query_text += 'GRAPH ' + RDF::NTriples.serialize(graph_uri)
+        when :default then query_text += 'DEFAULT'
+        when :named   then query_text += 'NAMED'
+        when :all     then query_text += 'ALL'
+        else raise ArgumentError, "invalid CLEAR operation: #{what.inspect}"
+      end
       query(query_text)
     end
 
