@@ -355,8 +355,16 @@ module SPARQL; class Client
     ##
     # @private
     def serialize_patterns(patterns)
-      patterns.map do |p|
-        p.to_triple.map { |v| SPARQL::Client.serialize_value(v) }.join(' ') + " ."
+      rdf_type = RDF.type
+      patterns.map do |pattern|
+        serialized_pattern = pattern.to_triple.each_with_index.map do |v, i|
+          if i == 1 && v.equal?(rdf_type)
+            'a' # abbreviate RDF.type in the predicate position per SPARQL grammar
+          else
+            SPARQL::Client.serialize_value(v)
+          end
+        end
+        serialized_pattern.join(' ') + ' .'
       end
     end
 
