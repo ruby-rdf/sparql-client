@@ -2,6 +2,10 @@ class SPARQL::Client
   ##
   # SPARQL 1.1 Update operation builders.
   module Update
+    def self.insert_data(*arguments)
+      InsertData.new(*arguments)
+    end
+
     def self.clear(*arguments)
       Clear.new(*arguments)
     end
@@ -20,25 +24,50 @@ class SPARQL::Client
     ##
     # @see http://www.w3.org/TR/sparql11-update/#insertData
     class InsertData < Operation
-      # TODO
+      attr_reader :data
+
+      def initialize(data, options = {})
+        @data = data
+        super(options)
+      end
+
+      def graph(uri)
+        self.options[:graph] = uri
+        self
+      end
+
+      def to_s
+        query_text = 'INSERT DATA {'
+        query_text += ' GRAPH ' + SPARQL::Client.serialize_uri(self.options[:graph]) + ' {' if self.options[:graph]
+        query_text += "\n"
+        query_text += RDF::NTriples::Writer.buffer { |writer| writer << @data }
+        query_text += '}' if self.options[:graph]
+        query_text += "}\n"
+      end
     end
 
     ##
     # @see http://www.w3.org/TR/sparql11-update/#deleteData
     class DeleteData < Operation
-      # TODO
+      def to_s
+        # TODO
+      end
     end
 
     ##
     # @see http://www.w3.org/TR/sparql11-update/#deleteInsert
     class DeleteInsert < Operation
-      # TODO
+      def to_s
+        # TODO
+      end
     end
 
     ##
     # @see http://www.w3.org/TR/sparql11-update/#load
     class Load < Operation
-      # TODO
+      def to_s
+        # TODO
+      end
     end
 
     ##
@@ -86,31 +115,41 @@ class SPARQL::Client
     ##
     # @see http://www.w3.org/TR/sparql11-update/#create
     class Create < Operation
-      # TODO
+      def to_s
+        # TODO
+      end
     end
 
     ##
     # @see http://www.w3.org/TR/sparql11-update/#drop
     class Drop < Operation
-      # TODO
+      def to_s
+        # TODO
+      end
     end
 
     ##
     # @see http://www.w3.org/TR/sparql11-update/#copy
     class Copy < Operation
-      # TODO
+      def to_s
+        # TODO
+      end
     end
 
     ##
     # @see http://www.w3.org/TR/sparql11-update/#move
     class Move < Operation
-      # TODO
+      def to_s
+        # TODO
+      end
     end
 
     ##
     # @see http://www.w3.org/TR/sparql11-update/#add
     class Add < Operation
-      # TODO
+      def to_s
+        # TODO
+      end
     end
   end # Update
 end # SPARQL::Client

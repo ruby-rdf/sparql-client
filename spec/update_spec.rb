@@ -7,7 +7,7 @@ describe SPARQL::Client::Update do
 
   context "when building queries" do
     it "should support INSERT DATA operations" do
-      #@sparql.should respond_to(:insert_data)
+      @sparql.should respond_to(:insert_data)
     end
 
     it "should support DELETE DATA operations" do
@@ -46,6 +46,27 @@ describe SPARQL::Client::Update do
 
     it "should support ADD operations" do
       #@sparql.should respond_to(:add)
+    end
+  end
+
+  context "when building INSERT DATA queries" do
+    it "should support empty input" do
+      @sparql.insert_data(RDF::Graph.new).to_s.should == "INSERT DATA {\n}\n"
+    end
+
+    it "should support non-empty input" do
+      data = RDF::Graph.new do |graph|
+        graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+      end
+      @sparql.insert_data(data).to_s.should ==
+        "INSERT DATA {\n<http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> \"J. Random Hacker\" .\n}\n"
+    end
+
+    it "should support the GRAPH modifier" do
+      [@sparql.insert_data(RDF::Graph.new, :graph => 'http://example.org/'),
+       @sparql.insert_data(RDF::Graph.new).graph('http://example.org/')].each do |example|
+        example.to_s.should == "INSERT DATA { GRAPH <http://example.org/> {\n}}\n"
+      end
     end
   end
 
