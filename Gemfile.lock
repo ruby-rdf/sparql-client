@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sparql-client (0.3.2)
+    sparql-client (0.3.3)
       json_pure (>= 1.4.6)
       net-http-persistent (>= 1.4.1)
       rdf (>= 0.3.5)
