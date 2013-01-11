@@ -454,55 +454,47 @@ module SPARQL
     # @yield  [response]
     # @yieldparam [Net::HTTPResponse] response
     # @return [Net::HTTPResponse]
+    # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def request(query, headers = {}, &block)
       method = (self.options[:method] || :post).to_sym
-      send(method, query, headers, &block)
+      request = send("make_#{method}_request", query, headers)
+
+      request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
+
+      response = @http.request(url, request)
+      if block_given?
+        block.call(response)
+      else
+        response
+      end
     end
 
     ##
-    # Performs an HTTP GET request against the SPARQL endpoint.
+    # Constructs an HTTP GET request according to the SPARQL Protocol.
     #
     # @param  [String, #to_s]          query
     # @param  [Hash{String => String}] headers
-    # @yield  [response]
-    # @yieldparam [Net::HTTPResponse] response
-    # @return [Net::HTTPResponse]
-    def get(query, headers = {}, &block)
+    # @return [Net::HTTPRequest]
+    # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-get
+    def make_get_request(query, headers = {})
       url = self.url.dup
       url.query_values = (url.query_values || {}).merge(:query => query.to_s)
-
       request = Net::HTTP::Get.new(url.request_uri, self.headers.merge(headers))
-      request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
-
-      response = @http.request(url, request)
-      if block_given?
-        block.call(response)
-      else
-        response
-      end
+      request
     end
 
     ##
-    # Performs an HTTP POST request against the SPARQL endpoint.
+    # Constructs an HTTP POST request according to the SPARQL Protocol.
     #
     # @param  [String, #to_s]          query
     # @param  [Hash{String => String}] headers
-    # @yield  [response]
-    # @yieldparam [Net::HTTPResponse] response
-    # @return [Net::HTTPResponse]
-    def post(query, headers = {}, &block)
+    # @return [Net::HTTPRequest]
+    # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded
+    def make_post_request(query, headers = {})
       url = self.url
-
       request = Net::HTTP::Post.new(url.request_uri, self.headers.merge(headers))
       request.set_form_data(:query => query.to_s)
-      request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
-
-      response = @http.request(url, request)
-      if block_given?
-        block.call(response)
-      else
-        response
-      end
+      request
     end
   end # Client
 end # SPARQL
