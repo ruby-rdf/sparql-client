@@ -26,6 +26,9 @@ module SPARQL
     # @return [RDF::URI]
     attr_reader :url
 
+    # @return [Hash{String => String}]
+    attr_reader :headers
+
     # @return [Hash{Symbol => Object}]
     attr_reader :options
 
@@ -247,8 +250,9 @@ module SPARQL
     # @option options [Hash] :headers
     # @return [String]
     def response(query, options = {})
-      @headers['Accept'] = options[:content_type] if options[:content_type]
-      request(query, options[:headers] || {}) do |response|
+      headers = options[:headers] || {}
+      headers['Accept'] = options[:content_type] if options[:content_type]
+      request(query, headers) do |response|
         case response
           when Net::HTTPBadRequest  # 400 Bad Request
             raise MalformedQuery.new(response.body)
@@ -467,7 +471,7 @@ module SPARQL
       url = self.url.dup
       url.query_values = (url.query_values || {}).merge(:query => query.to_s)
 
-      request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
+      request = Net::HTTP::Get.new(url.request_uri, self.headers.merge(headers))
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
       response = @http.request(url, request)
@@ -489,7 +493,7 @@ module SPARQL
     def post(query, headers = {}, &block)
       url = self.url
 
-      request = Net::HTTP::Post.new(url.request_uri, @headers.merge(headers))
+      request = Net::HTTP::Post.new(url.request_uri, self.headers.merge(headers))
       request.set_form_data(:query => query.to_s)
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
