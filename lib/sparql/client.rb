@@ -508,14 +508,15 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-direct
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded
     def make_post_request(query, headers = {})
-      url = self.url
-      request = Net::HTTP::Post.new(url.request_uri, self.headers.merge(headers))
+      request = Net::HTTP::Post.new(self.url.request_uri, self.headers.merge(headers))
       case (self.options[:protocol] || DEFAULT_PROTOCOL).to_s
         when '1.1'
           request['Content-Type'] = 'application/sparql-query'
           request.body = query.to_s
         when '1.0'
           request.set_form_data(:query => query.to_s)
+        else
+          raise ArgumentError, "unknown SPARQL protocol version: #{self.options[:protocol].inspect}"
       end
       request
     end
