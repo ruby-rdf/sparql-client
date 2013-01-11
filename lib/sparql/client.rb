@@ -12,6 +12,7 @@ module SPARQL
   class Client
     autoload :Query,      'sparql/client/query'
     autoload :Repository, 'sparql/client/repository'
+    autoload :Update,     'sparql/client/update'
     autoload :VERSION,    'sparql/client/version'
 
     class ClientError < StandardError; end
