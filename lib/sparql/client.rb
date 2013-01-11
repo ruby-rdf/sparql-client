@@ -210,17 +210,7 @@ module SPARQL
     # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#clear
     def clear(what, *arguments)
-      options = arguments.last.is_a?(Hash) ? arguments.pop : {}
-      query_text = 'CLEAR '
-      query_text += 'SILENT ' if options[:silent]
-      case what.to_sym
-        when :graph   then query_text += 'GRAPH ' + self.class.serialize_uri(arguments.pop)
-        when :default then query_text += 'DEFAULT'
-        when :named   then query_text += 'NAMED'
-        when :all     then query_text += 'ALL'
-        else raise ArgumentError, "invalid CLEAR operation: #{what.inspect}"
-      end
-      self.update(query_text)
+      self.update(Update::Clear.new(what, *arguments))
     end
 
     ##
