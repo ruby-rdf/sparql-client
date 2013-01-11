@@ -29,11 +29,11 @@ describe SPARQL::Client::Update do
     end
 
     it "should support CREATE operations" do
-      #@sparql.should respond_to(:create) # TODO
+      @sparql.should respond_to(:create)
     end
 
     it "should support DROP operations" do
-      #@sparql.should respond_to(:drop) # TODO
+      @sparql.should respond_to(:drop)
     end
 
     it "should support COPY operations" do
@@ -120,37 +120,87 @@ describe SPARQL::Client::Update do
 
   context "when building CLEAR queries" do
     it "should support the CLEAR GRAPH operation" do
-      @sparql.clear.graph('http://example.org/').to_s.should == 'CLEAR GRAPH <http://example.org/>'
-      @sparql.clear(:graph, 'http://example.org/').to_s.should == 'CLEAR GRAPH <http://example.org/>'
+      graph_uri = 'http://example.org/'
+      [@sparql.clear.graph(graph_uri),
+       @sparql.clear(:graph, graph_uri)].each do |example|
+        example.to_s.should == "CLEAR GRAPH <#{graph_uri}>"
+      end
     end
 
     it "should support the CLEAR DEFAULT operation" do
-      @sparql.clear.default.to_s.should == 'CLEAR DEFAULT'
-      @sparql.clear(:default).to_s.should == 'CLEAR DEFAULT'
+      [@sparql.clear.default, @sparql.clear(:default)].each do |example|
+         example.to_s.should == "CLEAR DEFAULT"
+      end
     end
 
     it "should support the CLEAR NAMED operation" do
-      @sparql.clear.named.to_s.should == 'CLEAR NAMED'
-      @sparql.clear(:named).to_s.should == 'CLEAR NAMED'
+      [@sparql.clear.named, @sparql.clear(:named)].each do |example|
+        example.to_s.should == "CLEAR NAMED"
+      end
     end
 
     it "should support the CLEAR ALL operation" do
-      @sparql.clear.all.to_s.should == 'CLEAR ALL'
-      @sparql.clear(:all).to_s.should == 'CLEAR ALL'
+      [@sparql.clear.all, @sparql.clear(:all)].each do |example|
+        example.to_s.should == "CLEAR ALL"
+      end
     end
 
     it "should support the SILENT modifier" do
-      @sparql.clear.all.silent.to_s.should == 'CLEAR SILENT ALL'
-      @sparql.clear(:all, :silent => true).to_s.should == 'CLEAR SILENT ALL'
+      [@sparql.clear(:all).silent,
+       @sparql.clear(:all, :silent => true)].each do |example|
+        example.to_s.should == "CLEAR SILENT ALL"
+      end
     end
   end
 
   context "when building CREATE queries" do
-    # TODO
+    it "should require a graph URI" do
+      graph_uri = 'http://example.org/'
+      @sparql.create(graph_uri).to_s.should == "CREATE GRAPH <#{graph_uri}>"
+    end
+
+    it "should support the SILENT modifier" do
+      graph_uri = 'http://example.org/'
+      [@sparql.create(graph_uri).silent,
+       @sparql.create(graph_uri, :silent => true)].each do |example|
+        example.to_s.should == "CREATE SILENT GRAPH <#{graph_uri}>"
+      end
+    end
   end
 
   context "when building DROP queries" do
-    # TODO
+    it "should support the DROP GRAPH operation" do
+      graph_uri = 'http://example.org/'
+      [@sparql.drop.graph(graph_uri),
+       @sparql.drop(:graph, graph_uri)].each do |example|
+        example.to_s.should == "DROP GRAPH <#{graph_uri}>"
+      end
+    end
+
+    it "should support the DROP DEFAULT operation" do
+      [@sparql.drop.default, @sparql.drop(:default)].each do |example|
+         example.to_s.should == "DROP DEFAULT"
+      end
+    end
+
+    it "should support the DROP NAMED operation" do
+      [@sparql.drop.named, @sparql.drop(:named)].each do |example|
+        example.to_s.should == "DROP NAMED"
+      end
+    end
+
+    it "should support the DROP ALL operation" do
+      [@sparql.drop.all, @sparql.drop(:all)].each do |example|
+        example.to_s.should == "DROP ALL"
+      end
+    end
+
+    it "should support the SILENT modifier" do
+      [@sparql.drop(:all).silent,
+       @sparql.drop(:all, :silent => true)].each do |example|
+        example.to_s.should == "DROP SILENT ALL"
+      end
+    end
   end
 
   context "when building COPY queries" do

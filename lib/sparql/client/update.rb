@@ -18,6 +18,14 @@ class SPARQL::Client
       Clear.new(*arguments)
     end
 
+    def self.create(*arguments)
+      Create.new(*arguments)
+    end
+
+    def self.drop(*arguments)
+      Drop.new(*arguments)
+    end
+
     class Operation
       attr_reader :options
 
@@ -122,6 +130,8 @@ class SPARQL::Client
     ##
     # @see http://www.w3.org/TR/sparql11-update/#clear
     class Clear < Operation
+      attr_reader :uri
+
       def graph(uri)
         @what, @uri = :graph, uri
         self
@@ -159,16 +169,35 @@ class SPARQL::Client
     ##
     # @see http://www.w3.org/TR/sparql11-update/#create
     class Create < Operation
+      attr_reader :uri
+
+      def initialize(uri, options = {})
+        @uri = RDF::URI(uri)
+        super(options)
+      end
+
       def to_s
-        # TODO
+        query_text = 'CREATE '
+        query_text += 'SILENT ' if self.options[:silent]
+        query_text += 'GRAPH ' + SPARQL::Client.serialize_uri(@uri)
+        query_text
       end
     end
 
     ##
     # @see http://www.w3.org/TR/sparql11-update/#drop
-    class Drop < Operation
+    class Drop < Clear
       def to_s
-        # TODO
+        query_text = 'DROP '
+        query_text += 'SILENT ' if self.options[:silent]
+        case @what.to_sym
+          when :graph   then query_text += 'GRAPH ' + SPARQL::Client.serialize_uri(@uri)
+          when :default then query_text += 'DEFAULT'
+          when :named   then query_text += 'NAMED'
+          when :all     then query_text += 'ALL'
+          else raise ArgumentError, "invalid DROP operation: #{@what.inspect}"
+        end
+        query_text
       end
     end
 
