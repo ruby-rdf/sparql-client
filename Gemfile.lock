@@ -45,4 +45,4 @@ DEPENDENCIES
   shotgun
   sparql-client!
   wirble
-  yard (>= 0.7.5)
+  yard (>= 0.8.3)
