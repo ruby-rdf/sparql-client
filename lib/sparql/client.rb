@@ -138,8 +138,7 @@ module SPARQL
       query_text += RDF::NTriples::Writer.buffer { |writer| writer << data }
       query_text += '}' if options[:graph]
       query_text += "}\n"
-      query(query_text)
-      self
+      self.update(query_text)
     end
 
     ##
@@ -167,8 +166,7 @@ module SPARQL
       query_text += RDF::NTriples::Writer.buffer { |writer| writer << data }
       query_text += '}' if options[:graph]
       query_text += "}\n"
-      query(query_text)
-      self
+      self.update(query_text)
     end
 
     ##
@@ -221,8 +219,7 @@ module SPARQL
         when :all     then query_text += 'ALL'
         else raise ArgumentError, "invalid CLEAR operation: #{what.inspect}"
       end
-      query(query_text)
-      self
+      self.update(query_text)
     end
 
     ##
@@ -245,15 +242,32 @@ module SPARQL
     end
 
     ##
-    # Executes a SPARQL query and returns parsed results.
+    # Executes a SPARQL query and returns the parsed results.
     #
     # @param  [String, #to_s]          query
     # @param  [Hash{Symbol => Object}] options
     # @option options [String] :content_type
     # @option options [Hash] :headers
     # @return [Array<RDF::Query::Solution>]
+    # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def query(query, options = {})
+      @op = :query
       parse_response(response(query, options), options)
+    end
+
+    ##
+    # Executes a SPARQL update operation.
+    #
+    # @param  [String, #to_s]          query
+    # @param  [Hash{Symbol => Object}] options
+    # @option options [String] :content_type
+    # @option options [Hash] :headers
+    # @return [void] `self`
+    # @see    http://www.w3.org/TR/sparql11-protocol/#update-operation
+    def update(query, options = {})
+      @op = :update
+      parse_response(response(query, options), options)
+      self
     end
 
     ##
@@ -511,7 +525,7 @@ module SPARQL
       request = Net::HTTP::Post.new(self.url.request_uri, self.headers.merge(headers))
       case (self.options[:protocol] || DEFAULT_PROTOCOL).to_s
         when '1.1'
-          request['Content-Type'] = 'application/sparql-query'
+          request['Content-Type'] = 'application/sparql-' + (@op || :query).to_s
           request.body = query.to_s
         when '1.0'
           request.set_form_data(:query => query.to_s)
