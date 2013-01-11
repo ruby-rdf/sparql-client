@@ -17,11 +17,13 @@ module SPARQL
     class MalformedQuery < ClientError; end
     class ServerError < StandardError; end
 
-    RESULT_BOOL = 'text/boolean'.freeze # Sesame-specific
     RESULT_JSON = 'application/sparql-results+json'.freeze
     RESULT_XML  = 'application/sparql-results+xml'.freeze
+    RESULT_BOOL = 'text/boolean'.freeze                           # Sesame-specific
+    RESULT_BRTR = 'application/x-binary-rdf-results-table'.freeze # Sesame-specific
     ACCEPT_JSON = {'Accept' => RESULT_JSON}.freeze
     ACCEPT_XML  = {'Accept' => RESULT_XML}.freeze
+    ACCEPT_BRTR = {'Accept' => RESULT_BRTR}.freeze
 
     # @return [RDF::URI]
     attr_reader :url
