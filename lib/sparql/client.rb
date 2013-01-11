@@ -1,6 +1,6 @@
-require 'net/http/persistent'
-require 'rdf' # @see http://rubygems.org/gems/rdf
-require 'rdf/ntriples'
+require 'net/http/persistent' # @see http://rubygems.org/gems/net-http-persistent
+require 'rdf'                 # @see http://rubygems.org/gems/rdf
+require 'rdf/ntriples'        # @see http://rubygems.org/gems/rdf
 
 module SPARQL
   ##
@@ -23,18 +23,22 @@ module SPARQL
     ACCEPT_JSON = {'Accept' => RESULT_JSON}.freeze
     ACCEPT_XML  = {'Accept' => RESULT_XML}.freeze
 
+    # @return [RDF::URI]
     attr_reader :url
+
+    # @return [Hash{Symbol => Object}]
     attr_reader :options
 
     ##
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
+    # @option options [Symbol] :method (:post)
     # @option options [Hash] :headers
     def initialize(url, options = {}, &block)
-      @url, @options = RDF::URI.new(url.to_s), options
+      @url, @options = RDF::URI.new(url.to_s), options.dup
       @headers = {
         'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.keys.map(&:to_s)].join(', ')
-      }.merge(@options[:headers] || {})
+      }.merge(@options.delete(:headers) || {})
       @http = http_klass(@url.scheme)
 
       if block_given?
@@ -244,7 +248,7 @@ module SPARQL
     # @return [String]
     def response(query, options = {})
       @headers['Accept'] = options[:content_type] if options[:content_type]
-      get(query, options[:headers] || {}) do |response|
+      request(query, options[:headers] || {}) do |response|
         case response
           when Net::HTTPBadRequest  # 400 Bad Request
             raise MalformedQuery.new(response.body)
@@ -439,6 +443,19 @@ module SPARQL
     end
 
     ##
+    # Performs an HTTP request against the SPARQL endpoint.
+    #
+    # @param  [String, #to_s]          query
+    # @param  [Hash{String => String}] headers
+    # @yield  [response]
+    # @yieldparam [Net::HTTPResponse] response
+    # @return [Net::HTTPResponse]
+    def request(query, headers = {}, &block)
+      method = (self.options[:method] || :post).to_sym
+      send(method, query, headers, &block)
+    end
+
+    ##
     # Performs an HTTP GET request against the SPARQL endpoint.
     #
     # @param  [String, #to_s]          query
@@ -451,6 +468,29 @@ module SPARQL
       url.query_values = (url.query_values || {}).merge(:query => query.to_s)
 
       request = Net::HTTP::Get.new(url.request_uri, @headers.merge(headers))
+      request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
+
+      response = @http.request(url, request)
+      if block_given?
+        block.call(response)
+      else
+        response
+      end
+    end
+
+    ##
+    # Performs an HTTP POST request against the SPARQL endpoint.
+    #
+    # @param  [String, #to_s]          query
+    # @param  [Hash{String => String}] headers
+    # @yield  [response]
+    # @yieldparam [Net::HTTPResponse] response
+    # @return [Net::HTTPResponse]
+    def post(query, headers = {}, &block)
+      url = self.url
+
+      request = Net::HTTP::Post.new(url.request_uri, @headers.merge(headers))
+      request.set_form_data(:query => query.to_s)
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
       response = @http.request(url, request)
