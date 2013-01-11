@@ -8,7 +8,7 @@ module SPARQL; class Client
   class Query < RDF::Query
     ##
     # @return [Symbol]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#QueryForms
+    # @see    http://www.w3.org/TR/sparql11-query/#QueryForms
     attr_reader :form
 
     ##
@@ -24,7 +24,7 @@ module SPARQL; class Client
     #
     # @param  [Hash{Symbol => Object}] options
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#ask
+    # @see    http://www.w3.org/TR/sparql11-query/#ask
     def self.ask(options = {})
       self.new(:ask, options)
     end
@@ -38,7 +38,7 @@ module SPARQL; class Client
     # @overload self.select(*variables, options)
     #   @param  [Array<Symbol>]          variables
     #   @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#select
+    # @see    http://www.w3.org/TR/sparql11-query/#select
     def self.select(*variables)
       options = variables.last.is_a?(Hash) ? variables.pop : {}
       self.new(:select, options).select(*variables)
@@ -53,7 +53,7 @@ module SPARQL; class Client
     # @overload self.describe(*variables, options)
     #   @param  [Array<Symbol, RDF::URI>] variables
     #   @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#describe
+    # @see    http://www.w3.org/TR/sparql11-query/#describe
     def self.describe(*variables)
       options = variables.last.is_a?(Hash) ? variables.pop : {}
       self.new(:describe, options).describe(*variables)
@@ -69,7 +69,7 @@ module SPARQL; class Client
     #   @param  [Array<RDF::Query::Pattern, Array>] patterns
     #   @param  [Hash{Symbol => Object}]            options
     #   @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#construct
+    # @see    http://www.w3.org/TR/sparql11-query/#construct
     def self.construct(*patterns)
       options = patterns.last.is_a?(Hash) ? patterns.pop : {}
       self.new(:construct, options).construct(*patterns) # FIXME
@@ -89,7 +89,7 @@ module SPARQL; class Client
 
     ##
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#ask
+    # @see    http://www.w3.org/TR/sparql11-query/#ask
     def ask
       @form = :ask
       self
@@ -98,7 +98,7 @@ module SPARQL; class Client
     ##
     # @param  [Array<Symbol>] variables
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#select
+    # @see    http://www.w3.org/TR/sparql11-query/#select
     def select(*variables)
       @values = variables.map { |var| [var, RDF::Query::Variable.new(var)] }
       self
@@ -107,7 +107,7 @@ module SPARQL; class Client
     ##
     # @param  [Array<Symbol>] variables
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#describe
+    # @see    http://www.w3.org/TR/sparql11-query/#describe
     def describe(*variables)
       @values = variables.map { |var|
         [var, var.is_a?(RDF::URI) ? var : RDF::Query::Variable.new(var)]
@@ -118,6 +118,7 @@ module SPARQL; class Client
     ##
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#construct
     def construct(*patterns)
       options[:template] = build_patterns(patterns)
       self
@@ -125,7 +126,7 @@ module SPARQL; class Client
 
     # @param [RDF::URI] uri
     # @return [Query]
-    # @see http://www.w3.org/TR/rdf-sparql-query/#specDataset
+    # @see http://www.w3.org/TR/sparql11-query/#specifyingDataset
     def from(uri)
       options[:from] = uri
       self
@@ -134,7 +135,7 @@ module SPARQL; class Client
     ##
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#GraphPattern
+    # @see    http://www.w3.org/TR/sparql11-query/#GraphPattern
     def where(*patterns)
       @patterns += build_patterns(patterns)
       self
@@ -145,7 +146,7 @@ module SPARQL; class Client
     ##
     # @param  [Array<Symbol, String>] variables
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#modOrderBy
+    # @see    http://www.w3.org/TR/sparql11-query/#modOrderBy
     def order(*variables)
       options[:order_by] = variables
       self
@@ -166,7 +167,7 @@ module SPARQL; class Client
 
     ##
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#modDistinct
+    # @see    http://www.w3.org/TR/sparql11-query/#modDuplicates
     def distinct(state = true)
       options[:distinct] = state
       self
@@ -174,7 +175,7 @@ module SPARQL; class Client
 
     ##
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#modReduced
+    # @see    http://www.w3.org/TR/sparql11-query/#modDuplicates
     def reduced(state = true)
       options[:reduced] = state
       self
@@ -197,7 +198,7 @@ module SPARQL; class Client
     ##
     # @param  [Integer, #to_i] start
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#modOffset
+    # @see    http://www.w3.org/TR/sparql11-query/#modOffset
     def offset(start)
       slice(start, nil)
     end
@@ -205,7 +206,7 @@ module SPARQL; class Client
     ##
     # @param  [Integer, #to_i] length
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#modResultLimit
+    # @see    http://www.w3.org/TR/sparql11-query/#modResultLimit
     def limit(length)
       slice(nil, length)
     end
@@ -222,7 +223,7 @@ module SPARQL; class Client
 
     ##
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#prefNames
+    # @see    http://www.w3.org/TR/sparql11-query/#prefNames
     def prefix(string)
       (options[:prefixes] ||= []) << string
       self
@@ -230,7 +231,7 @@ module SPARQL; class Client
 
     ##
     # @return [Query]
-    # @see    http://www.w3.org/TR/rdf-sparql-query/#optionals
+    # @see    http://www.w3.org/TR/sparql11-query/#optionals
     def optional(*patterns)
       (options[:optionals] ||= []) << build_patterns(patterns)
       self
