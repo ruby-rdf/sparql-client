@@ -11,7 +11,7 @@ describe SPARQL::Client::Update do
     end
 
     it "should support DELETE DATA operations" do
-      #@sparql.should respond_to(:delete_data)
+      @sparql.should respond_to(:delete_data)
     end
 
     it "should support DELETE/INSERT operations" do
@@ -66,6 +66,27 @@ describe SPARQL::Client::Update do
       [@sparql.insert_data(RDF::Graph.new, :graph => 'http://example.org/'),
        @sparql.insert_data(RDF::Graph.new).graph('http://example.org/')].each do |example|
         example.to_s.should == "INSERT DATA { GRAPH <http://example.org/> {\n}}\n"
+      end
+    end
+  end
+
+  context "when building DELETE DATA queries" do
+    it "should support empty input" do
+      @sparql.delete_data(RDF::Graph.new).to_s.should == "DELETE DATA {\n}\n"
+    end
+
+    it "should support non-empty input" do
+      data = RDF::Graph.new do |graph|
+        graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+      end
+      @sparql.delete_data(data).to_s.should ==
+        "DELETE DATA {\n<http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> \"J. Random Hacker\" .\n}\n"
+    end
+
+    it "should support the GRAPH modifier" do
+      [@sparql.delete_data(RDF::Graph.new, :graph => 'http://example.org/'),
+       @sparql.delete_data(RDF::Graph.new).graph('http://example.org/')].each do |example|
+        example.to_s.should == "DELETE DATA { GRAPH <http://example.org/> {\n}}\n"
       end
     end
   end

@@ -153,14 +153,7 @@ module SPARQL
     # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#deleteData
     def delete_data(data, options = {})
-      raise ArgumentError, "no data given" if data.empty?
-      query_text = 'DELETE DATA {'
-      query_text += ' GRAPH ' + self.class.serialize_uri(options[:graph]) + ' {' if options[:graph]
-      query_text += "\n"
-      query_text += RDF::NTriples::Writer.buffer { |writer| writer << data }
-      query_text += '}' if options[:graph]
-      query_text += "}\n"
-      self.update(query_text)
+      self.update(Update::DeleteData.new(data, options))
     end
 
     ##

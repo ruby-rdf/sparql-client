@@ -6,6 +6,10 @@ class SPARQL::Client
       InsertData.new(*arguments)
     end
 
+    def self.delete_data(*arguments)
+      DeleteData.new(*arguments)
+    end
+
     def self.clear(*arguments)
       Clear.new(*arguments)
     end
@@ -49,8 +53,25 @@ class SPARQL::Client
     ##
     # @see http://www.w3.org/TR/sparql11-update/#deleteData
     class DeleteData < Operation
+      attr_reader :data
+
+      def initialize(data, options = {})
+        @data = data
+        super(options)
+      end
+
+      def graph(uri)
+        self.options[:graph] = uri
+        self
+      end
+
       def to_s
-        # TODO
+        query_text = 'DELETE DATA {'
+        query_text += ' GRAPH ' + SPARQL::Client.serialize_uri(self.options[:graph]) + ' {' if self.options[:graph]
+        query_text += "\n"
+        query_text += RDF::NTriples::Writer.buffer { |writer| writer << @data }
+        query_text += '}' if self.options[:graph]
+        query_text += "}\n"
       end
     end
 
