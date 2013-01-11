@@ -10,6 +10,10 @@ class SPARQL::Client
       DeleteData.new(*arguments)
     end
 
+    def self.load(*arguments)
+      Load.new(*arguments)
+    end
+
     def self.clear(*arguments)
       Clear.new(*arguments)
     end
@@ -22,6 +26,11 @@ class SPARQL::Client
         unless arguments.empty?
           send(arguments.shift, *arguments)
         end
+      end
+
+      def silent
+        self.options[:silent] = true
+        self
       end
     end
 
@@ -86,19 +95,33 @@ class SPARQL::Client
     ##
     # @see http://www.w3.org/TR/sparql11-update/#load
     class Load < Operation
+      attr_reader :from
+      attr_reader :into
+
+      def initialize(from, options = {})
+        options = options.dup
+        @from = RDF::URI(from)
+        @into = RDF::URI(options.delete(:into)) if options[:into]
+        super(options)
+      end
+
+      def into(url)
+        @into = RDF::URI(url)
+        self
+      end
+
       def to_s
-        # TODO
+        query_text = 'LOAD '
+        query_text += 'SILENT ' if self.options[:silent]
+        query_text += SPARQL::Client.serialize_uri(@from)
+        query_text += ' INTO GRAPH ' + SPARQL::Client.serialize_uri(@into) if @into
+        query_text
       end
     end
 
     ##
     # @see http://www.w3.org/TR/sparql11-update/#clear
     class Clear < Operation
-      def silent
-        self.options[:silent] = true
-        self
-      end
-
       def graph(uri)
         @what, @uri = :graph, uri
         self
