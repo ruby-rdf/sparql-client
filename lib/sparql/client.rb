@@ -4,9 +4,10 @@ require 'rdf/ntriples'        # @see http://rubygems.org/gems/rdf
 
 module SPARQL
   ##
-  # A SPARQL client for RDF.rb.
+  # A SPARQL 1.0/1.1 client for RDF.rb.
   #
   # @see http://www.w3.org/TR/sparql11-query/
+  # @see http://www.w3.org/TR/sparql11-protocol/
   # @see http://www.w3.org/TR/sparql11-results-json/
   class Client
     autoload :Query,      'sparql/client/query'
@@ -25,19 +26,32 @@ module SPARQL
     ACCEPT_XML  = {'Accept' => RESULT_XML}.freeze
     ACCEPT_BRTR = {'Accept' => RESULT_BRTR}.freeze
 
+    DEFAULT_PROTOCOL = 1.0
+    DEFAULT_METHOD   = :post
+
+    ##
+    # The SPARQL endpoint URL.
+    #
     # @return [RDF::URI]
     attr_reader :url
 
+    ##
+    # The HTTP headers that will be sent in requests to the endpoint.
+    #
     # @return [Hash{String => String}]
     attr_reader :headers
 
+    ##
+    # Any miscellaneous configuration.
+    #
     # @return [Hash{Symbol => Object}]
     attr_reader :options
 
     ##
     # @param  [String, #to_s]          url
     # @param  [Hash{Symbol => Object}] options
-    # @option options [Symbol] :method (:post)
+    # @option options [Symbol] :method (DEFAULT_METHOD)
+    # @option options [Number] :protocol (DEFAULT_PROTOCOL)
     # @option options [Hash] :headers
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options.dup
@@ -458,7 +472,7 @@ module SPARQL
     # @return [Net::HTTPResponse]
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def request(query, headers = {}, &block)
-      method = (self.options[:method] || :post).to_sym
+      method = (self.options[:method] || DEFAULT_METHOD).to_sym
       request = send("make_#{method}_request", query, headers)
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
@@ -491,11 +505,18 @@ module SPARQL
     # @param  [String, #to_s]          query
     # @param  [Hash{String => String}] headers
     # @return [Net::HTTPRequest]
+    # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-direct
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded
     def make_post_request(query, headers = {})
       url = self.url
       request = Net::HTTP::Post.new(url.request_uri, self.headers.merge(headers))
-      request.set_form_data(:query => query.to_s)
+      case (self.options[:protocol] || DEFAULT_PROTOCOL).to_s
+        when '1.1'
+          request['Content-Type'] = 'application/sparql-query'
+          request.body = query.to_s
+        when '1.0'
+          request.set_form_data(:query => query.to_s)
+      end
       request
     end
   end # Client
