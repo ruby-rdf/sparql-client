@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name               = 'sparql-client'
-  gem.homepage           = 'http://github.com/ruby-rdf/sparql-client'
+  gem.homepage           = 'http://ruby-rdf.github.com/sparql-client/'
   gem.license            = 'Public Domain' if gem.respond_to?(:license=)
   gem.summary            = 'SPARQL client for RDF.rb.'
   gem.description        = gem.summary
@@ -27,11 +27,11 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version      = '>= 1.8.1'
   gem.requirements               = []
-  gem.add_runtime_dependency     'rdf',       '>= 0.3.5'
-  gem.add_runtime_dependency     'net-http-persistent', '>= 1.4.1'
-  gem.add_runtime_dependency     'json_pure', '>= 1.4.6'
-  gem.add_development_dependency 'rdf-spec',  '>= 0.3.5'
-  gem.add_development_dependency 'rspec',     '>= 2.10.0'
-  gem.add_development_dependency 'yard' ,     '>= 0.8.3'
+  gem.add_runtime_dependency     'rdf',       '>= 1.0'
+  gem.add_runtime_dependency     'net-http-persistent', '>= 1.4'
+  gem.add_runtime_dependency     'json_pure', '>= 1.4'
+  gem.add_development_dependency 'rdf-spec',  '>= 1.0'
+  gem.add_development_dependency 'rspec',     '>= 2.12'
+  gem.add_development_dependency 'yard' ,     '>= 0.8'
   gem.post_install_message       = nil
 end

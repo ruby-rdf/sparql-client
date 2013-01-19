@@ -64,9 +64,9 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 ##Dependencies
 
 * [Ruby](http://ruby-lang.org/) (>= 1.8.7) or (>= 1.8.1 with [Backports][])
-* [RDF.rb](http://rubygems.org/gems/rdf) (>= 0.3.5)
-* [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (>= 1.4.1)
-* [JSON](http://rubygems.org/gems/json_pure) (>= 1.4.6)
+* [RDF.rb](http://rubygems.org/gems/rdf) (>= 1.0)
+* [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (>= 1.4)
+* [JSON](http://rubygems.org/gems/json_pure) (>= 1.4)
 
 ##Installation
 
