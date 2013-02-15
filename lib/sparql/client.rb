@@ -298,9 +298,9 @@ module SPARQL
       require 'json' unless defined?(::JSON)
       json = JSON.parse(json.to_s) unless json.is_a?(Hash)
       case
-        when json['boolean']
+        when json.has_key?('boolean')
           json['boolean']
-        when json['results']
+        when json.has_key?('results')
           solutions = json['results']['bindings'].map do |row|
             row = row.inject({}) do |cols, (name, value)|
               cols.merge(name.to_sym => parse_json_value(value))
