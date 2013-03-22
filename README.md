@@ -21,21 +21,21 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 ##Examples
 
     require 'sparql/client'
-    
+
     sparql = SPARQL::Client.new("http://dbpedia.org/sparql")
 
 ### Executing a boolean query and outputting the result
 
     # ASK WHERE { ?s ?p ?o }
     result = sparql.ask.whether([:s, :p, :o]).true?
-    
+
     puts result.inspect   #=> true or false
 
 ### Executing a tuple query and iterating over the returned solutions
 
     # SELECT * WHERE { ?s ?p ?o } OFFSET 100 LIMIT 10
     query = sparql.select.where([:s, :p, :o]).offset(100).limit(10)
-    
+
     query.each_solution do |solution|
       puts solution.inspect
     end
@@ -44,7 +44,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
     # CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } LIMIT 10
     query = sparql.construct([:s, :p, :o]).where([:s, :p, :o]).limit(10)
-    
+
     query.each_statement do |statement|
       puts statement.inspect
     end
@@ -52,7 +52,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 ### Executing an arbitrary textual SPARQL query string
 
     result = sparql.query("ASK WHERE { ?s ?p ?o }")
-    
+
     puts result.inspect   #=> true or false
 
 ##Documentation
@@ -107,6 +107,7 @@ follows:
 * [Thamaraiselvan Poomalai](http://github.com/selvan) - <http://softonaut.blogspot.com/>
 * [Michael Sokol](http://github.com/mikaa123) - <http://sokolmichael.com/>
 * [Yves Raimond](http://github.com/moustaki) - <http://moustaki.org/>
+* [Thomas Feron](http://github.com/thoferon) - <http://github.com/thoferon>
 
 ##Contributing
 
