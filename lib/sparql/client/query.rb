@@ -83,6 +83,7 @@ module SPARQL; class Client
     # @yield  [query]
     # @yieldparam [Query]
     def initialize(form = :ask, options = {}, &block)
+      @subqueries = []
       @form = form.respond_to?(:to_sym) ? form.to_sym : form.to_s.to_sym
       super([], options, &block)
     end
@@ -136,8 +137,10 @@ module SPARQL; class Client
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#GraphPattern
-    def where(*patterns)
+    def where(*patterns_queries)
+      subqueries, patterns = patterns_queries.partition {|pq| pq.is_a? SPARQL::Client::Query}
       @patterns += build_patterns(patterns)
+      @subqueries += subqueries
       self
     end
 
@@ -341,6 +344,11 @@ module SPARQL; class Client
           buffer << 'GRAPH ' + SPARQL::Client.serialize_value(options[:graph])
           buffer << '{'
         end
+
+        @subqueries.each do |sq|
+          buffer << "{ #{sq.to_s} } ."
+        end
+
         buffer += serialize_patterns(patterns)
         if options[:optionals]
           options[:optionals].each do |patterns|

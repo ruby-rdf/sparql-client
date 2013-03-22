@@ -112,6 +112,12 @@ describe SPARQL::Client::Query do
       @query.select.where([:s, :p, :o]).optional([:s, RDF.type, :o]).optional([:s, RDF::DC.abstract, :o]).to_s.should ==
         "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s a ?o . } OPTIONAL { ?s <#{RDF::DC.abstract}> ?o . } }"
     end
+
+    it "should support subqueries" do
+      subquery = @query.select.where([:s, :p, :o])
+      @query.select.where(subquery).where([:s, :p, :o]).to_s.should ==
+        "SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }"
+    end
   end
 
   context "when building DESCRIBE queries" do
