@@ -243,6 +243,7 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#update-operation
     def update(query, options = {})
       @op = :update
+      options[:op] = :update
       parse_response(response(query, options), options)
       self
     end
@@ -257,9 +258,10 @@ module SPARQL
     # @option options [Hash] :headers
     # @return [String]
     def response(query, options = {})
+      op = options[:op] || :query
       headers = options[:headers] || {}
       headers['Accept'] = options[:content_type] if options[:content_type]
-      request(query, headers) do |response|
+      request(query,op,headers) do |response|
         case response
           when Net::HTTPBadRequest  # 400 Bad Request
             raise MalformedQuery.new(response.body)
@@ -462,9 +464,9 @@ module SPARQL
     # @yieldparam [Net::HTTPResponse] response
     # @return [Net::HTTPResponse]
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
-    def request(query, headers = {}, &block)
+    def request(query, headers = {}, op = :query, &block)
       method = (self.options[:method] || DEFAULT_METHOD).to_sym
-      request = send("make_#{method}_request", query, headers)
+      request = send("make_#{method}_request", query,op , headers)
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
@@ -483,9 +485,9 @@ module SPARQL
     # @param  [Hash{String => String}] headers
     # @return [Net::HTTPRequest]
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-get
-    def make_get_request(query, headers = {})
+    def make_get_request(query,op = :query, headers = {})
       url = self.url.dup
-      url.query_values = (url.query_values || {}).merge(:query => query.to_s)
+      url.query_values = (url.query_values || {}).merge(op => query.to_s)
       request = Net::HTTP::Get.new(url.request_uri, self.headers.merge(headers))
       request
     end
@@ -498,12 +500,17 @@ module SPARQL
     # @return [Net::HTTPRequest]
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-direct
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded
-    def make_post_request(query, headers = {})
+    def make_post_request(query, headers = {}, op = :query)
       request = Net::HTTP::Post.new(self.url.request_uri, self.headers.merge(headers))
       case (self.options[:protocol] || DEFAULT_PROTOCOL).to_s
         when '1.1'
-          request['Content-Type'] = 'application/sparql-' + (@op || :query).to_s
-          request.body = query.to_s
+          if self.options['Content-Type'] == "application/x-www-form-urlencoded"
+            request['Content-Type'] = "application/x-www-form-urlencoded"
+            request.set_form_data(op => query.to_s)
+          else
+            request['Content-Type'] = 'application/sparql-' + (@op || :query).to_s
+            request.body = query.to_s
+          end
         when '1.0'
           request.set_form_data(:query => query.to_s)
         else
