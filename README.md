@@ -1,9 +1,11 @@
 #SPARQL Client for RDF.rb
 
 This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
-[![Build Status](https://secure.travis-ci.org/ruby-rdf/sparql-client.png?branch=master)](http://travis-ci.org/ruby-rdf/sparql-client)
 
 * <http://ruby-rdf.github.com/sparql-client/>
+
+[![Gem Version](https://badge.fury.io/rb/sparql-client.png)][gem]
+[![Build Status](https://travis-ci.org/ruby-rdf/sparql-client.png?branch=master)](http://travis-ci.org/ruby-rdf/sparql-client)
 
 ##Features
 
