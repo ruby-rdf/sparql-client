@@ -130,10 +130,8 @@ module SPARQL; class Client
     # @see http://www.w3.org/TR/sparql11-query/#specifyingDataset
     def from(uri)
       options[:from] = uri
-      self
     end
-
-    ##
+   
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#GraphPattern
@@ -335,7 +333,14 @@ module SPARQL; class Client
           buffer << '}'
       end
 
-      buffer << "FROM #{SPARQL::Client.serialize_value(options[:from])}" if options[:from]
+      from = options[:from]
+      if from
+        binding.pry
+        from = from.instance_of?(Array) ? options[:from] : [options[:from]]
+        options[:from].each do |from|
+          buffer << "FROM #{SPARQL::Client.serialize_value(from)}"
+        end
+      end
 
       unless patterns.empty? && form == :describe
         buffer << 'WHERE {'
