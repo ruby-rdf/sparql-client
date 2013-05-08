@@ -130,6 +130,7 @@ module SPARQL; class Client
     # @see http://www.w3.org/TR/sparql11-query/#specifyingDataset
     def from(uri)
       options[:from] = uri
+      self
     end
    
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
@@ -235,6 +236,17 @@ module SPARQL; class Client
     # @see    http://www.w3.org/TR/sparql11-query/#optionals
     def optional(*patterns)
       (options[:optionals] ||= []) << build_patterns(patterns)
+      self
+    end
+
+    ##
+    # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#union
+    def union(*patterns_list)
+      options[:unions] ||= []
+      patterns_list.each do |patterns|
+        options[:unions] << build_patterns(patterns)
+      end
       self
     end
 
@@ -355,6 +367,16 @@ module SPARQL; class Client
         end
 
         buffer += serialize_patterns(patterns)
+        if options[:unions]
+          include_union = nil
+          options[:unions].each do |union_block|
+            buffer << include_union if include_union
+            buffer << '{'
+            buffer += serialize_patterns(union_block)
+            buffer << '} '
+            include_union = "UNION "
+          end
+        end
         if options[:optionals]
           options[:optionals].each do |patterns|
             buffer << 'OPTIONAL {'
