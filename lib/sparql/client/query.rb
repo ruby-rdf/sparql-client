@@ -334,8 +334,8 @@ module SPARQL; class Client
           buffer << 'REDUCED'  if options[:reduced]
           buffer << ((values.empty? and not options[:count]) ? '*' : values.map { |v| SPARQL::Client.serialize_value(v[1]) }.join(' '))
           if options[:count]
-            options[:count].each do |var, count|
-              buffer << '( COUNT(' + (options[:distinct] ? 'DISTINCT ' : '') +
+            options[:count].each do |var, count, aggregate|
+              buffer << "( #{aggregate.to_s.upcase}(" + (options[:distinct] ? 'DISTINCT ' : '') +
                 (var.is_a?(String) ? var : "?#{var}") + ') AS ' + (count.is_a?(String) ? count : "?#{count}") + ' )'
             end
           end
@@ -347,9 +347,8 @@ module SPARQL; class Client
 
       from = options[:from]
       if from
-        binding.pry
         from = from.instance_of?(Array) ? options[:from] : [options[:from]]
-        options[:from].each do |from|
+        from.each do |from|
           buffer << "FROM #{SPARQL::Client.serialize_value(from)}"
         end
       end
