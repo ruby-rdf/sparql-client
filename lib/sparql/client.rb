@@ -1,7 +1,6 @@
 require 'net/http/persistent' # @see http://rubygems.org/gems/net-http-persistent
 require 'rdf'                 # @see http://rubygems.org/gems/rdf
 require 'rdf/ntriples'        # @see http://rubygems.org/gems/rdf
-require 'nokogiri'
 
 module SPARQL
   ##
