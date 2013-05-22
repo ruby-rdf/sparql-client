@@ -1,6 +1,7 @@
 require 'net/http/persistent' # @see http://rubygems.org/gems/net-http-persistent
 require 'rdf'                 # @see http://rubygems.org/gems/rdf
 require 'rdf/ntriples'        # @see http://rubygems.org/gems/rdf
+require 'nokogiri'
 
 module SPARQL
   ##
@@ -56,8 +57,12 @@ module SPARQL
     # @option options [Hash] :headers
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options.dup
+      #@headers = {
+      #  'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.keys.map(&:to_s)].join(', ')
+      #}.merge(@options.delete(:headers) || {})
       @headers = {
-        'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.keys.map(&:to_s)].join(', ')
+        #'Accept' => RESULT_JSON.to_s
+        'Accept' => RESULT_XML.to_s
       }.merge(@options.delete(:headers) || {})
       @http = http_klass(@url.scheme)
 
@@ -260,8 +265,9 @@ module SPARQL
     def response(query, options = {})
       op = options[:op] || :query
       headers = options[:headers] || {}
+      query_options = (query.is_a?(Query) && query.options[:query_options]) || nil
       headers['Accept'] = options[:content_type] if options[:content_type]
-      request(query,op,headers) do |response|
+      request(query,op,headers,query_options) do |response|
         case response
           when Net::HTTPBadRequest  # 400 Bad Request
             raise MalformedQuery.new(response.body)
@@ -286,6 +292,7 @@ module SPARQL
         when RESULT_JSON
           self.class.parse_json_bindings(response.body, nodes)
         when RESULT_XML
+          #self.class.parse_xml_nokiri(response.body, nodes)
           self.class.parse_xml_bindings(response.body, nodes)
         else
           parse_rdf_serialization(response, options)
@@ -464,9 +471,9 @@ module SPARQL
     # @yieldparam [Net::HTTPResponse] response
     # @return [Net::HTTPResponse]
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
-    def request(query, headers = {}, op = :query, &block)
+    def request(query, headers = {}, op = :query, query_options = nil, &block)
       method = (self.options[:method] || DEFAULT_METHOD).to_sym
-      request = send("make_#{method}_request", query,op , headers)
+      request = send("make_#{method}_request", query,op , headers, query_options)
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
@@ -485,7 +492,7 @@ module SPARQL
     # @param  [Hash{String => String}] headers
     # @return [Net::HTTPRequest]
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-get
-    def make_get_request(query,op = :query, headers = {})
+    def make_get_request(query,op = :query, headers = {},query_options = nil)
       url = self.url.dup
       url.query_values = (url.query_values || {}).merge(op => query.to_s)
       request = Net::HTTP::Get.new(url.request_uri, self.headers.merge(headers))
@@ -500,13 +507,15 @@ module SPARQL
     # @return [Net::HTTPRequest]
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-direct
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded
-    def make_post_request(query, headers = {}, op = :query)
+    def make_post_request(query, headers = {}, op = :query, query_options = nil)
       request = Net::HTTP::Post.new(self.url.request_uri, self.headers.merge(headers))
       case (self.options[:protocol] || DEFAULT_PROTOCOL).to_s
         when '1.1'
           if self.options['Content-Type'] == "application/x-www-form-urlencoded"
             request['Content-Type'] = "application/x-www-form-urlencoded"
-            request.set_form_data(op => query.to_s)
+            form = {op => query.to_s}
+            form = form.merge(query_options) if query_options
+            request.set_form_data(form)
           else
             request['Content-Type'] = 'application/sparql-' + (@op || :query).to_s
             request.body = query.to_s
