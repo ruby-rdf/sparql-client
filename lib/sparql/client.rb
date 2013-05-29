@@ -60,8 +60,8 @@ module SPARQL
       #  'Accept' => [RESULT_JSON, RESULT_XML, RDF::Format.content_types.keys.map(&:to_s)].join(', ')
       #}.merge(@options.delete(:headers) || {})
       @headers = {
-        #'Accept' => RESULT_JSON.to_s
-        'Accept' => RESULT_XML.to_s
+        'Accept' => RESULT_JSON.to_s
+        #'Accept' => RESULT_XML.to_s
       }.merge(@options.delete(:headers) || {})
       @http = http_klass(@url.scheme)
 
@@ -324,13 +324,18 @@ module SPARQL
     # @return [RDF::Value]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
     def self.parse_json_value(value, nodes = {})
+      return nil if value == {}
       case value['type'].to_sym
         when :bnode
           nodes[id = value['value']] ||= RDF::Node.new(id)
         when :uri
           RDF::URI.new(value['value'])
         when :literal
-          RDF::Literal.new(value['value'], :language => value['xml:lang'])
+          if value['xml:lang'] or value['lang']
+            RDF::Literal.new(value['value'], :language => value['xml:lang'])
+          else
+            RDF::Literal.new(value['value'], :datatype => value['datatype'])
+          end
         when :'typed-literal'
           RDF::Literal.new(value['value'], :datatype => value['datatype'])
         else nil
