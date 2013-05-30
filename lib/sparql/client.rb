@@ -54,6 +54,7 @@ module SPARQL
     # @option options [Symbol] :method (DEFAULT_METHOD)
     # @option options [Number] :protocol (DEFAULT_PROTOCOL)
     # @option options [Hash] :headers
+    # @option options [Hash] :read_timeout
     def initialize(url, options = {}, &block)
       @url, @options = RDF::URI.new(url.to_s), options.dup
       #@headers = {
@@ -463,6 +464,7 @@ module SPARQL
       end
       klass = Net::HTTP::Persistent.new(self.class.to_s, proxy_url)
       klass.keep_alive = 120 # increase to 2 minutes
+      klass.read_timeout = @options[:read_timeout] || 60
       klass
     end
 
