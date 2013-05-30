@@ -132,8 +132,7 @@ module SPARQL; class Client
       options[:from] = uri
       self
     end
-
-    ##
+   
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#GraphPattern
@@ -241,6 +240,17 @@ module SPARQL; class Client
     end
 
     ##
+    # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#union
+    def union(*patterns_list)
+      options[:unions] ||= []
+      patterns_list.each do |patterns|
+        options[:unions] << build_patterns(patterns)
+      end
+      self
+    end
+
+    ##
     # @private
     def build_patterns(patterns)
       patterns.map do |pattern|
@@ -324,8 +334,8 @@ module SPARQL; class Client
           buffer << 'REDUCED'  if options[:reduced]
           buffer << ((values.empty? and not options[:count]) ? '*' : values.map { |v| SPARQL::Client.serialize_value(v[1]) }.join(' '))
           if options[:count]
-            options[:count].each do |var, count|
-              buffer << '( COUNT(' + (options[:distinct] ? 'DISTINCT ' : '') +
+            options[:count].each do |var, count, aggregate|
+              buffer << "( #{aggregate.to_s.upcase}(" + (options[:distinct] ? 'DISTINCT ' : '') +
                 (var.is_a?(String) ? var : "?#{var}") + ') AS ' + (count.is_a?(String) ? count : "?#{count}") + ' )'
             end
           end
@@ -335,7 +345,13 @@ module SPARQL; class Client
           buffer << '}'
       end
 
-      buffer << "FROM #{SPARQL::Client.serialize_value(options[:from])}" if options[:from]
+      from = options[:from]
+      if from
+        from = from.instance_of?(Array) ? options[:from] : [options[:from]]
+        from.each do |from|
+          buffer << "FROM #{SPARQL::Client.serialize_value(from)}"
+        end
+      end
 
       unless patterns.empty? && form == :describe
         buffer << 'WHERE {'
@@ -350,6 +366,16 @@ module SPARQL; class Client
         end
 
         buffer += serialize_patterns(patterns)
+        if options[:unions]
+          include_union = nil
+          options[:unions].each do |union_block|
+            buffer << include_union if include_union
+            buffer << '{'
+            buffer += serialize_patterns(union_block)
+            buffer << '} '
+            include_union = "UNION "
+          end
+        end
         if options[:optionals]
           options[:optionals].each do |patterns|
             buffer << 'OPTIONAL {'
