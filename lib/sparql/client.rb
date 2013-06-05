@@ -505,7 +505,7 @@ module SPARQL
           request['Content-Type'] = 'application/sparql-' + (@op || :query).to_s
           request.body = query.to_s
         when '1.0'
-          request.set_form_data(:query => query.to_s)
+          request.set_form_data((@op || :query) => query.to_s)
         else
           raise ArgumentError, "unknown SPARQL protocol version: #{self.options[:protocol].inspect}"
       end
