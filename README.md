@@ -13,7 +13,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 * Provides a query builder [DSL][] for `ASK`, `SELECT`, `DESCRIBE` and
   `CONSTRUCT` queries.
 * Includes preliminary support for some SPARQL 1.1 Update operations.
-* Supports tuple result sets in both XML and JSON formats, with JSON being
+* Supports tuple result sets in both XML, JSON, CSV and TSV formats, with JSON being
   the preferred default for content-negotiation purposes.
 * Supports graph results in any RDF serialization format understood by RDF.rb.
 * Returns results using the [RDF.rb object model][RDF.rb model].

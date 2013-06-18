@@ -330,6 +330,56 @@ module SPARQL
     end
 
     ##
+    # @param  [String, Array<Array<String>>] csv
+    # @return [<RDF::Query::Solutions>]
+    # @see    http://www.w3.org/TR/sparql11-results-csv-tsv/
+    def self.parse_csv_bindings(csv, nodes = {})
+      require 'csv' unless defined?(::CSV)
+      csv = CSV.parse(csv.to_s) unless csv.is_a?(Array)
+      vars = csv.shift
+      solutions = RDF::Query::Solutions.new
+      csv.each do |row|
+        solution = RDF::Query::Solution.new
+        row.each_with_index do |v, i|
+          term = case v
+          when /^_:(.*)$/ then nodes[$1] ||= RDF::Node($1)
+          when /^\w+:.*$/ then RDF::URI(v)
+          else RDF::Literal(v)
+          end
+          solution[vars[i].to_sym] = term
+        end
+        solutions << solution
+      end
+      solutions
+    end
+
+    ##
+    # @param  [String, Array<Array<String>>] tsv
+    # @return [<RDF::Query::Solutions>]
+    # @see    http://www.w3.org/TR/sparql11-results-csv-tsv/
+    def self.parse_tsv_bindings(tsv, nodes = {})
+      tsv = tsv.lines.map {|l| l.chomp.split("\t")} unless tsv.is_a?(Array)
+      vars = tsv.shift.map {|h| h.sub(/^\?/, '')}
+      solutions = RDF::Query::Solutions.new
+      tsv.each do |row|
+        solution = RDF::Query::Solution.new
+        row.each_with_index do |v, i|
+          term = RDF::NTriples.unserialize(v) || case v
+          when /^\d+\.\d*[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
+          when /^\d*\.\d+[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
+          when /^\d*\.\d+$/                 then RDF::Literal::Decimal.new(v)
+          when /^\d+$/                      then RDF::Literal::Integer.new(v)
+          else
+            RDF::Literal(v)
+          end
+          solution[vars[i].to_sym] = term
+        end
+        solutions << solution
+      end
+      solutions
+    end
+
+    ##
     # @param  [String, REXML::Element] xml
     # @return [<RDF::Query::Solutions>]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
