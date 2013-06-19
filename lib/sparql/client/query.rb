@@ -134,7 +134,8 @@ module SPARQL; class Client
     end
 
     ##
-    # @param  [Array<RDF::Query::Pattern, Array>] patterns
+    # @param  [Array<RDF::Query::Pattern, Array>] patterns_queries
+    #   splat of zero or more patterns followed by zero or more queries.
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#GraphPattern
     def where(*patterns_queries)
@@ -263,6 +264,7 @@ module SPARQL; class Client
     def true?
       case result
         when TrueClass, FalseClass then result
+        when RDF::Literal::Boolean then result.true?
         when Enumerable then !result.empty?
         else false
       end

@@ -205,10 +205,19 @@ module SPARQL
     # @example `CLEAR ALL`
     #   client.clear(:all)
     #
-    # @param  [Symbol, #to_sym] what
-    # @param  [Hash{Symbol => Object}] options
-    # @option options [Boolean] :silent
-    # @return [void] `self`
+    # @overload clear(what, *arguments)
+    #   @param  [Symbol, #to_sym] what
+    #   @param  [Array] arguments splat of other arguments to {Update::Clear}.
+    #   @option options [Boolean] :silent
+    #   @return [void] `self`
+    #
+    # @overload clear(what, *arguments, options = {})
+    #   @param  [Symbol, #to_sym] what
+    #   @param  [Array] arguments splat of other arguments to {Update::Clear}.
+    #   @param  [Hash{Symbol => Object}] options
+    #   @option options [Boolean] :silent
+    #   @return [void] `self`
+    #
     # @see    http://www.w3.org/TR/sparql11-update/#clear
     def clear(what, *arguments)
       self.update(Update::Clear.new(what, *arguments))
