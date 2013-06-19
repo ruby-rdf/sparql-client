@@ -10,7 +10,8 @@
   doap:homepage      <http://rubygems.org/gems/rdf> ;
   doap:license       <http://creativecommons.org/licenses/publicdomain/> ;
   doap:shortdesc     "SPARQL client for RDF.rb."@en ;
-  doap:description   "SPARQL client for RDF.rb."@en ;
+  doap:description   """Executes SPARQL queries and updates against a remote SPARQL 1.0 or 1.1 endpoint,
+                        or against a local repository. Generates SPARQL queries using a simple DSL."""@en ;
   doap:created       "2007-11-03" ;
   doap:platform      "Ruby" ;
   doap:category      <http://dbpedia.org/resource/Resource_Description_Framework>,
