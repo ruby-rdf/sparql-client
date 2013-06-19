@@ -1,0 +1,87 @@
+@base         <http://rubygems.org/gems/rdf> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dc:   <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix doap: <http://usefulinc.com/ns/doap#> .
+
+<> a doap:Project ;
+  doap:name          "SPARQL::Client" ;
+  doap:homepage      <http://rubygems.org/gems/rdf> ;
+  doap:license       <http://creativecommons.org/licenses/publicdomain/> ;
+  doap:shortdesc     "SPARQL client for RDF.rb."@en ;
+  doap:description   "SPARQL client for RDF.rb."@en ;
+  doap:created       "2007-11-03" ;
+  doap:platform      "Ruby" ;
+  doap:category      <http://dbpedia.org/resource/Resource_Description_Framework>,
+                     <http://dbpedia.org/resource/Ruby_(programming_language)> ;
+  doap:implements    <http://www.w3.org/TR/sparql11-query/>,
+                     <http://www.w3.org/TR/sparql11-update/>,
+                     <http://www.w3.org/TR/sparql11-results-json/>,
+                     <http://www.w3.org/TR/sparql11-results-csv-tsv/>,
+                     <http://www.w3.org/TR/rdf-sparql-XMLres/> ;
+  doap:download-page <http://rubygems.org/gems/sparql-client>;
+  doap:bug-database  <http://rubygems.org/gems/sparql-client/issues> ;
+  doap:blog          <http://ar.to/>, <http://blog.datagraph.org/>, <http://greggkellogg.net/> ;
+  doap:vendor        <http://datagraph.org/> ;
+  doap:developer     <http://ar.to/#self>, <http://bhuga.net/#ben>, <http://greggkellogg.net/foaf#me> ;
+  doap:maintainer    <http://ar.to/#self>, <http://bhuga.net/#ben>, <http://greggkellogg.net/foaf#me> ;
+  doap:documenter    <http://ar.to/#self>, <http://bhuga.net/#ben>, <http://greggkellogg.net/foaf#me> ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "Christoph Badura" ;
+                      foaf:mbox_sha1sum "3a9c4bbe13feec63b1c8292ebf90e8da6caa0afd"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "Fumihiro Kato" ;
+                      foaf:mbox_sha1sum "d31fdd6af7a279a89bf09fdc9f7c44d9d08bb930"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "James Hetherington" ;
+                      foaf:mbox_sha1sum "22358c247c092e1452c0ef5ac2fba612958061c9"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "Gabriel Horner" ;
+                      foaf:mbox_sha1sum "f8ea1d1bc7c36b7b18f38d71236cac75c42cefce"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "Nicholas Humfrey" ;
+                      foaf:mbox_sha1sum "9da296bcd486cbbfe4317b3f0317331d6a9577cf"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "Fumihiro Kato" ;
+                      foaf:mbox_sha1sum "678b4203e9310073c9f1c073b2732ce56bf0a67f"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "David Nielsen" ;
+                      foaf:mbox_sha1sum "f41dbb8acd06d9387d939a360707c976def9ed30"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "Thamaraiselvan Poomalai" ;
+                      foaf:mbox_sha1sum "7aac96712ece896b4af1405144ca89525b509bde"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "Michael Sokol" ;
+                      foaf:mbox_sha1sum "bd526552bc528245d80d17f16a1e8067f1cc0453"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "Yves Raimond" ;
+                      foaf:mbox_sha1sum "3ca077e61d39ef6b476035a4a9d4dee6a1890766"] ;
+  doap:helper        [a foaf:Person ;
+                      foaf:name "Thomas Feron" ;
+                      foaf:mbox_sha1sum "8c6ba34fcf8705a63af3858140ba0107b9ee756a"] ;
+  foaf:maker         <http://ar.to/#self> ;
+  dc:creator         <http://ar.to/#self> .
+
+<http://ar.to/#self> a foaf:Person ;
+  foaf:name          "Arto Bendiken" ;
+  foaf:mbox          <mailto:arto@bendiken.net> ;
+  foaf:mbox_sha1sum  "a033f652c84a4d73b8c26d318c2395699dd2bdfb",
+                     "d0737cceb55eb7d740578d2db1bc0727e3ed49ce" ;
+  foaf:homepage      <http://ar.to/> ;
+  foaf:made          <> ;
+  rdfs:isDefinedBy   <http://datagraph.org/bendiken/foaf> .
+
+<http://bhuga.net/#ben> a foaf:Person ;
+  foaf:name          "Ben Lavender" ;
+  foaf:mbox          <mailto:blavender@gmail.com> ;
+  foaf:mbox_sha1sum  "dbf45f4ffbd27b67aa84f02a6a31c144727d10af" ;
+  foaf:homepage      <http://bhuga.net/> ;
+  rdfs:isDefinedBy   <http://datagraph.org/bhuga/foaf> .
+
+<http://greggkellogg.net/foaf#me> a foaf:Person ;
+  foaf:name          "Gregg Kellogg" ;
+  foaf:mbox          <mailto:gregg@greggkellogg.net> ;
+  foaf:mbox_sha1sum  "35bc44e6d0070e5ad50ccbe0d24403c96af2b9bd" ;
+  foaf:homepage      <http://greggkellogg.net/>;
+  rdfs:isDefinedBy   <http://greggkellogg.net/foaf> .

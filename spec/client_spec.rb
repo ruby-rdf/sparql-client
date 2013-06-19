@@ -2,11 +2,9 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 
 describe SPARQL::Client do
-  describe "when querying" do
-    before(:each) do
-      @client = SPARQL::Client.new('http://data.linkedmdb.org/sparql')
-      @query = 'DESCRIBE ?kb WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'
-    end
+  let(:query) {'DESCRIBE ?kb WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
+  context "when querying a remote endpoint" do
+    subject {SPARQL::Client.new('http://data.linkedmdb.org/sparql')}
 
     def response(header)
       response = Net::HTTPSuccess.new '1.1', 200, 'body'
@@ -16,67 +14,89 @@ describe SPARQL::Client do
     end
 
     it "should handle successful response with plain header" do
-      @client.should_receive(:request).and_yield response('text/plain')
+      subject.should_receive(:request).and_yield response('text/plain')
       RDF::Reader.should_receive(:for).with(:content_type => 'text/plain')
-      @client.query(@query)
+      subject.query(query)
     end
 
     it "should handle successful response with boolean header" do
-      @client.should_receive(:request).and_yield response(SPARQL::Client::RESULT_BOOL)
-      @client.query(@query).should == false
+      subject.should_receive(:request).and_yield response(SPARQL::Client::RESULT_BOOL)
+      subject.query(query).should == false
     end
 
     it "should handle successful response with JSON header" do
-      @client.should_receive(:request).and_yield response(SPARQL::Client::RESULT_JSON)
-      @client.class.should_receive(:parse_json_bindings)
-      @client.query(@query)
+      subject.should_receive(:request).and_yield response(SPARQL::Client::RESULT_JSON)
+      subject.class.should_receive(:parse_json_bindings)
+      subject.query(query)
     end
 
     it "should handle successful response with XML header" do
-      @client.should_receive(:request).and_yield response(SPARQL::Client::RESULT_XML)
-      @client.class.should_receive(:parse_xml_bindings)
-      @client.query(@query)
+      subject.should_receive(:request).and_yield response(SPARQL::Client::RESULT_XML)
+      subject.class.should_receive(:parse_xml_bindings)
+      subject.query(query)
+    end
+
+    it "should handle successful response with CSV header" do
+      subject.should_receive(:request).and_yield response(SPARQL::Client::RESULT_CSV)
+      subject.class.should_receive(:parse_csv_bindings)
+      subject.query(query)
+    end
+
+    it "should handle successful response with TSV header" do
+      subject.should_receive(:request).and_yield response(SPARQL::Client::RESULT_TSV)
+      subject.class.should_receive(:parse_tsv_bindings)
+      subject.query(query)
     end
 
     it "should handle successful response with overridden XML header" do
-      @client.should_receive(:request).and_yield response(SPARQL::Client::RESULT_XML)
-      @client.class.should_receive(:parse_json_bindings)
-      @client.query(@query, :content_type => SPARQL::Client::RESULT_JSON)
+      subject.should_receive(:request).and_yield response(SPARQL::Client::RESULT_XML)
+      subject.class.should_receive(:parse_json_bindings)
+      subject.query(query, :content_type => SPARQL::Client::RESULT_JSON)
     end
 
     it "should handle successful response with overridden JSON header" do
-      @client.should_receive(:request).and_yield response(SPARQL::Client::RESULT_JSON)
-      @client.class.should_receive(:parse_xml_bindings)
-      @client.query(@query, :content_type => SPARQL::Client::RESULT_XML)
+      subject.should_receive(:request).and_yield response(SPARQL::Client::RESULT_JSON)
+      subject.class.should_receive(:parse_xml_bindings)
+      subject.query(query, :content_type => SPARQL::Client::RESULT_XML)
     end
 
     it "should handle successful response with overridden plain header" do
-      @client.should_receive(:request).and_yield response('text/plain')
+      subject.should_receive(:request).and_yield response('text/plain')
       RDF::Reader.should_receive(:for).with(:content_type => 'text/turtle')
-      @client.query(@query, :content_type => 'text/turtle')
+      subject.query(query, :content_type => 'text/turtle')
     end
 
     it "should handle successful response with custom headers" do
-      @client.should_receive(:request).with(anything, "Authorization" => "Basic XXX==").
+      subject.should_receive(:request).with(anything, "Authorization" => "Basic XXX==").
         and_yield response('text/plain')
-      @client.query(@query, :headers => {"Authorization" => "Basic XXX=="})
+      subject.query(query, :headers => {"Authorization" => "Basic XXX=="})
     end
 
     it "should handle successful response with initial custom headers" do
       options = {:headers => {"Authorization" => "Basic XXX=="}, :method => :get}
-      @client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', options)
-      @client.instance_variable_set :@http, mock(:request => response('text/plain'))
+      client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', options)
+      client.instance_variable_set :@http, mock(:request => response('text/plain'))
       Net::HTTP::Get.should_receive(:new).with(anything, hash_including(options[:headers]))
-      @client.query(@query)
+      client.query(query)
     end
 
     it "should support international characters in response body" do
-      @client = SPARQL::Client.new('http://dbpedia.org/sparql')
-      @query = "SELECT ?name WHERE { <http://dbpedia.org/resource/Tokyo> <http://dbpedia.org/property/nativeName> ?name }"
-      result = @client.query(@query, :content_type => SPARQL::Client::RESULT_JSON).first
+      client = SPARQL::Client.new('http://dbpedia.org/sparql')
+      query = "SELECT ?name WHERE { <http://dbpedia.org/resource/Tokyo> <http://dbpedia.org/property/nativeName> ?name }"
+      result = client.query(query, :content_type => SPARQL::Client::RESULT_JSON).first
       result[:name].to_s.should == "東京"
-      result = @client.query(@query, :content_type => SPARQL::Client::RESULT_XML).first
+      result = client.query(query, :content_type => SPARQL::Client::RESULT_XML).first
       result[:name].to_s.should == "東京"
+    end
+  end
+
+  context "when querying an RDF::Repository" do
+    let(:repo) {RDF::Repository.new}
+    subject {SPARQL::Client.new(repo)}
+
+    it "should query repository" do
+      SPARQL.should_receive(:execute).with(query, repo, {})
+      subject.query(query)
     end
   end
 end

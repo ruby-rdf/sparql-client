@@ -9,7 +9,8 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
 ##Features
 
-* Executes queries against any SPARQL 1.0-compatible endpoint over HTTP.
+* Executes queries against any SPARQL 1.0/1.1-compatible endpoint over HTTP,
+  or against an `RDF::Queryable` instance, using the `SPARQL` gem.
 * Provides a query builder [DSL][] for `ASK`, `SELECT`, `DESCRIBE` and
   `CONSTRUCT` queries.
 * Includes preliminary support for some SPARQL 1.1 Update operations.
@@ -22,9 +23,17 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
 ##Examples
 
+### Querying a remote SPARQL endpoint
     require 'sparql/client'
 
     sparql = SPARQL::Client.new("http://dbpedia.org/sparql")
+
+### Querying a `RDF::Repository` instance
+
+    require 'rdf/trig'
+    repository = RDF::Repository.load("http://example/dataset.trig")
+
+    sparql = SPARQL::Client.new(repository)
 
 ### Executing a boolean query and outputting the result
 
@@ -69,6 +78,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 1.0)
 * [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (>= 1.4)
 * [JSON](http://rubygems.org/gems/json_pure) (>= 1.4)
+* Soft dependency on [SPARQL](http://rubygems.org/gems/sparql) (>= 1.0)
 
 ##Installation
 
