@@ -90,11 +90,12 @@ describe SPARQL::Client do
     end
   end
 
-  context "when querying an RDF::Repository" do
+  context "when querying an RDF::Repository", :pending => ("not supported in Ruby < 1.9" if RUBY_VERSION < "1.9") do
     let(:repo) {RDF::Repository.new}
     subject {SPARQL::Client.new(repo)}
 
     it "should query repository" do
+      require 'sparql'  # Can't do this lazily and get mock to work
       SPARQL.should_receive(:execute).with(query, repo, {})
       subject.query(query)
     end

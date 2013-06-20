@@ -255,7 +255,7 @@ module SPARQL
       @op = :query
       case @url
       when RDF::Queryable
-        require 'sparql' unless defined?(:SPARQL)
+        require 'sparql' unless defined?(::SPARQL::Grammar)
         SPARQL.execute(query, @url, options)
       else
         parse_response(response(query, options), options)
@@ -275,7 +275,7 @@ module SPARQL
       @op = :update
       case @url
       when RDF::Queryable
-        require 'sparql' unless defined?(:SPARQL)
+        require 'sparql' unless defined?(::SPARQL::Grammar)
         SPARQL.execute(query, @url, options)
       else
         parse_response(response(query, options), options)
