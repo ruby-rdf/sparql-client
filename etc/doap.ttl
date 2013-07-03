@@ -1,4 +1,4 @@
-@base         <http://rubygems.org/gems/rdf> .
+@base         <http://rubygems.org/gems/sparql-client> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dc:   <http://purl.org/dc/terms/> .
@@ -7,7 +7,7 @@
 
 <> a doap:Project ;
   doap:name          "SPARQL::Client" ;
-  doap:homepage      <http://rubygems.org/gems/rdf> ;
+  doap:homepage      <http://rubygems.org/gems/sparql-client> ;
   doap:license       <http://creativecommons.org/licenses/publicdomain/> ;
   doap:shortdesc     "SPARQL client for RDF.rb."@en ;
   doap:description   """Executes SPARQL queries and updates against a remote SPARQL 1.0 or 1.1 endpoint,
