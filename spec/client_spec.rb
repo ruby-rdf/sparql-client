@@ -9,7 +9,7 @@ describe SPARQL::Client do
     def response(header)
       response = Net::HTTPSuccess.new '1.1', 200, 'body'
       response.content_type = header
-      response.stub!(:body).and_return('body')
+      response.stub(:body).and_return('body')
       response
     end
 
@@ -75,7 +75,7 @@ describe SPARQL::Client do
     it "should handle successful response with initial custom headers" do
       options = {:headers => {"Authorization" => "Basic XXX=="}, :method => :get}
       client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', options)
-      client.instance_variable_set :@http, mock(:request => response('text/plain'))
+      client.instance_variable_set :@http, double(:request => response('text/plain'))
       Net::HTTP::Get.should_receive(:new).with(anything, hash_including(options[:headers]))
       client.query(query)
     end
@@ -95,7 +95,7 @@ describe SPARQL::Client do
     subject {SPARQL::Client.new(repo)}
 
     it "should query repository" do
-      require 'sparql'  # Can't do this lazily and get mock to work
+      require 'sparql'  # Can't do this lazily and get double to work
       SPARQL.should_receive(:execute).with(query, repo, {})
       subject.query(query)
     end

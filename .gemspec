@@ -33,7 +33,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'json_pure', '>= 1.4'
   gem.add_development_dependency 'sparql',    '>= 1.0' unless RUBY_VERSION < "1.9"
   gem.add_development_dependency 'rdf-spec',  '>= 1.0'
-  gem.add_development_dependency 'rspec',     '>= 2.12'
+  gem.add_development_dependency 'rspec',     '>= 2.14'
   gem.add_development_dependency 'yard' ,     '>= 0.8'
   gem.post_install_message       = nil
 end
