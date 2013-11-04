@@ -90,7 +90,7 @@ describe SPARQL::Client do
     end
   end
 
-  context "when querying an RDF::Repository", :pending => ("not supported in Ruby < 1.9" if RUBY_VERSION < "1.9") do
+  context "when querying an RDF::Repository" do
     let(:repo) {RDF::Repository.new}
     subject {SPARQL::Client.new(repo)}
 
