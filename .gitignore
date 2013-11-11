@@ -6,3 +6,4 @@
 *.lock
 pkg
 tmp
+doc

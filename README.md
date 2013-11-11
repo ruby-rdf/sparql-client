@@ -74,10 +74,9 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
 ##Dependencies
 
-* [Ruby](http://ruby-lang.org/) (>= 1.9.2)
+* [Ruby](http://ruby-lang.org/) (>= 1.9.3)
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 1.1)
 * [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (>= 1.4)
-* [JSON](http://rubygems.org/gems/json_pure) (>= 1.4)
 * Soft dependency on [SPARQL](http://rubygems.org/gems/sparql) (>= 1.1)
 
 ##Installation
@@ -122,6 +121,7 @@ follows:
 * [Thomas Feron](http://github.com/thoferon) - <http://github.com/thoferon>
 
 ##Contributing
+This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange development and release activity. All submissions _must_ be on a feature branch based on the _develop_ branch to ease staging and integration.
 
 * Do your best to adhere to the existing coding conventions and idioms.
 * Don't use hard tabs, and don't leave trailing whitespace on any line.
