@@ -342,7 +342,7 @@ module SPARQL
           json['boolean']
         when json.has_key?('results')
           RDF::Query::Solutions::Enumerator.new do |yielder|
-            solutions = json['results']['bindings'].each do |row|
+            json['results']['bindings'].each do |row|
               row = row.inject({}) do |cols, (name, value)|
                 cols.merge(name.to_sym => parse_json_value(value))
               end
@@ -434,16 +434,16 @@ module SPARQL
           boolean.text == 'true'
         when results = xml.elements['results']
           RDF::Query::Solutions::Enumerator.new do |yielder|
-          results.elements.each do |result|
-            row = {}
-            result.elements.each do |binding|
-              name  = binding.attributes['name'].to_sym
-              value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
-              row[name] = parse_xml_value(value, nodes)
+            results.elements.each do |result|
+              row = {}
+              result.elements.each do |binding|
+                name  = binding.attributes['name'].to_sym
+                value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
+                row[name] = parse_xml_value(value, nodes)
+              end
+              yielder << RDF::Query::Solution.new(row)
             end
-            yielder << RDF::Query::Solution.new(row)
           end
-        end
       end
     end
 
