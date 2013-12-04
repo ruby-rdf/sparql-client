@@ -341,14 +341,13 @@ module SPARQL
         when json.has_key?('boolean')
           json['boolean']
         when json.has_key?('results')
-          RDF::Query::Solutions::Enumerator.new do |yielder|
-            json['results']['bindings'].each do |row|
-              row = row.inject({}) do |cols, (name, value)|
-                cols.merge(name.to_sym => parse_json_value(value))
-              end
-              yielder << RDF::Query::Solution.new(row)
+          solutions = json['results']['bindings'].map do |row|
+            row = row.inject({}) do |cols, (name, value)|
+              cols.merge(name.to_sym => parse_json_value(value))
             end
+            RDF::Query::Solution.new(row)
           end
+          RDF::Query::Solutions.new(solutions)
       end
     end
 
@@ -378,20 +377,20 @@ module SPARQL
       require 'csv' unless defined?(::CSV)
       csv = CSV.parse(csv.to_s) unless csv.is_a?(Array)
       vars = csv.shift
-      RDF::Query::Solutions::Enumerator.new do |yielder|
-        csv.each do |row|
-          solution = RDF::Query::Solution.new
-          row.each_with_index do |v, i|
-            term = case v
-            when /^_:(.*)$/ then nodes[$1] ||= RDF::Node($1)
-            when /^\w+:.*$/ then RDF::URI(v)
-            else RDF::Literal(v)
-            end
-            solution[vars[i].to_sym] = term
+      solutions = RDF::Query::Solutions.new
+      csv.each do |row|
+        solution = RDF::Query::Solution.new
+        row.each_with_index do |v, i|
+          term = case v
+          when /^_:(.*)$/ then nodes[$1] ||= RDF::Node($1)
+          when /^\w+:.*$/ then RDF::URI(v)
+          else RDF::Literal(v)
           end
-          yielder << solution
+          solution[vars[i].to_sym] = term
         end
+        solutions << solution
       end
+      solutions
     end
 
     ##
@@ -401,23 +400,23 @@ module SPARQL
     def self.parse_tsv_bindings(tsv, nodes = {})
       tsv = tsv.lines.map {|l| l.chomp.split("\t")} unless tsv.is_a?(Array)
       vars = tsv.shift.map {|h| h.sub(/^\?/, '')}
-      RDF::Query::Solutions::Enumerator.new do |yielder|
-        tsv.each do |row|
-          solution = RDF::Query::Solution.new
-          row.each_with_index do |v, i|
-            term = RDF::NTriples.unserialize(v) || case v
-            when /^\d+\.\d*[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
-            when /^\d*\.\d+[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
-            when /^\d*\.\d+$/                 then RDF::Literal::Decimal.new(v)
-            when /^\d+$/                      then RDF::Literal::Integer.new(v)
-            else
-              RDF::Literal(v)
-            end
-            solution[vars[i].to_sym] = term
+      solutions = RDF::Query::Solutions.new
+      tsv.each do |row|
+        solution = RDF::Query::Solution.new
+        row.each_with_index do |v, i|
+          term = RDF::NTriples.unserialize(v) || case v
+          when /^\d+\.\d*[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
+          when /^\d*\.\d+[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
+          when /^\d*\.\d+$/                 then RDF::Literal::Decimal.new(v)
+          when /^\d+$/                      then RDF::Literal::Integer.new(v)
+          else
+            RDF::Literal(v)
           end
-          yielder << solution
+          solution[vars[i].to_sym] = term
         end
+        solutions << solution
       end
+      solutions
     end
 
     ##
@@ -433,17 +432,16 @@ module SPARQL
         when boolean = xml.elements['boolean']
           boolean.text == 'true'
         when results = xml.elements['results']
-          RDF::Query::Solutions::Enumerator.new do |yielder|
-            results.elements.each do |result|
-              row = {}
-              result.elements.each do |binding|
-                name  = binding.attributes['name'].to_sym
-                value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
-                row[name] = parse_xml_value(value, nodes)
-              end
-              yielder << RDF::Query::Solution.new(row)
+          solutions = results.elements.map do |result|
+            row = {}
+            result.elements.each do |binding|
+              name  = binding.attributes['name'].to_sym
+              value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
+              row[name] = parse_xml_value(value, nodes)
             end
+            RDF::Query::Solution.new(row)
           end
+          RDF::Query::Solutions.new(solutions)
       end
     end
 
