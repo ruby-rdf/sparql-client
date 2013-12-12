@@ -165,4 +165,20 @@ describe SPARQL::Client do
       expect(SPARQL::Client::parse_json_bindings(json)).to eq false
     end
   end
+
+  context "when parsing CSV" do
+    it "should parse binding results correctly" do
+      csv = File.read("spec/fixtures/results.csv")
+      nodes = {}
+      solutions = SPARQL::Client::parse_csv_bindings(csv, nodes)
+      expect(solutions).to eq RDF::Query::Solutions.new([
+        RDF::Query::Solution.new(:x => RDF::URI("http://example/x"),
+                                 :literal => RDF::Literal('String-with-dquote"')),
+        RDF::Query::Solution.new(:x => RDF::Node.new("b0"), :literal => RDF::Literal("Blank node")),
+        RDF::Query::Solution.new(:x => RDF::Literal(""), :literal => RDF::Literal("Missing 'x'")),
+        RDF::Query::Solution.new(:x => RDF::Literal(""), :literal => RDF::Literal("")),
+      ])
+      expect(solutions[1]["x"]).to eq nodes["b0"]
+    end
+  end
 end
