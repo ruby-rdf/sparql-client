@@ -137,4 +137,32 @@ describe SPARQL::Client do
       expect(SPARQL::Client::parse_xml_bindings(xml)).to eq false
     end
   end
+
+  context "when parsing JSON" do
+    it "should parse binding results correctly" do
+      xml = File.read("spec/fixtures/results.json")
+      nodes = {}
+      solutions = SPARQL::Client::parse_json_bindings(xml, nodes)
+      expect(solutions).to eq RDF::Query::Solutions.new([
+        RDF::Query::Solution.new(
+          :x => RDF::Node.new("r2"),
+          :hpage => RDF::URI.new("http://work.example.org/bob/"),
+          :name => RDF::Literal.new("Bob", :language => "en"),
+          :age => RDF::Literal.new("30", :datatype => "http://www.w3.org/2001/XMLSchema#integer"),
+          :mbox => RDF::URI.new("mailto:bob@work.example.org"),
+        )
+      ])
+      expect(solutions[0]["x"]).to eq nodes["r2"]
+    end
+
+    it "should parse boolean true results correctly" do
+      json = '{"boolean": true}'
+      expect(SPARQL::Client::parse_json_bindings(json)).to eq true
+    end
+
+    it "should parse boolean true results correctly" do
+      json = '{"boolean": false}'
+      expect(SPARQL::Client::parse_json_bindings(json)).to eq false
+    end
+  end
 end

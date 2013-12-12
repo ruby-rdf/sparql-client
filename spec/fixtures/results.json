@@ -1,0 +1,42 @@
+{
+    "head": {
+        "link": [
+            "http://www.w3.org/TR/rdf-sparql-XMLres/example.rq"
+        ],
+        "vars": [
+            "x",
+            "hpage",
+            "name",
+            "age",
+            "mbox"
+        ]
+    },
+    "results": {
+        "bindings": [
+            {
+                "x": {
+                    "type": "bnode",
+                    "value": "r2"
+                },
+                "hpage": {
+                    "type": "uri",
+                    "value": "http://work.example.org/bob/"
+                },
+                "name": {
+                    "type": "literal",
+                    "value": "Bob",
+                    "xml:lang": "en"
+                },
+                "age": {
+                    "type": "typed-literal",
+                    "value": "30",
+                    "datatype": "http://www.w3.org/2001/XMLSchema#integer"
+                },
+                "mbox": {
+                    "type": "uri",
+                    "value": "mailto:bob@work.example.org"
+                }
+            }
+        ]
+    }
+}
