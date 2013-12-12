@@ -129,14 +129,12 @@ describe SPARQL::Client do
 
     it "should parse boolean true results correctly" do
       xml = File.read("spec/fixtures/bool_true.xml")
-      nodes = {}
-      expect(SPARQL::Client::parse_xml_bindings(xml, nodes)).to eq true
+      expect(SPARQL::Client::parse_xml_bindings(xml)).to eq true
     end
 
     it "should parse boolean false results correctly" do
       xml = File.read("spec/fixtures/bool_false.xml")
-      nodes = {}
-      expect(SPARQL::Client::parse_xml_bindings(xml, nodes)).to eq false
+      expect(SPARQL::Client::parse_xml_bindings(xml)).to eq false
     end
   end
 end
