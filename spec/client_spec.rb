@@ -181,4 +181,20 @@ describe SPARQL::Client do
       expect(solutions[1]["x"]).to eq nodes["b0"]
     end
   end
+
+  context "when parsing TSV" do
+    it "should parse binding results correctly" do
+      tsv = File.read("spec/fixtures/results.tsv")
+      nodes = {}
+      solutions = SPARQL::Client::parse_tsv_bindings(tsv, nodes)
+      expect(solutions).to eq RDF::Query::Solutions.new([
+        RDF::Query::Solution.new(:x => RDF::URI("http://example/x"),
+                                 :literal => RDF::Literal('String-with-dquote"')),
+        RDF::Query::Solution.new(:x => RDF::Node.new("blank0"), :literal => RDF::Literal("Blank node")),
+        RDF::Query::Solution.new(:x => RDF::Node("blank1"), :literal => RDF::Literal.new("String-with-lang", :language => "en")),
+        RDF::Query::Solution.new(:x => RDF::Node("blank1"), :literal => RDF::Literal::Integer.new("123")),
+      ])
+      expect(solutions[1]["x"]).to eq nodes["blank0"]
+    end
+  end
 end
