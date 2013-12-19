@@ -1,0 +1,5 @@
+?x	?literal
+<http://example/x>	"String-with-dquote\"" 
+_:blank0	"Blank node"
+_:blank1	"String-with-lang"@en
+_:blank1	123

@@ -6,6 +6,7 @@ gem "rdf",                :git => "git://github.com/ruby-rdf/rdf.git", :branch =
 gem "rdf-aggregate-repo", :git => "git://github.com/ruby-rdf/rdf-aggregate-repo.git", :branch => "develop"
 gem "sparql",             :git => "git://github.com/ruby-rdf/sparql.git", :branch => "develop"
 gem "jruby-openssl",      :platforms => :jruby
+gem "nokogiri"
 
 group :test do
   gem "rdf-spec",    :git => "git://github.com/ruby-rdf/rdf-spec.git", :branch => "develop"
