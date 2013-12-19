@@ -35,6 +35,8 @@ module SPARQL
     DEFAULT_PROTOCOL = 1.0
     DEFAULT_METHOD   = :post
 
+    XMLNS = {'sparql' => 'http://www.w3.org/2005/sparql-results#'}.freeze
+
     ##
     # The SPARQL endpoint URL, or an RDF::Queryable instance, to use the native SPARQL engine.
     #
@@ -420,23 +422,23 @@ module SPARQL
     end
 
     ##
-    # @param  [String, REXML::Element] xml
+    # @param  [String, IO, Nokogiri::XML::Node] xml
     # @return [<RDF::Query::Solutions>]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
     def self.parse_xml_bindings(xml, nodes = {})
       xml.force_encoding(::Encoding::UTF_8) if xml.respond_to?(:force_encoding)
-      require 'rexml/document' unless defined?(::REXML::Document)
-      xml = REXML::Document.new(xml).root unless xml.is_a?(REXML::Element)
+      require 'nokogiri' unless defined?(::Nokogiri)
+      xml = Nokogiri::XML(xml).root unless xml.is_a?(Nokogiri::XML::Document)
 
       case
-        when boolean = xml.elements['boolean']
+        when boolean = xml.xpath("//sparql:boolean", XMLNS)[0]
           boolean.text == 'true'
-        when results = xml.elements['results']
+        when results = xml.xpath("//sparql:results", XMLNS)[0]
           solutions = results.elements.map do |result|
             row = {}
             result.elements.each do |binding|
-              name  = binding.attributes['name'].to_sym
-              value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
+              name  = binding.attr('name').to_sym
+              value = binding.elements.first
               row[name] = parse_xml_value(value, nodes)
             end
             RDF::Query::Solution.new(row)
@@ -446,7 +448,7 @@ module SPARQL
     end
 
     ##
-    # @param  [REXML::Element] value
+    # @param  [Nokogiri::XML::Element] value
     # @return [RDF::Value]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
     def self.parse_xml_value(value, nodes = {})
@@ -457,8 +459,8 @@ module SPARQL
           RDF::URI.new(value.text)
         when :literal
           RDF::Literal.new(value.text, {
-            :language => value.attributes['xml:lang'],
-            :datatype => value.attributes['datatype'],
+            :language => value.attr('xml:lang'),
+            :datatype => value.attr('datatype'),
           })
         else nil
       end

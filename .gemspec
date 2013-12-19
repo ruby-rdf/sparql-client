@@ -33,6 +33,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'json',      '>= 1.8'
   gem.add_development_dependency 'sparql',    '>= 1.1'
   gem.add_development_dependency 'rdf-spec',  '>= 1.1'
+  gem.add_development_dependency 'nokogiri',  '>= 1.5'
   gem.add_development_dependency 'rspec',     '>= 2.14'
   gem.add_development_dependency 'webmock',   '>= 1.15'
   gem.add_development_dependency 'yard' ,     '>= 0.8'
