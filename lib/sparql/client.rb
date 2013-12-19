@@ -1,6 +1,11 @@
 require 'net/http/persistent' # @see http://rubygems.org/gems/net-http-persistent
 require 'rdf'                 # @see http://rubygems.org/gems/rdf
 require 'rdf/ntriples'        # @see http://rubygems.org/gems/rdf
+begin
+  require 'nokogiri'
+rescue LoadError
+  require 'rexml/document'
+end
 
 module SPARQL
   ##
@@ -316,7 +321,7 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     # @return [Object]
     def parse_response(response, options = {})
-      case content_type = options[:content_type] || response.content_type
+      case options[:content_type] || response.content_type
         when RESULT_BOOL # Sesame-specific
           response.body == 'true'
         when RESULT_JSON
@@ -425,33 +430,52 @@ module SPARQL
     end
 
     ##
-    # @param  [String, IO, Nokogiri::XML::Node] xml
+    # @param  [String, IO, Nokogiri::XML::Node, REXML::Element] xml
     # @return [<RDF::Query::Solutions>]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
     def self.parse_xml_bindings(xml, nodes = {})
       xml.force_encoding(::Encoding::UTF_8) if xml.respond_to?(:force_encoding)
-      require 'nokogiri' unless defined?(::Nokogiri)
-      xml = Nokogiri::XML(xml).root unless xml.is_a?(Nokogiri::XML::Document)
 
-      case
-        when boolean = xml.xpath("//sparql:boolean", XMLNS)[0]
-          boolean.text == 'true'
-        when results = xml.xpath("//sparql:results", XMLNS)[0]
-          solutions = results.elements.map do |result|
-            row = {}
-            result.elements.each do |binding|
-              name  = binding.attr('name').to_sym
-              value = binding.elements.first
-              row[name] = parse_xml_value(value, nodes)
+      if defined?(::Nokogiri)
+        xml = Nokogiri::XML(xml).root unless xml.is_a?(Nokogiri::XML::Document)
+        case
+          when boolean = xml.xpath("//sparql:boolean", XMLNS)[0]
+            boolean.text == 'true'
+          when results = xml.xpath("//sparql:results", XMLNS)[0]
+            solutions = results.elements.map do |result|
+              row = {}
+              result.elements.each do |binding|
+                name  = binding.attr('name').to_sym
+                value = binding.elements.first
+                row[name] = parse_xml_value(value, nodes)
+              end
+              RDF::Query::Solution.new(row)
             end
-            RDF::Query::Solution.new(row)
-          end
-          RDF::Query::Solutions.new(solutions)
+            RDF::Query::Solutions.new(solutions)
+        end
+      else
+        # REXML
+        xml = REXML::Document.new(xml).root unless xml.is_a?(REXML::Element)
+        case
+          when boolean = xml.elements['boolean']
+            boolean.text == 'true'
+          when results = xml.elements['results']
+            solutions = results.elements.map do |result|
+              row = {}
+              result.elements.each do |binding|
+                name  = binding.attributes['name'].to_sym
+                value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
+                row[name] = parse_xml_value(value, nodes)
+              end
+              RDF::Query::Solution.new(row)
+            end
+            RDF::Query::Solutions.new(solutions)
+        end
       end
     end
 
     ##
-    # @param  [Nokogiri::XML::Element] value
+    # @param  [Nokogiri::XML::Element, REXML::Element] value
     # @return [RDF::Value]
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
     def self.parse_xml_value(value, nodes = {})
@@ -461,10 +485,9 @@ module SPARQL
         when :uri
           RDF::URI.new(value.text)
         when :literal
-          RDF::Literal.new(value.text, {
-            :language => value.attr('xml:lang'),
-            :datatype => value.attr('datatype'),
-          })
+          lang     = value.respond_to?(:attr) ? value.attr('xml:lang') : value.attributes['xml:lang']
+          datatype = value.respond_to?(:attr) ? value.attr('datatype') : value.attributes['datatype']
+          RDF::Literal.new(value.text, :language => lang, :datatype => datatype)
         else nil
       end
     end
