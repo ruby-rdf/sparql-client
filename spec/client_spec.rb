@@ -109,4 +109,92 @@ describe SPARQL::Client do
       subject.query(query)
     end
   end
+
+  context "when parsing XML" do
+    it "should parse binding results correctly" do
+      xml = File.read("spec/fixtures/results.xml")
+      nodes = {}
+      solutions = SPARQL::Client::parse_xml_bindings(xml, nodes)
+      expect(solutions).to eq RDF::Query::Solutions.new([
+        RDF::Query::Solution.new(
+          :x => RDF::Node.new("r2"),
+          :hpage => RDF::URI.new("http://work.example.org/bob/"),
+          :name => RDF::Literal.new("Bob", :language => "en"),
+          :age => RDF::Literal.new("30", :datatype => "http://www.w3.org/2001/XMLSchema#integer"),
+          :mbox => RDF::URI.new("mailto:bob@work.example.org"),
+        )
+      ])
+      expect(solutions[0]["x"]).to eq nodes["r2"]
+    end
+
+    it "should parse boolean true results correctly" do
+      xml = File.read("spec/fixtures/bool_true.xml")
+      expect(SPARQL::Client::parse_xml_bindings(xml)).to eq true
+    end
+
+    it "should parse boolean false results correctly" do
+      xml = File.read("spec/fixtures/bool_false.xml")
+      expect(SPARQL::Client::parse_xml_bindings(xml)).to eq false
+    end
+  end
+
+  context "when parsing JSON" do
+    it "should parse binding results correctly" do
+      xml = File.read("spec/fixtures/results.json")
+      nodes = {}
+      solutions = SPARQL::Client::parse_json_bindings(xml, nodes)
+      expect(solutions).to eq RDF::Query::Solutions.new([
+        RDF::Query::Solution.new(
+          :x => RDF::Node.new("r2"),
+          :hpage => RDF::URI.new("http://work.example.org/bob/"),
+          :name => RDF::Literal.new("Bob", :language => "en"),
+          :age => RDF::Literal.new("30", :datatype => "http://www.w3.org/2001/XMLSchema#integer"),
+          :mbox => RDF::URI.new("mailto:bob@work.example.org"),
+        )
+      ])
+      expect(solutions[0]["x"]).to eq nodes["r2"]
+    end
+
+    it "should parse boolean true results correctly" do
+      json = '{"boolean": true}'
+      expect(SPARQL::Client::parse_json_bindings(json)).to eq true
+    end
+
+    it "should parse boolean true results correctly" do
+      json = '{"boolean": false}'
+      expect(SPARQL::Client::parse_json_bindings(json)).to eq false
+    end
+  end
+
+  context "when parsing CSV" do
+    it "should parse binding results correctly" do
+      csv = File.read("spec/fixtures/results.csv")
+      nodes = {}
+      solutions = SPARQL::Client::parse_csv_bindings(csv, nodes)
+      expect(solutions).to eq RDF::Query::Solutions.new([
+        RDF::Query::Solution.new(:x => RDF::URI("http://example/x"),
+                                 :literal => RDF::Literal('String-with-dquote"')),
+        RDF::Query::Solution.new(:x => RDF::Node.new("b0"), :literal => RDF::Literal("Blank node")),
+        RDF::Query::Solution.new(:x => RDF::Literal(""), :literal => RDF::Literal("Missing 'x'")),
+        RDF::Query::Solution.new(:x => RDF::Literal(""), :literal => RDF::Literal("")),
+      ])
+      expect(solutions[1]["x"]).to eq nodes["b0"]
+    end
+  end
+
+  context "when parsing TSV" do
+    it "should parse binding results correctly" do
+      tsv = File.read("spec/fixtures/results.tsv")
+      nodes = {}
+      solutions = SPARQL::Client::parse_tsv_bindings(tsv, nodes)
+      expect(solutions).to eq RDF::Query::Solutions.new([
+        RDF::Query::Solution.new(:x => RDF::URI("http://example/x"),
+                                 :literal => RDF::Literal('String-with-dquote"')),
+        RDF::Query::Solution.new(:x => RDF::Node.new("blank0"), :literal => RDF::Literal("Blank node")),
+        RDF::Query::Solution.new(:x => RDF::Node("blank1"), :literal => RDF::Literal.new("String-with-lang", :language => "en")),
+        RDF::Query::Solution.new(:x => RDF::Node("blank1"), :literal => RDF::Literal::Integer.new("123")),
+      ])
+      expect(solutions[1]["x"]).to eq nodes["blank0"]
+    end
+  end
 end
