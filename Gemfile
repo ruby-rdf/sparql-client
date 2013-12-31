@@ -8,13 +8,9 @@ gem "sparql",             :git => "git://github.com/ruby-rdf/sparql.git", :branc
 gem "jruby-openssl",      :platforms => :jruby
 gem "nokogiri" unless ENV["WITH_NOKOGIRI"] == "false"
 
-group :test do
+group :development, :test do
   gem "rdf-spec",    :git => "git://github.com/ruby-rdf/rdf-spec.git", :branch => "develop"
-  gem "sparql",      :git => "git://github.com/ruby-rdf/sparql.git", :branch => "develop"
-end
-
-group :development do
-  gem "rdf-spec",     :git => "git://github.com/ruby-rdf/rdf-spec.git", :branch => "develop"
+  gem 'sxp',            :git => "git://github.com/gkellogg/sxp-ruby.git"
 end
 
 group :debug do
