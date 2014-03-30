@@ -321,7 +321,7 @@ module SPARQL; class Client
 
       case form
         when :select, :describe
-          only_count = values.empty? and options[:count]
+          only_count = values.empty? && options[:count]
           buffer << 'DISTINCT' if options[:distinct] and not only_count
           buffer << 'REDUCED'  if options[:reduced]
           buffer << ((values.empty? and not options[:count]) ? '*' : values.map { |v| SPARQL::Client.serialize_value(v[1]) }.join(' '))

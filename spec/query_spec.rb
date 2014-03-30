@@ -47,6 +47,7 @@ describe SPARQL::Client::Query do
     it "should support DISTINCT" do
       expect(subject.select(:s, :distinct => true).where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
       expect(subject.select(:s).distinct.where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
+      expect(subject.select.distinct.where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT * WHERE { ?s ?p ?o . }"
     end
 
     it "should support REDUCED" do
