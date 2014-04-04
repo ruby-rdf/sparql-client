@@ -389,11 +389,10 @@ module SPARQL; class Client
     ##
     # @private
     def serialize_patterns(patterns)
-      rdf_type = RDF.type
       patterns.map do |pattern|
         serialized_pattern = pattern.to_triple.each_with_index.map do |v, i|
-          if i == 1 && v.equal?(rdf_type)
-            'a' # abbreviate RDF.type in the predicate position per SPARQL grammar
+          if i == 1
+            SPARQL::Client.serialize_predicate(v)
           else
             SPARQL::Client.serialize_value(v)
           end
