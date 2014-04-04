@@ -112,6 +112,29 @@ describe SPARQL::Client::Query do
       subquery = subject.select.where([:s, :p, :o])
       expect(subject.select.where(subquery).where([:s, :p, :o]).to_s).to eq "SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }"
     end
+
+    context "with property paths"
+      it "should support the InversePath expression" do
+        expect(subject.select.where([:s, ["^",RDF::RDFS.subClassOf], :o]).to_s).to eq "SELECT * WHERE { ?s ^<#{RDF::RDFS.subClassOf}> ?o . }"
+      end
+      it "should support the SequencePath expression" do
+        expect(subject.select.where([:s, [RDF.type,"/",RDF::RDFS.subClassOf], :o]).to_s).to eq "SELECT * WHERE { ?s a/<#{RDF::RDFS.subClassOf}> ?o . }"
+      end
+      it "should support the AlternativePath expression" do
+        expect(subject.select.where([:s, [RDF.type,"|",RDF::RDFS.subClassOf], :o]).to_s).to eq "SELECT * WHERE { ?s a|<#{RDF::RDFS.subClassOf}> ?o . }"
+      end
+      it "should support the ZeroOrMore expression" do
+        expect(subject.select.where([:s, [RDF::RDFS.subClassOf,"*"], :o]).to_s).to eq "SELECT * WHERE { ?s <#{RDF::RDFS.subClassOf}>* ?o . }"
+      end
+      it "should support the OneOrMore expression" do
+        expect(subject.select.where([:s, [RDF::RDFS.subClassOf,"+"], :o]).to_s).to eq "SELECT * WHERE { ?s <#{RDF::RDFS.subClassOf}>+ ?o . }"
+      end
+      it "should support the ZeroOrOne expression" do
+        expect(subject.select.where([:s, [RDF::RDFS.subClassOf,"?"], :o]).to_s).to eq "SELECT * WHERE { ?s <#{RDF::RDFS.subClassOf}>? ?o . }"
+      end
+      it "should support the NegatedPropertySet expression" do
+        expect(subject.select.where([:s, ["!",[RDF::RDFS.subClassOf,"|",RDF.type]], :o]).to_s).to eq "SELECT * WHERE { ?s !(<#{RDF::RDFS.subClassOf}>|a) ?o . }"
+      end
   end
 
   context "when building DESCRIBE queries" do

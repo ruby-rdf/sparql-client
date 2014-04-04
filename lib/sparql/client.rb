@@ -534,6 +534,25 @@ module SPARQL
     end
 
     ##
+    # Serializes a SPARQL predicate
+    #
+    # @param [RDF::Value, Array, String] value
+    # @param [Fixnum] rdepth
+    # @return [String]
+    # @private
+    def self.serialize_predicate(value,rdepth=0)
+      case value
+        when String then value
+        when Array
+          s = value.map{|v|serialize_predicate(v,rdepth+1)}.join
+          rdepth > 0 ? "(#{s})" : s
+        when RDF::Value
+          # abbreviate RDF.type in the predicate position per SPARQL grammar
+          value.equal?(RDF.type) ? 'a' : serialize_value(value)
+      end
+    end
+
+    ##
     # Outputs a developer-friendly representation of this object to `stderr`.
     #
     # @return [void]
