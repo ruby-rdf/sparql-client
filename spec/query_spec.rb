@@ -22,9 +22,49 @@ describe SPARQL::Client::Query do
   end
 
   context "when building ASK queries" do
-    it "should support basic graph patterns" do
-      expect(subject.ask.where([:s, :p, :o]).to_s).to eq "ASK WHERE { ?s ?p ?o . }"
-      expect(subject.ask.whether([:s, :p, :o]).to_s).to eq "ASK WHERE { ?s ?p ?o . }"
+    context "basic graph patterns" do
+      context "where" do
+        it "supports simple pattern" do
+          expect(subject.ask.where([:s, :p, :o]).to_s).to eq "ASK WHERE { ?s ?p ?o . }"
+        end
+        it "supports multiple patterns" do
+          dbpo =  RDF::URI("http://dbpedia.org/ontology/")
+          grs = RDF::URI("http://www.georss.org/georss/")
+          patterns = [
+            [:city, RDF.type, dbpo + "Place"],
+            [:city, RDF::RDFS.label, :name],
+            [:city, dbpo + "country", :country],
+            [:city, dbpo + "abstract", :abstact],
+            [:city, grs + "point", :coords]
+          ]
+          where = [
+            "?city a <http://dbpedia.org/ontology/Place> .",
+            "?city <http://www.w3.org/2000/01/rdf-schema#label> ?name .",
+            "?city <http://dbpedia.org/ontology/country> ?country .",
+            "?city <http://dbpedia.org/ontology/abstract> ?abstact .",
+            "?city <http://www.georss.org/georss/point> ?coords ."
+          ].join(" ")
+          expect(subject.ask.where(*patterns).to_s).to eq "ASK WHERE { #{where} }"
+        end
+      end
+      it "supports whether as an alias for where" do
+        expect(subject.ask.whether([:s, :p, :o]).to_s).to eq "ASK WHERE { ?s ?p ?o . }"
+      end
+
+      context "filter" do
+        it "supports filter as a string argument" do
+          expected = "ASK WHERE { ?s ?p ?o . FILTER(regex(?s, 'Abiline, Texas')) }"
+          expect(subject.ask.where([:s, :p, :o]).filter("regex(?s, 'Abiline, Texas')").to_s).to eq expected
+        end
+        it "supports multiple string filters" do
+          expected = "ASK WHERE { ?s ?p ?o . FILTER(regex(?s, 'Abiline, Texas')) FILTER(langmatches(lang(?o), 'EN')) }"
+          expect(subject.ask.where([:s, :p, :o]).
+                         filter("regex(?s, 'Abiline, Texas')").
+                         filter("langmatches(lang(?o), 'EN')").
+                         to_s
+                ).to eq expected
+        end
+      end
     end
   end
 
@@ -76,7 +116,7 @@ describe SPARQL::Client::Query do
     it "should support ORDER BY" do
       expect(subject.select.where([:s, :p, :o]).order_by(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
       expect(subject.select.where([:s, :p, :o]).order_by('?o').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
-      # expect(subject.select.where([:s, :p, :o]).order_by(:o => :asc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ASC"
+      #expect(subject.select.where([:s, :p, :o]).order_by(:o => :asc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ASC"
       expect(subject.select.where([:s, :p, :o]).order_by('?o ASC').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ASC"
       # expect(subject.select.where([:s, :p, :o]).order_by(:o => :desc).to_s.to) eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o DESC"
       expect(subject.select.where([:s, :p, :o]).order_by('?o DESC').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o DESC"
