@@ -16,6 +16,29 @@ module SPARQL; class Client
     end
 
     ##
+    # Queries `self` using the given basic graph pattern (BGP) query,
+    # yielding each matched solution to the given block.
+    #
+    # Overrides Queryable::query_execute to use SPARQL::Client::query
+    #
+    # @param  [RDF::Query] query
+    #   the query to execute
+    # @param  [Hash{Symbol => Object}] options ({})
+    #   Any other options passed to `query.execute`
+    # @yield  [solution]
+    # @yieldparam  [RDF::Query::Solution] solution
+    # @yieldreturn [void] ignored
+    # @return [void] ignored
+    # @see    RDF::Queryable#query
+    # @see    RDF::Query#execute
+    def query_execute(query, options = {}, &block)
+      q = SPARQL::Client::Query.select(query.variables).where(*query.patterns)
+       client.query(q, options).each do |solution|
+        yield solution
+      end
+    end
+
+    ##
     # Enumerates each RDF statement in this repository.
     #
     # @yield  [statement]
