@@ -192,7 +192,6 @@ module SPARQL
     # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#deleteInsert
     def delete_insert(delete_graph, insert_graph = nil, where_graph = nil, options = {})
-      puts "'#{insert_graph}' '#{delete_graph}' '#{where_graph}'"
       self.update(Update::DeleteInsert.new(delete_graph, insert_graph, where_graph, options))
     end
 
