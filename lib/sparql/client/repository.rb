@@ -16,6 +16,29 @@ module SPARQL; class Client
     end
 
     ##
+    # Queries `self` using the given basic graph pattern (BGP) query,
+    # yielding each matched solution to the given block.
+    #
+    # Overrides Queryable::query_execute to use SPARQL::Client::query
+    #
+    # @param  [RDF::Query] query
+    #   the query to execute
+    # @param  [Hash{Symbol => Object}] options ({})
+    #   Any other options passed to `query.execute`
+    # @yield  [solution]
+    # @yieldparam  [RDF::Query::Solution] solution
+    # @yieldreturn [void] ignored
+    # @return [void] ignored
+    # @see    RDF::Queryable#query
+    # @see    RDF::Query#execute
+    def query_execute(query, options = {}, &block)
+      q = SPARQL::Client::Query.select(query.variables).where(*query.patterns)
+       client.query(q, options).each do |solution|
+        yield solution
+      end
+    end
+
+    ##
     # Enumerates each RDF statement in this repository.
     #
     # @yield  [statement]
@@ -187,7 +210,66 @@ module SPARQL; class Client
     # @return [Boolean]
     # @see    RDF::Mutable#mutable?
     def writable?
-      false
+      true
     end
+
+    ##
+    # Deletes RDF statements from `self`.
+    # If any statement contains a {Query::Variable}, it is
+    # considered to be a pattern, and used to query
+    # self to find matching statements to delete.
+    #
+    # @param  [Enumerable<RDF::Statement>] statements
+    # @raise  [TypeError] if `self` is immutable
+    # @return [Mutable]
+    def delete(*statements)
+      delete_statements(statements) unless statements.empty?
+      return self
+    end
+
+    protected
+
+    ##
+    # Deletes the given RDF statements from the underlying storage.
+    #
+    # Overridden here to use SPARQL/UPDATE
+    #
+    # @param  [RDF::Enumerable] statements
+    # @return [void]
+    def delete_statements(statements)
+
+      constant = true
+      statements.each do |value|
+        case
+          when value.respond_to?(:each_statement)
+          # needs to be flattened... urgh
+            nil
+          when (statement = RDF::Statement.from(value)).constant?
+            # constant
+          else
+          constant = false
+        end
+      end
+
+      if constant
+        client.delete_data(statements)
+      else
+        client.delete_insert(statements)
+      end
+    end
+
+    ##
+    # Inserts the given RDF statements into the underlying storage or output
+    # stream.
+    #
+    # Overridden here to use SPARQL/UPDATE
+    #
+    # @param  [RDF::Enumerable] statements
+    # @return [void]
+    # @since  0.1.6
+    def insert_statements(statements)
+      client.insert_data(statements)
+    end
+
   end
 end; end

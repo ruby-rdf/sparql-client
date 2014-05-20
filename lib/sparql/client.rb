@@ -180,6 +180,22 @@ module SPARQL
     end
 
     ##
+    # Executes a `DELETE/INSERT` operation.
+    #
+    # This requires that the endpoint support SPARQL 1.1 Update.
+    #
+    # @param  [RDF::Enumerable] delete_graph
+    # @param  [RDF::Enumerable] insert_graph
+    # @param  [RDF::Enumerable] where_graph
+    # @param  [Hash{Symbol => Object}] options
+    # @option options [RDF::URI, String] :graph
+    # @return [void] `self`
+    # @see    http://www.w3.org/TR/sparql11-update/#deleteInsert
+    def delete_insert(delete_graph, insert_graph = nil, where_graph = nil, options = {})
+      self.update(Update::DeleteInsert.new(delete_graph, insert_graph, where_graph, options))
+    end
+
+    ##
     # Executes a `CLEAR GRAPH` operation.
     #
     # This is a convenience wrapper for the {#clear} method.
@@ -528,6 +544,7 @@ module SPARQL
       # SPARQL queries are UTF-8, but support ASCII-style Unicode escapes, so
       # the N-Triples serializer is fine unless it's a variable:
       case
+        when value.nil? then RDF::Query::Variable.new.to_s
         when value.variable? then value.to_s
         else RDF::NTriples.serialize(value)
       end
@@ -549,6 +566,25 @@ module SPARQL
         when RDF::Value
           # abbreviate RDF.type in the predicate position per SPARQL grammar
           value.equal?(RDF.type) ? 'a' : serialize_value(value)
+      end
+    end
+
+    ##
+    # Serializes a SPARQL graph
+    #
+    # @param [RDF::Enumerable] patterns
+    # @return [String]
+    # @private
+    def self.serialize_patterns(patterns)
+      patterns.map do |pattern|
+        serialized_pattern = RDF::Statement.from(pattern).to_triple.each_with_index.map do |v, i|
+          if i == 1
+            SPARQL::Client.serialize_predicate(v)
+         else
+            SPARQL::Client.serialize_value(v)
+          end
+        end
+        serialized_pattern.join(' ') + ' .'
       end
     end
 
