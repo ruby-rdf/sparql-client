@@ -18,8 +18,8 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
   the preferred default for content-negotiation purposes.
 * Supports graph results in any RDF serialization format understood by RDF.rb.
 * Returns results using the [RDF.rb object model][RDF.rb model].
-* Supports accessing endpoints as read-only [`RDF::Repository`][RDF::Repository]
-  instances.
+* Supports accessing endpoints as read/write [`RDF::Repository`][RDF::Repository]
+  instances {SPARQL::Client::Repository}.
 
 ##Examples
 

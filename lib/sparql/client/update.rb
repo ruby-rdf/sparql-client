@@ -61,7 +61,7 @@ class SPARQL::Client
         query_text = 'INSERT DATA {'
         query_text += ' GRAPH ' + SPARQL::Client.serialize_uri(self.options[:graph]) + ' {' if self.options[:graph]
         query_text += "\n"
-        query_text += RDF::NTriples::Writer.buffer { |writer| writer << @data }
+        query_text += RDF::NTriples::Writer.buffer { |writer| @data.each { |d| writer << d } }
         query_text += '}' if self.options[:graph]
         query_text += "}\n"
       end
@@ -86,7 +86,7 @@ class SPARQL::Client
         query_text = 'DELETE DATA {'
         query_text += ' GRAPH ' + SPARQL::Client.serialize_uri(self.options[:graph]) + ' {' if self.options[:graph]
         query_text += "\n"
-        query_text += RDF::NTriples::Writer.buffer { |writer| writer << @data }
+        query_text += RDF::NTriples::Writer.buffer { |writer| @data.each { |d| writer << d } }
         query_text += '}' if self.options[:graph]
         query_text += "}\n"
       end
@@ -95,9 +95,50 @@ class SPARQL::Client
     ##
     # @see http://www.w3.org/TR/sparql11-update/#deleteInsert
     class DeleteInsert < Operation
-      def to_s
-        # TODO
+      attr_reader :insert_graph
+      attr_reader :delete_graph
+      attr_reader :where_graph
+
+      def initialize(_delete_graph, _insert_graph = nil, _where_graph = nil, options = {})
+        @delete_graph = _delete_graph
+        @insert_graph = _insert_graph
+        @where_graph = _where_graph
+        super(options)
       end
+
+      def graph(uri)
+        self.options[:graph] = uri
+        self
+      end
+
+      def to_s
+        buffer = []
+
+        if self.options[:graph]
+          buffer << "WITH"
+          buffer << SPARQL::Client.serialize_uri(self.options[:graph])
+        end
+        if delete_graph and !delete_graph.empty?
+          serialized_delete = SPARQL::Client.serialize_patterns delete_graph
+          buffer << "DELETE {\n"
+          buffer += serialized_delete
+          buffer << "}\n"
+        end
+        if insert_graph and !insert_graph.empty?
+          buffer << "INSERT {\n"
+          buffer += SPARQL::Client.serialize_patterns insert_graph
+          buffer << "}\n"
+        end
+          buffer << "WHERE {\n"
+        if where_graph
+          buffer += SPARQL::Client.serialize_patterns where_graph
+        elsif serialized_delete
+          buffer += serialized_delete
+        end
+        buffer << "}\n"
+        buffer.join(' ')
+      end
+
     end
 
     ##

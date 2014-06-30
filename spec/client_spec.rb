@@ -9,7 +9,7 @@ describe SPARQL::Client do
     def response(header)
       response = Net::HTTPSuccess.new '1.1', 200, 'body'
       response.content_type = header
-      response.stub(:body).and_return('body')
+      allow(response).to receive(:body).and_return('body')
       response
     end
 
@@ -21,12 +21,12 @@ describe SPARQL::Client do
 
     it "should handle successful response with boolean header" do
       expect(subject).to receive(:request).and_yield response(SPARQL::Client::RESULT_BOOL)
-      expect(subject.query(query)).to be_false
+      expect(subject.query(query)).to be_falsey
     end
 
     it "should handle successful response with JSON header" do
       expect(subject).to receive(:request).and_yield response(SPARQL::Client::RESULT_JSON)
-      subject.class.should_receive(:parse_json_bindings)
+      expect(subject.class).to receive(:parse_json_bindings)
       subject.query(query)
     end
 
@@ -80,7 +80,7 @@ describe SPARQL::Client do
       client.query(query)
     end
 
-    it "should support international characters in response body" do
+    it "should support international characters in response body", skip: ENV['CI'].nil? do
       require 'webmock/rspec'
       require 'json'
       client = SPARQL::Client.new('http://dbpedia.org/sparql')

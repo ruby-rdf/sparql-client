@@ -16,17 +16,48 @@ module SPARQL; class Client
     end
 
     ##
+    # Queries `self` using the given basic graph pattern (BGP) query,
+    # yielding each matched solution to the given block.
+    #
+    # Overrides Queryable::query_execute to use SPARQL::Client::query
+    #
+    # @param  [RDF::Query] query
+    #   the query to execute
+    # @param  [Hash{Symbol => Object}] options ({})
+    #   Any other options passed to `query.execute`
+    # @yield  [solution]
+    # @yieldparam  [RDF::Query::Solution] solution
+    # @yieldreturn [void] ignored
+    # @return [void] ignored
+    # @see    RDF::Queryable#query
+    # @see    RDF::Query#execute
+    def query_execute(query, options = {}, &block)
+      q = SPARQL::Client::Query.select(query.variables).where(*query.patterns)
+       client.query(q, options).each do |solution|
+        yield solution
+      end
+    end
+
+    ##
     # Enumerates each RDF statement in this repository.
     #
     # @yield  [statement]
     # @yieldparam [RDF::Statement] statement
-    # @return [Enumerator]
     # @see    RDF::Repository#each
     def each(&block)
-      unless block_given?
-        RDF::Enumerator.new(self, :each)
-      else
-        client.construct([:s, :p, :o]).where([:s, :p, :o]).each_statement(&block)
+      client.construct([:s, :p, :o]).where([:s, :p, :o]).each_statement(&block)
+    end
+
+    ##
+    # @private
+    # @see RDF::Enumerable#supports?
+    def supports?(feature)
+      case feature.to_sym
+        # statement contexts / named graphs
+        when :context   then false
+        when :inference then false  # forward-chaining inference
+        when :validity  then false
+        else false
       end
     end
 
@@ -68,11 +99,10 @@ module SPARQL; class Client
     # @return [Enumerator]
     # @see    RDF::Repository#each_subject?
     def each_subject(&block)
-      unless block_given?
-        RDF::Enumerator.new(self, :each_subject)
-      else
-        client.select(:s, :distinct => true).where([:s, :p, :o]).each { |solution| block.call(solution[:s]) }
+      if block_given?
+        client.select(:s, :distinct => true).where([:s, :p, :o]).each_solution { |solution| block.call(solution[:s]) }
       end
+      enum_subject
     end
 
     ##
@@ -83,11 +113,10 @@ module SPARQL; class Client
     # @return [Enumerator]
     # @see    RDF::Repository#each_predicate?
     def each_predicate(&block)
-      unless block_given?
-        RDF::Enumerator.new(self, :each_predicate)
-      else
-        client.select(:p, :distinct => true).where([:s, :p, :o]).each { |solution| block.call(solution[:p]) }
+      if block_given?
+        client.select(:p, :distinct => true).where([:s, :p, :o]).each_solution { |solution| block.call(solution[:p]) }
       end
+      enum_predicate
     end
 
     ##
@@ -98,11 +127,10 @@ module SPARQL; class Client
     # @return [Enumerator]
     # @see    RDF::Repository#each_object?
     def each_object(&block)
-      unless block_given?
-        RDF::Enumerator.new(self, :each_object)
-      else
-        client.select(:o, :distinct => true).where([:s, :p, :o]).each { |solution| block.call(solution[:o]) }
+      if block_given?
+        client.select(:o, :distinct => true).where([:s, :p, :o]).each_solution { |solution| block.call(solution[:o]) }
       end
+      enum_object
     end
 
     ##
@@ -161,6 +189,8 @@ module SPARQL; class Client
     #     repository.query([nil, RDF::DOAP.developer, nil])
     #     repository.query(:predicate => RDF::DOAP.developer)
     #
+    # @fixme This should use basic SPARQL query mechanism.
+    #
     # @param  [Pattern] pattern
     # @see    RDF::Queryable#query_pattern
     # @yield  [statement]
@@ -187,7 +217,80 @@ module SPARQL; class Client
     # @return [Boolean]
     # @see    RDF::Mutable#mutable?
     def writable?
-      false
+      true
     end
+
+    ##
+    # @private
+    # @see RDF::Mutable#clear
+    def clear_statements
+      client.clear(:all)
+    end
+
+    ##
+    # Deletes RDF statements from `self`.
+    # If any statement contains a {Query::Variable}, it is
+    # considered to be a pattern, and used to query
+    # self to find matching statements to delete.
+    #
+    # @param  [Enumerable<RDF::Statement>] statements
+    # @raise  [TypeError] if `self` is immutable
+    # @return [Mutable]
+    def delete(*statements)
+      delete_statements(statements) unless statements.empty?
+      return self
+    end
+
+    protected
+
+    ##
+    # Deletes the given RDF statements from the underlying storage.
+    #
+    # Overridden here to use SPARQL/UPDATE
+    #
+    # @param  [RDF::Enumerable] statements
+    # @return [void]
+    def delete_statements(statements)
+
+      constant = true
+      statements.each do |value|
+        case
+          when value.respond_to?(:each_statement)
+          # needs to be flattened... urgh
+            nil
+          when (statement = RDF::Statement.from(value)).constant?
+            # constant
+          else
+          constant = false
+        end
+      end
+
+      if constant
+        client.delete_data(statements)
+      else
+        client.delete_insert(statements)
+      end
+    end
+
+    ##
+    # Inserts the given RDF statements into the underlying storage or output
+    # stream.
+    #
+    # Overridden here to use SPARQL/UPDATE
+    #
+    # @param  [RDF::Enumerable] statements
+    # @return [void]
+    # @since  0.1.6
+    def insert_statements(statements)
+      client.insert_data(statements)
+    end
+
+    ##
+    # @private
+    # @see RDF::Mutable#insert
+    def insert_statement(statement)
+      client.insert_data([statement])
+    end
+
   end
 end; end

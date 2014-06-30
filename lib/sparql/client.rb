@@ -149,7 +149,7 @@ module SPARQL
     # @example Inserting data into a named graph
     #   client.insert_data(data, :graph => "http://example.org/")
     #
-    # @param  [RDF::Graph] data
+    # @param  [RDF::Enumerable] data
     # @param  [Hash{Symbol => Object}] options
     # @option options [RDF::URI, String] :graph
     # @return [void] `self`
@@ -170,13 +170,29 @@ module SPARQL
     # @example Deleting data from a named graph
     #   client.delete_data(data, :graph => "http://example.org/")
     #
-    # @param  [RDF::Graph] data
+    # @param  [RDF::Enumerable] data
     # @param  [Hash{Symbol => Object}] options
     # @option options [RDF::URI, String] :graph
     # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#deleteData
     def delete_data(data, options = {})
       self.update(Update::DeleteData.new(data, options))
+    end
+
+    ##
+    # Executes a `DELETE/INSERT` operation.
+    #
+    # This requires that the endpoint support SPARQL 1.1 Update.
+    #
+    # @param  [RDF::Enumerable] delete_graph
+    # @param  [RDF::Enumerable] insert_graph
+    # @param  [RDF::Enumerable] where_graph
+    # @param  [Hash{Symbol => Object}] options
+    # @option options [RDF::URI, String] :graph
+    # @return [void] `self`
+    # @see    http://www.w3.org/TR/sparql11-update/#deleteInsert
+    def delete_insert(delete_graph, insert_graph = nil, where_graph = nil, options = {})
+      self.update(Update::DeleteInsert.new(delete_graph, insert_graph, where_graph, options))
     end
 
     ##
@@ -528,8 +544,47 @@ module SPARQL
       # SPARQL queries are UTF-8, but support ASCII-style Unicode escapes, so
       # the N-Triples serializer is fine unless it's a variable:
       case
+        when value.nil? then RDF::Query::Variable.new.to_s
         when value.variable? then value.to_s
         else RDF::NTriples.serialize(value)
+      end
+    end
+
+    ##
+    # Serializes a SPARQL predicate
+    #
+    # @param [RDF::Value, Array, String] value
+    # @param [Fixnum] rdepth
+    # @return [String]
+    # @private
+    def self.serialize_predicate(value,rdepth=0)
+      case value
+        when String then value
+        when Array
+          s = value.map{|v|serialize_predicate(v,rdepth+1)}.join
+          rdepth > 0 ? "(#{s})" : s
+        when RDF::Value
+          # abbreviate RDF.type in the predicate position per SPARQL grammar
+          value.equal?(RDF.type) ? 'a' : serialize_value(value)
+      end
+    end
+
+    ##
+    # Serializes a SPARQL graph
+    #
+    # @param [RDF::Enumerable] patterns
+    # @return [String]
+    # @private
+    def self.serialize_patterns(patterns)
+      patterns.map do |pattern|
+        serialized_pattern = RDF::Statement.from(pattern).to_triple.each_with_index.map do |v, i|
+          if i == 1
+            SPARQL::Client.serialize_predicate(v)
+         else
+            SPARQL::Client.serialize_value(v)
+          end
+        end
+        serialized_pattern.join(' ') + ' .'
       end
     end
 

@@ -321,7 +321,7 @@ module SPARQL; class Client
 
       case form
         when :select, :describe
-          only_count = values.empty? and options[:count]
+          only_count = values.empty? && options[:count]
           buffer << 'DISTINCT' if options[:distinct] and not only_count
           buffer << 'REDUCED'  if options[:reduced]
           buffer << ((values.empty? and not options[:count]) ? '*' : values.map { |v| SPARQL::Client.serialize_value(v[1]) }.join(' '))
@@ -333,7 +333,7 @@ module SPARQL; class Client
           end
         when :construct
           buffer << '{'
-          buffer += serialize_patterns(options[:template])
+          buffer += SPARQL::Client.serialize_patterns(options[:template])
           buffer << '}'
       end
 
@@ -351,11 +351,11 @@ module SPARQL; class Client
           buffer << "{ #{sq.to_s} } ."
         end
 
-        buffer += serialize_patterns(patterns)
+        buffer += SPARQL::Client.serialize_patterns(patterns)
         if options[:optionals]
           options[:optionals].each do |patterns|
             buffer << 'OPTIONAL {'
-            buffer += serialize_patterns(patterns)
+            buffer += SPARQL::Client.serialize_patterns(patterns)
             buffer << '}'
           end
         end
@@ -384,22 +384,6 @@ module SPARQL; class Client
       options[:prefixes].reverse.each { |e| buffer.unshift("PREFIX #{e}") } if options[:prefixes]
 
       buffer.join(' ')
-    end
-
-    ##
-    # @private
-    def serialize_patterns(patterns)
-      rdf_type = RDF.type
-      patterns.map do |pattern|
-        serialized_pattern = pattern.to_triple.each_with_index.map do |v, i|
-          if i == 1 && v.equal?(rdf_type)
-            'a' # abbreviate RDF.type in the predicate position per SPARQL grammar
-          else
-            SPARQL::Client.serialize_value(v)
-          end
-        end
-        serialized_pattern.join(' ') + ' .'
-      end
     end
 
     ##
