@@ -10,7 +10,9 @@ Gem::Specification.new do |gem|
   gem.license            = 'Public Domain' if gem.respond_to?(:license=)
   gem.summary            = 'SPARQL client for RDF.rb.'
   gem.description        = %(Executes SPARQL queries and updates against a remote SPARQL 1.0 or 1.1 endpoint,
-                            or against a local repository. Generates SPARQL queries using a simple DSL.)
+                            or against a local repository. Generates SPARQL queries using a simple DSL.
+                            Includes SPARQL::Client::Repository, which allows any endpoint supporting
+                            SPARQL Update to be used as an RDF.rb repository.)
   gem.rubyforge_project  = 'sparql-client'
 
   gem.authors            = ['Arto Bendiken', 'Ben Lavender', 'Gregg Kellogg']
