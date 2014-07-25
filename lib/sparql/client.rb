@@ -291,12 +291,14 @@ module SPARQL
     #
     # @param  [String, #to_s]          query
     # @param  [Hash{Symbol => Object}] options
+    # @option options [String] :endpoint
     # @option options [String] :content_type
     # @option options [Hash] :headers
     # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-protocol/#update-operation
     def update(query, options = {})
       @op = :update
+      @alt_endpoint = options[:endpoint] unless options[:endpoint].nil?
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
@@ -674,7 +676,12 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-direct
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded
     def make_post_request(query, headers = {})
-      request = Net::HTTP::Post.new(self.url.request_uri, self.headers.merge(headers))
+      if @alt_endpoint.nil?
+        endpoint = url.request_uri 
+      else
+        endpoint = @alt_endpoint
+      end
+      request = Net::HTTP::Post.new(endpoint, self.headers.merge(headers))
       case (self.options[:protocol] || DEFAULT_PROTOCOL).to_s
         when '1.1'
           request['Content-Type'] = 'application/sparql-' + (@op || :query).to_s
