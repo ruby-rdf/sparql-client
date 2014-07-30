@@ -47,8 +47,13 @@ describe SPARQL::Client::Query do
           expect(subject.ask.where(*patterns).to_s).to eq "ASK WHERE { #{where} }"
         end
       end
+
       it "supports whether as an alias for where" do
         expect(subject.ask.whether([:s, :p, :o]).to_s).to eq "ASK WHERE { ?s ?p ?o . }"
+      end
+
+      it "expects results not statements" do
+        expect(subject.ask.where([:s, :p, :o])).not_to be_expects_statements
       end
 
       context "filter" do
@@ -153,6 +158,10 @@ describe SPARQL::Client::Query do
       expect(subject.select.where(subquery).where([:s, :p, :o]).to_s).to eq "SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }"
     end
 
+    it "expects results not statements" do
+      expect(subject.select.where([:s, :p, :o])).not_to be_expects_statements
+    end
+
     context "with property paths"
       it "should support the InversePath expression" do
         expect(subject.select.where([:s, ["^",RDF::RDFS.subClassOf], :o]).to_s).to eq "SELECT * WHERE { ?s ^<#{RDF::RDFS.subClassOf}> ?o . }"
@@ -192,11 +201,19 @@ describe SPARQL::Client::Query do
       uris = ['http://www.bbc.co.uk/programmes/b007stmh#programme', 'http://www.bbc.co.uk/programmes/b00lg2xb#programme']
       expect(subject.describe(RDF::URI.new(uris[0]),RDF::URI.new(uris[1])).to_s).to eq "DESCRIBE <#{uris[0]}> <#{uris[1]}>"
     end
+
+    it "expects statements not results" do
+      expect(subject.describe(:s).where([:s, :p, :o])).to be_expects_statements
+    end
   end
 
   context "when building CONSTRUCT queries" do
     it "should support basic graph patterns" do
       expect(subject.construct([:s, :p, :o]).where([:s, :p, :o]).to_s).to eq "CONSTRUCT { ?s ?p ?o . } WHERE { ?s ?p ?o . }"
+    end
+
+    it "expects statements not results" do
+      expect(subject.construct([:s, :p, :o]).where([:s, :p, :o])).to be_expects_statements
     end
   end
 end

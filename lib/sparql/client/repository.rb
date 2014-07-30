@@ -32,8 +32,9 @@ module SPARQL; class Client
     # @see    RDF::Queryable#query
     # @see    RDF::Query#execute
     def query_execute(query, options = {}, &block)
+      return nil unless block_given?
       q = SPARQL::Client::Query.select(query.variables).where(*query.patterns)
-       client.query(q, options).each do |solution|
+      client.query(q, options).each do |solution|
         yield solution
       end
     end

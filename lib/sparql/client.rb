@@ -78,9 +78,7 @@ module SPARQL
         @url, @options = url, options.dup
       else
         @url, @options = RDF::URI.new(url.to_s), options.dup
-        @headers = {
-          'Accept' => [RESULT_JSON, RESULT_XML, "#{RESULT_TSV};p=0.8", "#{RESULT_CSV};p=0.2", RDF::Format.content_types.keys.map(&:to_s)].join(', ')
-        }.merge(@options.delete(:headers) || {})
+        @headers = @options.delete(:headers) || {}
         @http = http_klass(@url.scheme)
       end
 
@@ -639,6 +637,24 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def request(query, headers = {}, &block)
       method = (self.options[:method] || DEFAULT_METHOD).to_sym
+
+      # Make sure an appropriate Accept header is present
+      unless self.headers.has_key?('Accept')
+        headers['Accept'] ||= if query.respond_to?(:expects_statements?)
+          if query.expects_statements?
+            RDF::Format.content_types.keys.map(&:to_s).join(', ')
+          else
+            [RESULT_JSON, RESULT_XML, "#{RESULT_TSV};p=0.8", "#{RESULT_CSV};p=0.2"].join(', ')
+          end
+        else
+          case query
+          when /CONSTRUCT|DESCRIBE|DELETE|CLEAR/
+            RDF::Format.content_types.keys.map(&:to_s).join(', ')
+          else
+            [RESULT_JSON, RESULT_XML, "#{RESULT_TSV};p=0.8", "#{RESULT_CSV};p=0.2"].join(', ')
+          end
+        end
+      end
       request = send("make_#{method}_request", query, headers)
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?

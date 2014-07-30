@@ -36,6 +36,14 @@ class SPARQL::Client
         end
       end
 
+      ##
+      # Update always returns statements
+      #
+      # @return expects_statements?
+      def expects_statements?
+        true
+      end
+
       def silent
         self.options[:silent] = true
         self
@@ -55,6 +63,14 @@ class SPARQL::Client
       def graph(uri)
         self.options[:graph] = uri
         self
+      end
+
+      ##
+      # Update always returns statements
+      #
+      # @return expects_statements?
+      def expects_statements?
+        false
       end
 
       def to_s
@@ -191,6 +207,14 @@ class SPARQL::Client
       def all
         @what = :all
         self
+      end
+
+      ##
+      # Update always returns statements
+      #
+      # @return expects_statements?
+      def expects_statements?
+        false
       end
 
       def to_s
