@@ -380,6 +380,7 @@ module SPARQL
     ##
     # @param  [Hash{String => String}] value
     # @return [RDF::Value]
+    # @see    http://www.w3.org/TR/sparql11-results-json/#select-encode-terms
     # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
     def self.parse_json_value(value, nodes = {})
       case value['type'].to_sym
@@ -388,7 +389,7 @@ module SPARQL
         when :uri
           RDF::URI.new(value['value'])
         when :literal
-          RDF::Literal.new(value['value'], :language => value['xml:lang'])
+          RDF::Literal.new(value['value'], :datatype => value['datatype'], :language => value['xml:lang'])
         when :'typed-literal'
           RDF::Literal.new(value['value'], :datatype => value['datatype'])
         else nil
