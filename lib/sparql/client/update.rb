@@ -37,7 +37,7 @@ class SPARQL::Client
       end
 
       ##
-      # Update always returns statements
+      # Generic Update always returns statements
       #
       # @return expects_statements?
       def expects_statements?
@@ -66,7 +66,7 @@ class SPARQL::Client
       end
 
       ##
-      # Update always returns statements
+      # InsertData always returns result set
       #
       # @return expects_statements?
       def expects_statements?
@@ -210,7 +210,7 @@ class SPARQL::Client
       end
 
       ##
-      # Update always returns statements
+      # Clear always returns statements
       #
       # @return expects_statements?
       def expects_statements?

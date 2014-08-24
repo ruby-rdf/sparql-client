@@ -253,19 +253,15 @@ module SPARQL; class Client
     # @return [void]
     def delete_statements(statements)
 
-      constant = true
-      statements.each do |value|
-        case
-          when value.respond_to?(:each_statement)
-          # needs to be flattened... urgh
-            nil
-          when (statement = RDF::Statement.from(value)).constant?
-            # constant
-          else
-          constant = false
+      constant = statements.all? do |value|
+        # needs to be flattened... urgh
+        !value.respond_to?(:each_statement) && begin
+          statement = RDF::Statement.from(value)
+          statement.constant? && !statement.has_blank_nodes?
         end
       end
 
+      require 'byebug'; byebug
       if constant
         client.delete_data(statements)
       else
