@@ -102,12 +102,12 @@ describe SPARQL::Client do
     end
 
     context "Accept Header" do
-      it "should use application/n-triples for ASK" do
+      it "should use application/sparql-results+json for ASK" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
+          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(ask_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/tab-separated-values;p=0.8, text/csv;p=0.2'})
+          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;p=0.8, text/csv;p=0.2, */*;p=0.1'})
       end
 
       it "should use application/n-triples for CONSTRUCT" do
@@ -115,7 +115,7 @@ describe SPARQL::Client do
           to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
         subject.query(construct_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/n-triples, text/plain'})
+          with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;p=0.1'})
       end
 
       it "should use application/n-triples for DESCRIBE" do
@@ -123,15 +123,15 @@ describe SPARQL::Client do
           to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
         subject.query(query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/n-triples, text/plain'})
+          with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;p=0.1'})
       end
 
-      it "should use application/n-triples for SELECT" do
+      it "should use application/sparql-results+json for SELECT" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
+          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/tab-separated-values;p=0.8, text/csv;p=0.2'})
+          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;p=0.8, text/csv;p=0.2, */*;p=0.1'})
       end
     end
   end

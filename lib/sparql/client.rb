@@ -31,11 +31,26 @@ module SPARQL
     RESULT_TSV  = 'text/tab-separated-values'.freeze
     RESULT_BOOL = 'text/boolean'.freeze                           # Sesame-specific
     RESULT_BRTR = 'application/x-binary-rdf-results-table'.freeze # Sesame-specific
-    ACCEPT_JSON = {'Accept' => RESULT_JSON}.freeze
-    ACCEPT_XML  = {'Accept' => RESULT_XML}.freeze
-    ACCEPT_CSV  = {'Accept' => RESULT_CSV}.freeze
-    ACCEPT_TSV  = {'Accept' => RESULT_TSV}.freeze
-    ACCEPT_BRTR = {'Accept' => RESULT_BRTR}.freeze
+    RESULT_ALL  = [
+      RESULT_JSON,
+      RESULT_XML,
+      RESULT_BOOL,
+      "#{RESULT_TSV};p=0.8",
+      "#{RESULT_CSV};p=0.2",
+      '*/*;p=0.1'
+    ].join(', ').freeze
+    GRAPH_ALL  = (
+      RDF::Format.content_types.keys + 
+      ['*/*;p=0.1']
+    ).join(', ').freeze
+
+    ACCEPT_JSON    = {'Accept' => RESULT_JSON}.freeze
+    ACCEPT_XML     = {'Accept' => RESULT_XML}.freeze
+    ACCEPT_CSV     = {'Accept' => RESULT_CSV}.freeze
+    ACCEPT_TSV     = {'Accept' => RESULT_TSV}.freeze
+    ACCEPT_BRTR    = {'Accept' => RESULT_BRTR}.freeze
+    ACCEPT_RESULTS = {'Accept' => RESULT_ALL}.freeze
+    ACCEPT_GRAPH   = {'Accept' => GRAPH_ALL}.freeze
 
     DEFAULT_PROTOCOL = 1.0
     DEFAULT_METHOD   = :post
@@ -557,6 +572,8 @@ module SPARQL
     # @private
     def self.serialize_predicate(value,rdepth=0)
       case value
+        when nil
+          RDF::Query::Variable.new.to_s
         when String then value
         when Array
           s = value.map{|v|serialize_predicate(v,rdepth+1)}.join
@@ -639,22 +656,14 @@ module SPARQL
       method = (self.options[:method] || DEFAULT_METHOD).to_sym
 
       # Make sure an appropriate Accept header is present
-      unless self.headers.has_key?('Accept')
-        headers['Accept'] ||= if query.respond_to?(:expects_statements?)
-          if query.expects_statements?
-            RDF::Format.content_types.keys.map(&:to_s).join(', ')
-          else
-            [RESULT_JSON, RESULT_XML, "#{RESULT_TSV};p=0.8", "#{RESULT_CSV};p=0.2"].join(', ')
-          end
-        else
-          case query
-          when /CONSTRUCT|DESCRIBE|DELETE|CLEAR/
-            RDF::Format.content_types.keys.map(&:to_s).join(', ')
-          else
-            [RESULT_JSON, RESULT_XML, "#{RESULT_TSV};p=0.8", "#{RESULT_CSV};p=0.2"].join(', ')
-          end
-        end
+      headers['Accept'] ||= if (query.respond_to?(:expects_statements?) ?
+                                query.expects_statements? :
+                                (query =~ /CONSTRUCT|DESCRIBE|DELETE|CLEAR/))
+        GRAPH_ALL
+      else
+        RESULT_ALL
       end
+
       request = send("make_#{method}_request", query, headers)
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
