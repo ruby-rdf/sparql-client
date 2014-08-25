@@ -32,8 +32,9 @@ module SPARQL; class Client
     # @see    RDF::Queryable#query
     # @see    RDF::Query#execute
     def query_execute(query, options = {}, &block)
+      return nil unless block_given?
       q = SPARQL::Client::Query.select(query.variables).where(*query.patterns)
-       client.query(q, options).each do |solution|
+      client.query(q, options).each do |solution|
         yield solution
       end
     end
@@ -252,16 +253,11 @@ module SPARQL; class Client
     # @return [void]
     def delete_statements(statements)
 
-      constant = true
-      statements.each do |value|
-        case
-          when value.respond_to?(:each_statement)
-          # needs to be flattened... urgh
-            nil
-          when (statement = RDF::Statement.from(value)).constant?
-            # constant
-          else
-          constant = false
+      constant = statements.all? do |value|
+        # needs to be flattened... urgh
+        !value.respond_to?(:each_statement) && begin
+          statement = RDF::Statement.from(value)
+          statement.constant? && !statement.has_blank_nodes?
         end
       end
 

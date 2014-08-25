@@ -12,10 +12,10 @@ describe SPARQL::Client::Update do
       expect(subject).to respond_to(:delete_data)
     end
 
-    it "should support DELETE/INSERT operations" do
-      #expect(subject).to respond_to(:what)
-      #expect(subject).to respond_to(:delete)
-      #expect(subject).to respond_to(:insert)
+    it "should support DELETE/INSERT operations", pending: true do
+      expect(subject).to respond_to(:what)
+      expect(subject).to respond_to(:delete)
+      expect(subject).to respond_to(:insert)
     end
 
     it "should support LOAD operations" do
@@ -34,22 +34,26 @@ describe SPARQL::Client::Update do
       expect(subject).to respond_to(:drop)
     end
 
-    it "should support COPY operations" do
-      #expect(subject).to respond_to(:copy) # TODO
+    it "should support COPY operations", pending: true do
+      expect(subject).to respond_to(:copy) # TODO
     end
 
-    it "should support MOVE operations" do
-      #expect(subject).to respond_to(:move) # TODO
+    it "should support MOVE operations", pending: true do
+      expect(subject).to respond_to(:move) # TODO
     end
 
-    it "should support ADD operations" do
-      #expect(subject).to respond_to(:add) # TODO
+    it "should support ADD operations", pending: true do
+      expect(subject).to respond_to(:add) # TODO
     end
   end
 
   context "when building INSERT DATA queries" do
     it "should support empty input" do
       expect(subject.insert_data(RDF::Graph.new).to_s).to eq "INSERT DATA {\n}\n"
+    end
+
+    it "expects results not statements" do
+      expect(subject.insert_data(RDF::Graph.new)).not_to be_expects_statements
     end
 
     it "should support non-empty input" do
@@ -72,6 +76,10 @@ describe SPARQL::Client::Update do
       expect(subject.delete_data(RDF::Graph.new).to_s).to eq "DELETE DATA {\n}\n"
     end
 
+    it "expects statements not results" do
+      expect(subject.delete_data(RDF::Graph.new)).to be_expects_statements
+    end
+
     it "should support non-empty input" do
       data = RDF::Graph.new do |graph|
         graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
@@ -88,17 +96,21 @@ describe SPARQL::Client::Update do
   end
 
   context "when building INSERT/DELETE queries" do
-    # TODO
+    it "should do something"
   end
 
   context "when building LOAD queries" do
+    let(:from_url) {'http://example.org/data.rdf'}
+
     it "should require a source URI" do
-      from_url = 'http://example.org/data.rdf'
       expect(subject.load(from_url).to_s).to eq "LOAD <#{from_url}>"
     end
 
+    it "expects statements not results" do
+      expect(subject.load(from_url)).to be_expects_statements
+    end
+
     it "should support the SILENT modifier" do
-      from_url = 'http://example.org/data.rdf'
       [subject.load(from_url).silent,
        subject.load(from_url, :silent => true)].each do |example|
         expect(example.to_s).to eq "LOAD SILENT <#{from_url}>"
@@ -106,7 +118,6 @@ describe SPARQL::Client::Update do
     end
 
     it "should support the INTO GRAPH modifier" do
-      from_url = 'http://example.org/data.rdf'
       [subject.load(from_url).into(from_url),
        subject.load(from_url, :into => from_url)].each do |example|
         expect(example.to_s).to eq "LOAD <#{from_url}> INTO GRAPH <#{from_url}>"
@@ -141,6 +152,10 @@ describe SPARQL::Client::Update do
       end
     end
 
+    it "expects results not statements" do
+      expect(subject.clear.all).not_to be_expects_statements
+    end
+
     it "should support the SILENT modifier" do
       [subject.clear(:all).silent,
        subject.clear(:all, :silent => true)].each do |example|
@@ -150,17 +165,21 @@ describe SPARQL::Client::Update do
   end
 
   context "when building CREATE queries" do
+    let(:graph_uri) {'http://example.org/'}
+
     it "should require a graph URI" do
-      graph_uri = 'http://example.org/'
       expect(subject.create(graph_uri).to_s).to eq "CREATE GRAPH <#{graph_uri}>"
     end
 
     it "should support the SILENT modifier" do
-      graph_uri = 'http://example.org/'
       [subject.create(graph_uri).silent,
        subject.create(graph_uri, :silent => true)].each do |example|
         expect(example.to_s).to eq "CREATE SILENT GRAPH <#{graph_uri}>"
       end
+    end
+
+    it "expects statements not results" do
+      expect(subject.create(graph_uri)).to be_expects_statements
     end
   end
 
@@ -191,6 +210,10 @@ describe SPARQL::Client::Update do
       end
     end
 
+    it "expects results not statements" do
+      expect(subject.drop.all).not_to be_expects_statements
+    end
+
     it "should support the SILENT modifier" do
       [subject.drop(:all).silent,
        subject.drop(:all, :silent => true)].each do |example|
@@ -200,14 +223,14 @@ describe SPARQL::Client::Update do
   end
 
   context "when building COPY queries" do
-    # TODO
+    it "should do something"
   end
 
   context "when building MOVE queries" do
-    # TODO
+    it "should do something"
   end
 
   context "when building ADD queries" do
-    # TODO
+    it "should do something"
   end
 end

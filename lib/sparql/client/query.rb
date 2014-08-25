@@ -242,6 +242,12 @@ module SPARQL; class Client
     end
 
     ##
+    # @return expects_statements?
+    def expects_statements?
+      [:construct, :describe].include?(form)
+    end
+
+    ##
     # @private
     def build_patterns(patterns)
       patterns.map do |pattern|
