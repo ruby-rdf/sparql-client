@@ -261,7 +261,6 @@ module SPARQL; class Client
         end
       end
 
-      require 'byebug'; byebug
       if constant
         client.delete_data(statements)
       else
