@@ -335,11 +335,11 @@ module SPARQL
       request(query, headers) do |response|
         case response
           when Net::HTTPBadRequest  # 400 Bad Request
-            raise MalformedQuery.new(response.body)
+            raise MalformedQuery.new(response.body + " Processing query #{query}")
           when Net::HTTPClientError # 4xx
-            raise ClientError.new(response.body)
+            raise ClientError.new(response.body + " Processing query #{query}")
           when Net::HTTPServerError # 5xx
-            raise ServerError.new(response.body)
+            raise ServerError.new(response.body + " Processing query #{query}")
           when Net::HTTPSuccess     # 2xx
             response
         end
@@ -551,14 +551,16 @@ module SPARQL
     # Serializes an `RDF::Value` into SPARQL syntax.
     #
     # @param  [RDF::Value] value
+    # @param  [Boolean] use_vars (false) Use variables in place of BNodes
     # @return [String]
     # @private
-    def self.serialize_value(value)
+    def self.serialize_value(value, use_vars = false)
       # SPARQL queries are UTF-8, but support ASCII-style Unicode escapes, so
       # the N-Triples serializer is fine unless it's a variable:
       case
-        when value.nil? then RDF::Query::Variable.new.to_s
+        when value.nil?      then RDF::Query::Variable.new.to_s
         when value.variable? then value.to_s
+        when value.node?     then (use_vars ? RDF::Query::Variable.new(value.id) : value)
         else RDF::NTriples.serialize(value)
       end
     end
@@ -588,15 +590,16 @@ module SPARQL
     # Serializes a SPARQL graph
     #
     # @param [RDF::Enumerable] patterns
+    # @param  [Boolean] use_vars (false) Use variables in place of BNodes
     # @return [String]
     # @private
-    def self.serialize_patterns(patterns)
+    def self.serialize_patterns(patterns, use_vars = false)
       patterns.map do |pattern|
         serialized_pattern = RDF::Statement.from(pattern).to_triple.each_with_index.map do |v, i|
           if i == 1
             SPARQL::Client.serialize_predicate(v)
          else
-            SPARQL::Client.serialize_value(v)
+            SPARQL::Client.serialize_value(v, use_vars)
           end
         end
         serialized_pattern.join(' ') + ' .'

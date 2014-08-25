@@ -134,6 +134,25 @@ describe SPARQL::Client do
           with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;p=0.8, text/csv;p=0.2, */*;p=0.1'})
       end
     end
+
+    context "Error response" do
+      {
+        "bad request" => {status: 400, error: SPARQL::Client::MalformedQuery },
+        "unauthorized" => {status: 401, error: SPARQL::Client::ClientError },
+        "not found" => {status: 404, error: SPARQL::Client::ClientError },
+        "internal server error" => {status: 500, error: SPARQL::Client::ServerError },
+        "not implemented" => {status: 501, error: SPARQL::Client::ServerError },
+        "service unavailable" => {status: 503, error: SPARQL::Client::ServerError },
+      }.each do |test, params|
+        it "detects #{test}" do
+          WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
+            to_return(:body => 'the body', :status => params[:status], headers: {'Content-Type' => 'text/plain'})
+          expect {
+            subject.query(select_query)
+          }.to raise_error(params[:error], "the body Processing query #{select_query}")
+        end
+      end
+    end
   end
 
   context "when querying an RDF::Repository" do

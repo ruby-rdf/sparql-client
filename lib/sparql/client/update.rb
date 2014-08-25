@@ -135,19 +135,19 @@ class SPARQL::Client
           buffer << SPARQL::Client.serialize_uri(self.options[:graph])
         end
         if delete_graph and !delete_graph.empty?
-          serialized_delete = SPARQL::Client.serialize_patterns delete_graph
+          serialized_delete = SPARQL::Client.serialize_patterns delete_graph, true
           buffer << "DELETE {\n"
           buffer += serialized_delete
           buffer << "}\n"
         end
         if insert_graph and !insert_graph.empty?
           buffer << "INSERT {\n"
-          buffer += SPARQL::Client.serialize_patterns insert_graph
+          buffer += SPARQL::Client.serialize_patterns insert_graph, true
           buffer << "}\n"
         end
           buffer << "WHERE {\n"
         if where_graph
-          buffer += SPARQL::Client.serialize_patterns where_graph
+          buffer += SPARQL::Client.serialize_patterns where_graph, true
         elsif serialized_delete
           buffer += serialized_delete
         end
