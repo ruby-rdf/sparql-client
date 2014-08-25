@@ -31,11 +31,26 @@ module SPARQL
     RESULT_TSV  = 'text/tab-separated-values'.freeze
     RESULT_BOOL = 'text/boolean'.freeze                           # Sesame-specific
     RESULT_BRTR = 'application/x-binary-rdf-results-table'.freeze # Sesame-specific
-    ACCEPT_JSON = {'Accept' => RESULT_JSON}.freeze
-    ACCEPT_XML  = {'Accept' => RESULT_XML}.freeze
-    ACCEPT_CSV  = {'Accept' => RESULT_CSV}.freeze
-    ACCEPT_TSV  = {'Accept' => RESULT_TSV}.freeze
-    ACCEPT_BRTR = {'Accept' => RESULT_BRTR}.freeze
+    RESULT_ALL  = [
+      RESULT_JSON,
+      RESULT_XML,
+      RESULT_BOOL,
+      "#{RESULT_TSV};p=0.8",
+      "#{RESULT_CSV};p=0.2",
+      '*/*;p=0.1'
+    ].join(', ').freeze
+    GRAPH_ALL  = (
+      RDF::Format.content_types.keys + 
+      ['*/*;p=0.1']
+    ).join(', ').freeze
+
+    ACCEPT_JSON    = {'Accept' => RESULT_JSON}.freeze
+    ACCEPT_XML     = {'Accept' => RESULT_XML}.freeze
+    ACCEPT_CSV     = {'Accept' => RESULT_CSV}.freeze
+    ACCEPT_TSV     = {'Accept' => RESULT_TSV}.freeze
+    ACCEPT_BRTR    = {'Accept' => RESULT_BRTR}.freeze
+    ACCEPT_RESULTS = {'Accept' => RESULT_ALL}.freeze
+    ACCEPT_GRAPH   = {'Accept' => GRAPH_ALL}.freeze
 
     DEFAULT_PROTOCOL = 1.0
     DEFAULT_METHOD   = :post
@@ -78,9 +93,7 @@ module SPARQL
         @url, @options = url, options.dup
       else
         @url, @options = RDF::URI.new(url.to_s), options.dup
-        @headers = {
-          'Accept' => [RESULT_JSON, RESULT_XML, "#{RESULT_TSV};p=0.8", "#{RESULT_CSV};p=0.2", RDF::Format.content_types.keys.map(&:to_s)].join(', ')
-        }.merge(@options.delete(:headers) || {})
+        @headers = @options.delete(:headers) || {}
         @http = http_klass(@url.scheme)
       end
 
@@ -324,11 +337,11 @@ module SPARQL
       request(query, headers) do |response|
         case response
           when Net::HTTPBadRequest  # 400 Bad Request
-            raise MalformedQuery.new(response.body)
+            raise MalformedQuery.new(response.body + " Processing query #{query}")
           when Net::HTTPClientError # 4xx
-            raise ClientError.new(response.body)
+            raise ClientError.new(response.body + " Processing query #{query}")
           when Net::HTTPServerError # 5xx
-            raise ServerError.new(response.body)
+            raise ServerError.new(response.body + " Processing query #{query}")
           when Net::HTTPSuccess     # 2xx
             response
         end
@@ -541,14 +554,16 @@ module SPARQL
     # Serializes an `RDF::Value` into SPARQL syntax.
     #
     # @param  [RDF::Value] value
+    # @param  [Boolean] use_vars (false) Use variables in place of BNodes
     # @return [String]
     # @private
-    def self.serialize_value(value)
+    def self.serialize_value(value, use_vars = false)
       # SPARQL queries are UTF-8, but support ASCII-style Unicode escapes, so
       # the N-Triples serializer is fine unless it's a variable:
       case
-        when value.nil? then RDF::Query::Variable.new.to_s
+        when value.nil?      then RDF::Query::Variable.new.to_s
         when value.variable? then value.to_s
+        when value.node?     then (use_vars ? RDF::Query::Variable.new(value.id) : value)
         else RDF::NTriples.serialize(value)
       end
     end
@@ -562,6 +577,8 @@ module SPARQL
     # @private
     def self.serialize_predicate(value,rdepth=0)
       case value
+        when nil
+          RDF::Query::Variable.new.to_s
         when String then value
         when Array
           s = value.map{|v|serialize_predicate(v,rdepth+1)}.join
@@ -576,15 +593,16 @@ module SPARQL
     # Serializes a SPARQL graph
     #
     # @param [RDF::Enumerable] patterns
+    # @param  [Boolean] use_vars (false) Use variables in place of BNodes
     # @return [String]
     # @private
-    def self.serialize_patterns(patterns)
+    def self.serialize_patterns(patterns, use_vars = false)
       patterns.map do |pattern|
         serialized_pattern = RDF::Statement.from(pattern).to_triple.each_with_index.map do |v, i|
           if i == 1
             SPARQL::Client.serialize_predicate(v)
          else
-            SPARQL::Client.serialize_value(v)
+            SPARQL::Client.serialize_value(v, use_vars)
           end
         end
         serialized_pattern.join(' ') + ' .'
@@ -642,6 +660,16 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def request(query, headers = {}, &block)
       method = (self.options[:method] || DEFAULT_METHOD).to_sym
+
+      # Make sure an appropriate Accept header is present
+      headers['Accept'] ||= if (query.respond_to?(:expects_statements?) ?
+                                query.expects_statements? :
+                                (query =~ /CONSTRUCT|DESCRIBE|DELETE|CLEAR/))
+        GRAPH_ALL
+      else
+        RESULT_ALL
+      end
+
       request = send("make_#{method}_request", query, headers)
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
