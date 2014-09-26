@@ -101,6 +101,27 @@ describe SPARQL::Client do
       expect(result[:name].to_s).to eq "東京"
     end
 
+    context "Redirects" do
+      before do
+        WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
+          to_return(:body => '{}', :status => 303, :headers => { 'Location' => 'http://sparql.linkedmdb.org/sparql' })
+      end
+
+      it 'follows redirects' do
+        WebMock.stub_request(:any, 'http://sparql.linkedmdb.org/sparql').
+          to_return(:body => '{}', :status => 200)
+        subject.query(ask_query)
+        expect(WebMock).to have_requested(:post, "http://sparql.linkedmdb.org/sparql").
+          with(:body => 'query=ASK+WHERE+%7B+%3Fkb+%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E+%22Kevin+Bacon%22+.+%7D')
+      end
+
+      it 'raises an error on infinate redirects' do
+        WebMock.stub_request(:any, 'http://sparql.linkedmdb.org/sparql').
+          to_return(:body => '{}', :status => 303, :headers => { 'Location' => 'http://sparql.linkedmdb.org/sparql' })
+        expect{ subject.query(ask_query) }.to raise_error SPARQL::Client::ServerError
+      end
+    end
+
     context "Accept Header" do
       it "should use application/sparql-results+json for ASK" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
