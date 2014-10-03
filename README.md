@@ -120,6 +120,7 @@ follows:
 * [Michael Sokol](http://github.com/mikaa123) - <http://sokolmichael.com/>
 * [Yves Raimond](http://github.com/moustaki) - <http://moustaki.org/>
 * [Thomas Feron](http://github.com/thoferon) - <http://github.com/thoferon>
+* [Nick Gottlieb](http://github.com/ngottlieb) - <http://www.nicholasgottlieb.com>
 
 ##Contributing
 This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange development and release activity. All submissions _must_ be on a feature branch based on the _develop_ branch to ease staging and integration.
