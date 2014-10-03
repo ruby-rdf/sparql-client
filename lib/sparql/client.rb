@@ -675,11 +675,15 @@ module SPARQL
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
       response = @http.request(url, request)
-      if block_given?
-        block.call(response)
-      else
-        response
+
+      10.times do
+        if response.kind_of? Net::HTTPRedirection
+          response = @http.request(RDF::URI(response['location']), request)
+        else
+          return block_given? ? block.call(response) : response 
+        end          
       end
+      raise ServerError, "Infinite redirect at #{url}. Redirected more than 10 times."
     end
 
     ##

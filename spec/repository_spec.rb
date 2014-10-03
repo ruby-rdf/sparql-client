@@ -5,6 +5,11 @@ require 'rdf/spec/repository'
 describe SPARQL::Client::Repository do
   before :all do
     @repository = SPARQL::Client::Repository.new('http://iZ9PhxCm0nUeqhQ0MuGn@dydra.com/ruby-rdf/sparql-client-test/sparql')
+    WebMock.disable!
+  end
+
+  after :all do
+    Webmock.enable!
   end
 
   around :example do |example|
