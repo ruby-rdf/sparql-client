@@ -2,11 +2,7 @@ language: ruby
 bundler_args: --without debug
 script: "bundle exec rspec spec"
 env:
-  global:
-    - CI=true
-  matrix:
-    - WITH_NOKOGIRI=true
-    - WITH_NOKOGIRI=false
+  - CI=true
 rvm:
   - 1.9.3
   - 2.0
