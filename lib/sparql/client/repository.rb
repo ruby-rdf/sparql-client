@@ -12,7 +12,17 @@ module SPARQL; class Client
     # @param  [Hash{Symbol => Object}] options
     def initialize(endpoint, options = {})
       @options = options.dup
+      @update_client = SPARQL::Client.new(options.delete(:update_endpoint), options) if options[:update_endpoint]
       @client  = SPARQL::Client.new(endpoint, options)
+    end
+
+    ##
+    # Returns the client for the update_endpoint if specified, otherwise the
+    # {client}.
+    #
+    # @return [SPARQL::Client]
+    def update_client
+      @update_client || @client
     end
 
     ##
@@ -225,7 +235,7 @@ module SPARQL; class Client
     # @private
     # @see RDF::Mutable#clear
     def clear_statements
-      client.clear(:all)
+      update_client.clear(:all)
     end
 
     ##
@@ -262,9 +272,9 @@ module SPARQL; class Client
       end
 
       if constant
-        client.delete_data(statements)
+        update_client.delete_data(statements)
       else
-        client.delete_insert(statements)
+        update_client.delete_insert(statements)
       end
     end
 
@@ -278,14 +288,14 @@ module SPARQL; class Client
     # @return [void]
     # @since  0.1.6
     def insert_statements(statements)
-      client.insert_data(statements)
+      update_client.insert_data(statements)
     end
 
     ##
     # @private
     # @see RDF::Mutable#insert
     def insert_statement(statement)
-      client.insert_data([statement])
+      update_client.insert_data([statement])
     end
 
   end

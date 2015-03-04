@@ -85,6 +85,14 @@ describe SPARQL::Client do
       client.query(query)
     end
 
+    it "should enable overriding the http method" do
+      stub_request(:get, "http://data.linkedmdb.org/sparql?query=DESCRIBE%20?kb%20WHERE%20%7B%20?kb%20%3Chttp://data.linkedmdb.org/resource/movie/actor_name%3E%20%22Kevin%20Bacon%22%20.%20%7D").
+         to_return(:status => 200, :body => "", :headers => {})
+      allow(subject).to receive(:request_method).with(query).and_return(:get)
+      expect(subject).to receive(:make_get_request).and_call_original
+      subject.query(query)
+    end
+
     it "should support international characters in response body" do
       client = SPARQL::Client.new('http://dbpedia.org/sparql')
       json = {
