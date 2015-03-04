@@ -659,8 +659,6 @@ module SPARQL
     # @return [Net::HTTPResponse]
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def request(query, headers = {}, &block)
-      method = (self.options[:method] || DEFAULT_METHOD).to_sym
-
       # Make sure an appropriate Accept header is present
       headers['Accept'] ||= if (query.respond_to?(:expects_statements?) ?
                                 query.expects_statements? :
@@ -670,7 +668,7 @@ module SPARQL
         RESULT_ALL
       end
 
-      request = send("make_#{method}_request", query, headers)
+      request = send("make_#{method(query)}_request", query, headers)
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
@@ -685,6 +683,15 @@ module SPARQL
       end
       raise ServerError, "Infinite redirect at #{url}. Redirected more than 10 times."
     end
+
+    ##
+    # Return the HTTP verb for posting this request.
+    # this is useful if you need to override the HTTP verb based on the request being made.
+    # (e.g. Marmotta 3.3.0 requires GET for DELETE requests, but can accept POST for INSERT)
+    def method(query)
+      (options[:method] || DEFAULT_METHOD).to_sym
+    end
+
 
     ##
     # Constructs an HTTP GET request according to the SPARQL Protocol.
