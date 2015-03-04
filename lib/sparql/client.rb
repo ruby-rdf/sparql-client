@@ -668,7 +668,7 @@ module SPARQL
         RESULT_ALL
       end
 
-      request = send("make_#{method(query)}_request", query, headers)
+      request = send("make_#{request_method(query)}_request", query, headers)
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
@@ -688,7 +688,7 @@ module SPARQL
     # Return the HTTP verb for posting this request.
     # this is useful if you need to override the HTTP verb based on the request being made.
     # (e.g. Marmotta 3.3.0 requires GET for DELETE requests, but can accept POST for INSERT)
-    def method(query)
+    def request_method(query)
       (options[:method] || DEFAULT_METHOD).to_sym
     end
 

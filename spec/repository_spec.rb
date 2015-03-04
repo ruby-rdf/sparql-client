@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 require File.join(File.dirname(__FILE__), 'spec_helper')
+require 'webmock/rspec'
 require 'rdf/spec/repository'
 
 describe SPARQL::Client::Repository do
