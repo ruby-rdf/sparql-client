@@ -25,31 +25,6 @@ module SPARQL; class Client
       @update_client || @client
     end
 
-    ##
-    # Queries `self` using the given basic graph pattern (BGP) query,
-    # yielding each matched solution to the given block.
-    #
-    # Overrides Queryable::query_execute to use SPARQL::Client::query
-    #
-    # @param  [RDF::Query] query
-    #   the query to execute
-    # @param  [Hash{Symbol => Object}] options ({})
-    #   Any other options passed to `query.execute`
-    # @yield  [solution]
-    # @yieldparam  [RDF::Query::Solution] solution
-    # @yieldreturn [void] ignored
-    # @return [void] ignored
-    # @see    RDF::Queryable#query
-    # @see    RDF::Query#execute
-    def query_execute(query, options = {}, &block)
-      return nil unless block_given?
-      q = SPARQL::Client::Query.select(query.variables).where(*query.patterns)
-      client.query(q, options).each do |solution|
-        yield solution
-      end
-    end
-
-    ##
     # Enumerates each RDF statement in this repository.
     #
     # @yield  [statement]
@@ -171,8 +146,8 @@ module SPARQL; class Client
     # @see    RDF::Repository#count?
     def count
       begin
-        binding = client.query("SELECT COUNT(*) WHERE { ?s ?p ?o }").first.to_hash
-        binding[binding.keys.first].value.to_i
+        binding = client.query("SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o }").first.to_hash
+        binding[:count].value.to_i rescue 0
       rescue SPARQL::Client::MalformedQuery => e
         # SPARQL 1.0 does not include support for aggregate functions:
         count = 0
@@ -191,35 +166,6 @@ module SPARQL; class Client
     # @see    RDF::Repository#empty?
     def empty?
       client.ask.whether([:s, :p, :o]).false?
-    end
-
-    ##
-    # Queries `self` for RDF statements matching the given `pattern`.
-    #
-    # @example
-    #     repository.query([nil, RDF::DOAP.developer, nil])
-    #     repository.query(:predicate => RDF::DOAP.developer)
-    #
-    # @fixme This should use basic SPARQL query mechanism.
-    #
-    # @param  [Pattern] pattern
-    # @see    RDF::Queryable#query_pattern
-    # @yield  [statement]
-    # @yieldparam [Statement]
-    # @return [Enumerable<Statement>]
-    def query_pattern(pattern, &block)
-      pattern = pattern.dup
-      pattern.subject   ||= RDF::Query::Variable.new
-      pattern.predicate ||= RDF::Query::Variable.new
-      pattern.object    ||= RDF::Query::Variable.new
-      pattern.initialize!
-      query = client.construct(pattern).where(pattern)
-
-      if block_given?
-        query.each_statement(&block)
-      else
-        query.solutions.to_a.extend(RDF::Enumerable, RDF::Queryable)
-      end
     end
 
     ##
@@ -253,6 +199,59 @@ module SPARQL; class Client
     end
 
     protected
+
+    ##
+    # Queries `self` using the given basic graph pattern (BGP) query,
+    # yielding each matched solution to the given block.
+    #
+    # Overrides Queryable::query_execute to use SPARQL::Client::query
+    #
+    # @param  [RDF::Query] query
+    #   the query to execute
+    # @param  [Hash{Symbol => Object}] options ({})
+    #   Any other options passed to `query.execute`
+    # @yield  [solution]
+    # @yieldparam  [RDF::Query::Solution] solution
+    # @yieldreturn [void] ignored
+    # @return [void] ignored
+    # @see    RDF::Queryable#query
+    # @see    RDF::Query#execute
+    def query_execute(query, options = {}, &block)
+      return nil unless block_given?
+      q = SPARQL::Client::Query.select(query.variables).where(*query.patterns)
+      client.query(q, options).each do |solution|
+        yield solution
+      end
+    end
+
+    ##
+    # Queries `self` for RDF statements matching the given `pattern`.
+    #
+    # @example
+    #     repository.query([nil, RDF::DOAP.developer, nil])
+    #     repository.query(:predicate => RDF::DOAP.developer)
+    #
+    # @fixme This should use basic SPARQL query mechanism.
+    #
+    # @param  [Pattern] pattern
+    # @see    RDF::Queryable#query_pattern
+    # @yield  [statement]
+    # @yieldparam [Statement]
+    # @return [Enumerable<Statement>]
+    def query_pattern(pattern, &block)
+      pattern = pattern.dup
+      pattern.subject   ||= RDF::Query::Variable.new
+      pattern.predicate ||= RDF::Query::Variable.new
+      pattern.object    ||= RDF::Query::Variable.new
+      pattern.initialize!
+      query = client.construct(pattern).where(pattern)
+
+      if block_given?
+        query.each_statement(&block)
+      else
+        query.solutions.to_a.extend(RDF::Enumerable, RDF::Queryable)
+      end
+    end
 
     ##
     # Deletes the given RDF statements from the underlying storage.
