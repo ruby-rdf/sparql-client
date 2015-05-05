@@ -32,7 +32,7 @@ Gem::Specification.new do |gem|
   gem.requirements               = []
   gem.add_runtime_dependency     'rdf',       '~> 1.1' 
   gem.add_runtime_dependency     'net-http-persistent', '~> 2.9'
-  gem.add_development_dependency 'sparql',    '~> 1.1'
+  gem.add_development_dependency 'sparql',    '~> 1.1', '>= 1.1.6'
   gem.add_development_dependency 'rdf-spec',  '~> 1.1'
   gem.add_development_dependency 'rspec',     '~> 3.0'
   gem.add_development_dependency 'rspec-its', '~> 1.0'

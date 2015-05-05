@@ -293,7 +293,12 @@ module SPARQL
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
-        SPARQL.execute(query, @url, options)
+        begin
+          SPARQL.execute(query, @url, options)
+        rescue SPARQL::MalformedQuery
+          $stderr.puts "error running #{query}: #{$!}"
+          raise
+        end
       else
         parse_response(response(query, options), options)
       end
@@ -315,7 +320,7 @@ module SPARQL
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
-        SPARQL.execute(query, @url, options)
+        SPARQL.execute(query, @url, options.merge(update: true))
       else
         parse_response(response(query, options), options)
       end
