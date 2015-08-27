@@ -382,7 +382,40 @@ module SPARQL; class Client
 
       if options[:order_by]
         buffer << 'ORDER BY'
-        buffer += options[:order_by].map { |var| var.is_a?(String) ? var : "?#{var}" }
+        options[:order_by].map { |elem|
+          case elem
+            # .order_by({ :var1 => :asc, :var2 => :desc})
+            when Hash
+              elem.each { |key, val|
+                # check provided values
+                if !key.is_a?(Symbol)
+                  raise ArgumentError, 'keys of hash argument must be a Symbol'
+                elsif !val.is_a?(Symbol) || (val != :asc && val != :desc)
+                  raise ArgumentError, 'values of hash argument must either be `:asc` or `:desc`'
+                end
+                buffer << "#{val == :asc ? 'ASC' : 'DESC'}(?#{key})"
+              }
+            # .order_by([:var1, :asc], [:var2, :desc])
+            when Array
+              # check provided values
+              if elem.length != 2
+                raise ArgumentError, 'array argument must specify two elements'
+              elsif !elem[0].is_a?(Symbol)
+                raise ArgumentError, '1st element of array argument must contain a Symbol'
+              elsif !elem[1].is_a?(Symbol) || (elem[1] != :asc && elem[1] != :desc)
+                raise ArgumentError, '2nd element of array argument must either be `:asc` or `:desc`'
+              end
+              buffer << "#{elem[1] == :asc ? 'ASC' : 'DESC'}(?#{elem[0]})"
+            # .order_by(:var1, :var2)
+            when Symbol
+              buffer << "?#{elem}"
+            # .order_by('ASC(?var1) DESC(?var2)')
+            when String
+              buffer << elem
+            else
+              raise ArgumentError, 'argument provided to `order()` must either be an Array, Symbol or String'
+          end
+        }
       end
 
       buffer << "OFFSET #{options[:offset]}" if options[:offset]
