@@ -6,14 +6,15 @@ require 'rdf/spec/repository'
 describe SPARQL::Client::Repository do
   before :all do
     @base_repo = RDF::Repository.new
-    @repository = SPARQL::Client::Repository.new(@base_repo)
   end
 
   # @see lib/rdf/spec/repository.rb in RDF-spec
-  include RDF_Repository
+  it_behaves_like 'an RDF::Repository' do
+    let(:repository) { SPARQL::Client::Repository.new(@base_repo) }
+  end
 
   context "Problematic Tests", skip: true do
-    subject {@repository}
+    subject {SPARQL::Client::Repository.new(@base_repo)}
     before :each do
       @statements = RDF::Spec.quads
   

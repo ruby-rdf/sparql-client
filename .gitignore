@@ -7,4 +7,5 @@
 pkg
 tmp
 doc
+coverage
 .bundle

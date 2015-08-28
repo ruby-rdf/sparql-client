@@ -139,6 +139,18 @@ describe SPARQL::Client::Query do
       expect { subject.select.where([:s, :p, :o]).order_by(42 => :asc).to_s }.to raise_error(ArgumentError)
     end
 
+    it "should support ORDER BY ASC" do
+      expect(subject.select.where([:s, :p, :o]).order.asc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
+      expect(subject.select.where([:s, :p, :o]).asc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
+      expect { subject.select.where([:s, :p, :o]).order.asc(:o, :p).to_s }.to raise_error(ArgumentError)
+    end
+
+    it "should support ORDER BY DESC" do
+      expect(subject.select.where([:s, :p, :o]).order.desc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
+      expect(subject.select.where([:s, :p, :o]).desc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
+      expect { subject.select.where([:s, :p, :o]).order.desc(:o, :p).to_s }.to raise_error(ArgumentError)
+    end
+
     it "should support OFFSET" do
       expect(subject.select.where([:s, :p, :o]).offset(100).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } OFFSET 100"
     end

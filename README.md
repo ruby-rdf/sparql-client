@@ -66,11 +66,28 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
     puts result.inspect   #=> true or false
 
+### Inserting data into a graph
+
+    # INSERT DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
+    data = RDF::Graph.new do |graph|
+      graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+    end
+    insert_data(data)
+
+### Deleting data from a graph
+
+    # DELETE DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
+    data = RDF::Graph.new do |graph|
+      graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+    end
+    delete_data(data)
+
 ##Documentation
 
 * {SPARQL::Client}
   * {SPARQL::Client::Query}
   * {SPARQL::Client::Repository}
+  * {SPARQL::Client::Update}
 
 ##Dependencies
 

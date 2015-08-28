@@ -2,7 +2,7 @@ module SPARQL; class Client
   ##
   # A read-only repository view of a SPARQL endpoint.
   #
-  # @see RDF::Repository
+  # @see `RDF::Repository`
   class Repository < RDF::Repository
     # @return [SPARQL::Client]
     attr_reader :client
@@ -18,7 +18,7 @@ module SPARQL; class Client
 
     ##
     # Returns the client for the update_endpoint if specified, otherwise the
-    # {client}.
+    # {#client}.
     #
     # @return [SPARQL::Client]
     def update_client
@@ -186,7 +186,7 @@ module SPARQL; class Client
 
     ##
     # Deletes RDF statements from `self`.
-    # If any statement contains a {Query::Variable}, it is
+    # If any statement contains an `RDF::Query::Variable`, it is
     # considered to be a pattern, and used to query
     # self to find matching statements to delete.
     #
@@ -231,7 +231,7 @@ module SPARQL; class Client
     #     repository.query([nil, RDF::DOAP.developer, nil])
     #     repository.query(:predicate => RDF::DOAP.developer)
     #
-    # @fixme This should use basic SPARQL query mechanism.
+    # @todo This should use basic SPARQL query mechanism.
     #
     # @param  [Pattern] pattern
     # @see    RDF::Queryable#query_pattern
