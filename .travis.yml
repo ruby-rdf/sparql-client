@@ -14,3 +14,4 @@ gemfile:
   - Gemfile
   - Gemfile-pure
 cache: bundler
+sudo: false

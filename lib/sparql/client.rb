@@ -108,6 +108,7 @@ module SPARQL
     ##
     # Executes a boolean `ASK` query.
     #
+    # @param (see Query.ask)
     # @return [Query]
     def ask(*args)
       call_query_method(:ask, *args)
@@ -116,7 +117,7 @@ module SPARQL
     ##
     # Executes a tuple `SELECT` query.
     #
-    # @param  [Array<Symbol>] args
+    # @param (see Query.select)
     # @return [Query]
     def select(*args)
       call_query_method(:select, *args)
@@ -125,7 +126,7 @@ module SPARQL
     ##
     # Executes a `DESCRIBE` query.
     #
-    # @param  [Array<Symbol, RDF::URI>] args
+    # @param (see Query.describe)
     # @return [Query]
     def describe(*args)
       call_query_method(:describe, *args)
@@ -134,7 +135,7 @@ module SPARQL
     ##
     # Executes a graph `CONSTRUCT` query.
     #
-    # @param  [Array<Symbol>] args
+    # @param (see Query.construct)
     # @return [Query]
     def construct(*args)
       call_query_method(:construct, *args)

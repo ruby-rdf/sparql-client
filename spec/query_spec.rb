@@ -120,11 +120,35 @@ describe SPARQL::Client::Query do
 
     it "should support ORDER BY" do
       expect(subject.select.where([:s, :p, :o]).order_by(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
+      expect(subject.select.where([:s, :p, :o]).order_by(:o, :p).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ?p"
       expect(subject.select.where([:s, :p, :o]).order_by('?o').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
-      #expect(subject.select.where([:s, :p, :o]).order_by(:o => :asc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ASC"
-      expect(subject.select.where([:s, :p, :o]).order_by('?o ASC').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ASC"
-      # expect(subject.select.where([:s, :p, :o]).order_by(:o => :desc).to_s.to) eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o DESC"
-      expect(subject.select.where([:s, :p, :o]).order_by('?o DESC').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o DESC"
+      expect(subject.select.where([:s, :p, :o]).order_by('ASC(?o)').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
+      expect(subject.select.where([:s, :p, :o]).order_by('DESC(?o)').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
+      expect(subject.select.where([:s, :p, :o]).order_by(:o => :asc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
+      expect(subject.select.where([:s, :p, :o]).order_by(:o => :desc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
+      expect(subject.select.where([:s, :p, :o]).order_by(:o => :asc, :p => :desc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o) DESC(?p)"
+      expect(subject.select.where([:s, :p, :o]).order_by([:o, :asc]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
+      expect(subject.select.where([:s, :p, :o]).order_by([:o, :desc]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
+      expect(subject.select.where([:s, :p, :o]).order_by([:o, :asc], [:p, :desc]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o) DESC(?p)"
+      expect { subject.select.where([:s, :p, :o]).order_by(42).to_s }.to raise_error(ArgumentError)
+      expect { subject.select.where([:s, :p, :o]).order_by(:o, 42).to_s }.to raise_error(ArgumentError)
+      expect { subject.select.where([:s, :p, :o]).order_by([:o]).to_s }.to raise_error(ArgumentError)
+      expect { subject.select.where([:s, :p, :o]).order_by([:o, :csa]).to_s }.to raise_error(ArgumentError)
+      expect { subject.select.where([:s, :p, :o]).order_by([:o, :asc, 42]).to_s }.to raise_error(ArgumentError)
+      expect { subject.select.where([:s, :p, :o]).order_by(:o => 42).to_s }.to raise_error(ArgumentError)
+      expect { subject.select.where([:s, :p, :o]).order_by(42 => :asc).to_s }.to raise_error(ArgumentError)
+    end
+
+    it "should support ORDER BY ASC" do
+      expect(subject.select.where([:s, :p, :o]).order.asc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
+      expect(subject.select.where([:s, :p, :o]).asc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
+      expect { subject.select.where([:s, :p, :o]).order.asc(:o, :p).to_s }.to raise_error(ArgumentError)
+    end
+
+    it "should support ORDER BY DESC" do
+      expect(subject.select.where([:s, :p, :o]).order.desc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
+      expect(subject.select.where([:s, :p, :o]).desc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
+      expect { subject.select.where([:s, :p, :o]).order.desc(:o, :p).to_s }.to raise_error(ArgumentError)
     end
 
     it "should support OFFSET" do

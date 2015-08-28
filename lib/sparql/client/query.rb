@@ -7,7 +7,9 @@ module SPARQL; class Client
   #
   class Query < RDF::Query
     ##
-    # @return [Symbol]
+    # The form of the query.
+    #
+    # @return [:select, :ask, :construct, :describe]
     # @see    http://www.w3.org/TR/sparql11-query/#QueryForms
     attr_reader :form
 
@@ -16,13 +18,18 @@ module SPARQL; class Client
     attr_reader :options
 
     ##
+    # Values returned from previous query.
+    #
     # @return [Array<[key, RDF::Value]>]
     attr_reader :values
 
     ##
     # Creates a boolean `ASK` query.
     #
-    # @param  [Hash{Symbol => Object}] options
+    # @example ASK WHERE { ?s ?p ?o . }
+    #   Query.ask.where([:s, :p, :o])
+    #
+    # @param  [Hash{Symbol => Object}] options (see {#initialize})
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#ask
     def self.ask(options = {})
@@ -32,11 +39,15 @@ module SPARQL; class Client
     ##
     # Creates a tuple `SELECT` query.
     #
+    # @example SELECT * WHERE { ?s ?p ?o . }
+    #   Query.select.where([:s, :p, :o])
+    #
     # @param  [Array<Symbol>]          variables
     # @return [Query]
     #
     # @overload self.select(*variables, options)
     #   @param  [Array<Symbol>]          variables
+    #   @param  [Hash{Symbol => Object}] options (see {#initialize})
     #   @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#select
     def self.select(*variables)
@@ -47,11 +58,15 @@ module SPARQL; class Client
     ##
     # Creates a `DESCRIBE` query.
     #
+    # @example DESCRIBE * WHERE { ?s ?p ?o . }
+    #   Query.describe.where([:s, :p, :o])
+    #
     # @param  [Array<Symbol, RDF::URI>] variables
     # @return [Query]
     #
     # @overload self.describe(*variables, options)
     #   @param  [Array<Symbol, RDF::URI>] variables
+    #   @param  [Hash{Symbol => Object}] options (see {#initialize})
     #   @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#describe
     def self.describe(*variables)
@@ -62,12 +77,15 @@ module SPARQL; class Client
     ##
     # Creates a graph `CONSTRUCT` query.
     #
+    # @example CONSTRUCT { ?s ?p ?o . } WHERE { ?s ?p ?o . }
+    #   Query.construct([:s, :p, :o]).where([:s, :p, :o])
+    #
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
     #
     # @overload self.construct(*variables, options)
     #   @param  [Array<RDF::Query::Pattern, Array>] patterns
-    #   @param  [Hash{Symbol => Object}]            options
+    #   @param  [Hash{Symbol => Object}] options (see {#initialize})
     #   @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#construct
     def self.construct(*patterns)
@@ -79,7 +97,7 @@ module SPARQL; class Client
     # @param  [Symbol, #to_s]          form
     # @overload self.construct(*variables, options)
     #   @param  [Symbol, #to_s]          form
-    #   @param  [Hash{Symbol => Object}] options
+    #   @param  [Hash{Symbol => Object}] options (see {Client#initialize})
     # @yield  [query]
     # @yieldparam [Query]
     def initialize(form = :ask, options = {}, &block)
@@ -89,6 +107,9 @@ module SPARQL; class Client
     end
 
     ##
+    # @example ASK WHERE { ?s ?p ?o . }
+    #   query.ask.where([:s, :p, :o])
+    #
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#ask
     def ask
@@ -97,6 +118,9 @@ module SPARQL; class Client
     end
 
     ##
+    # @example SELECT * WHERE { ?s ?p ?o . }
+    #   query.select.where([:s, :p, :o])
+    #
     # @param  [Array<Symbol>] variables
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#select
@@ -106,6 +130,9 @@ module SPARQL; class Client
     end
 
     ##
+    # @example DESCRIBE * WHERE { ?s ?p ?o . }
+    #   query.describe.where([:s, :p, :o])
+    #
     # @param  [Array<Symbol>] variables
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#describe
@@ -117,6 +144,9 @@ module SPARQL; class Client
     end
 
     ##
+    # @example CONSTRUCT { ?s ?p ?o . } WHERE { ?s ?p ?o . }
+    #   query.construct([:s, :p, :o]).where([:s, :p, :o])
+    #
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#construct
@@ -125,6 +155,10 @@ module SPARQL; class Client
       self
     end
 
+    ##
+    # @example SELECT * FROM <a> WHERE \{ ?s ?p ?o . \}
+    #   query.select.from(RDF::URI.new(a)).where([:s, :p, :o])
+    #
     # @param [RDF::URI] uri
     # @return [Query]
     # @see http://www.w3.org/TR/sparql11-query/#specifyingDataset
@@ -134,6 +168,10 @@ module SPARQL; class Client
     end
 
     ##
+    # @example SELECT * WHERE { ?s ?p ?o . }
+    #   query.select.where([:s, :p, :o])
+    #   query.select.whether([:s, :p, :o])
+    #
     # @param  [Array<RDF::Query::Pattern, Array>] patterns_queries
     #   splat of zero or more patterns followed by zero or more queries.
     # @return [Query]
@@ -148,6 +186,16 @@ module SPARQL; class Client
     alias_method :whether, :where
 
     ##
+    # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o
+    #   query.select.where([:s, :p, :o]).order(:o)
+    #   query.select.where([:s, :p, :o]).order_by(:o)
+    #
+    # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ?p
+    #   query.select.where([:s, :p, :o]).order_by(:o, :p)
+    #
+    # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o) DESC(?p)
+    #   query.select.where([:s, :p, :o]).order_by(:o => :asc, :p => :desc)
+    #
     # @param  [Array<Symbol, String>] variables
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#modOrderBy
@@ -159,6 +207,35 @@ module SPARQL; class Client
     alias_method :order_by, :order
 
     ##
+    # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)
+    #   query.select.where([:s, :p, :o]).order.asc(:o)
+    #   query.select.where([:s, :p, :o]).asc(:o)
+    #
+    # @param  [Array<Symbol, String>] variables
+    # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#modOrderBy
+    def asc(var)
+      (options[:order_by] ||= []) << {var => :asc}
+      self
+    end
+
+    ##
+    # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)
+    #   query.select.where([:s, :p, :o]).order.desc(:o)
+    #   query.select.where([:s, :p, :o]).desc(:o)
+    #
+    # @param  [Array<Symbol, String>] variables
+    # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#modOrderBy
+    def desc(var)
+      (options[:order_by] ||= []) << {var => :desc}
+      self
+    end
+
+    ##
+    # @example SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s
+    #   query.select(:s).where([:s, :p, :o]).group_by(:s)
+    #
     # @param  [Array<Symbol, String>] variables
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#groupby
@@ -170,6 +247,9 @@ module SPARQL; class Client
     alias_method :group_by, :group
 
     ##
+    # @example SELECT DISTINCT ?s WHERE { ?s ?p ?o . }
+    #   query.select(:s).distinct.where([:s, :p, :o])
+    #
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#modDuplicates
     def distinct(state = true)
@@ -178,6 +258,9 @@ module SPARQL; class Client
     end
 
     ##
+    # @example SELECT REDUCED ?s WHERE { ?s ?p ?o . }
+    #   query.select(:s).reduced.where([:s, :p, :o])
+    #
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#modDuplicates
     def reduced(state = true)
@@ -186,6 +269,8 @@ module SPARQL; class Client
     end
 
     ##
+    # @example SELECT * WHERE { GRAPH ?g { ?s ?p ?o . } }
+    #   query.select.graph(:g).where([:s, :p, :o])
     # @param  [RDF::Value] graph_uri_or_var
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#queryDataset
@@ -200,6 +285,9 @@ module SPARQL; class Client
     end
 
     ##
+    # @example SELECT * WHERE { ?s ?p ?o . } OFFSET 100
+    #   query.select.where([:s, :p, :o]).offset(100)
+    #
     # @param  [Integer, #to_i] start
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#modOffset
@@ -208,6 +296,9 @@ module SPARQL; class Client
     end
 
     ##
+    # @example SELECT * WHERE { ?s ?p ?o . } LIMIT 10
+    #   query.select.where([:s, :p, :o]).limit(10)
+    #
     # @param  [Integer, #to_i] length
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#modResultLimit
@@ -216,6 +307,9 @@ module SPARQL; class Client
     end
 
     ##
+    # @example SELECT * WHERE { ?s ?p ?o . } OFFSET 100 LIMIT 10
+    #   query.select.where([:s, :p, :o]).slice(100, 10)
+    #
     # @param  [Integer, #to_i] start
     # @param  [Integer, #to_i] length
     # @return [Query]
@@ -226,6 +320,12 @@ module SPARQL; class Client
     end
 
     ##
+    # @example PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE \{ ?s ?p ?o . \}
+    #   query.select.
+    #     prefix(dc: RDF::URI("http://purl.org/dc/elements/1.1/")).
+    #     prefix(foaf: RDF::URI("http://xmlns.com/foaf/0.1/")).
+    #     where([:s, :p, :o])
+    #
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#prefNames
     def prefix(string)
@@ -234,6 +334,10 @@ module SPARQL; class Client
     end
 
     ##
+    # @example SELECT * WHERE \{ ?s ?p ?o . OPTIONAL \{ ?s a ?o . ?s \<http://purl.org/dc/terms/abstract\> ?o . \} \}
+    #   query.select.where([:s, :p, :o]).
+    #     optional([:s, RDF.type, :o], [:s, RDF::DC.abstract, :o])
+    #
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#optionals
     def optional(*patterns)
@@ -382,7 +486,40 @@ module SPARQL; class Client
 
       if options[:order_by]
         buffer << 'ORDER BY'
-        buffer += options[:order_by].map { |var| var.is_a?(String) ? var : "?#{var}" }
+        options[:order_by].map { |elem|
+          case elem
+            # .order_by({ :var1 => :asc, :var2 => :desc})
+            when Hash
+              elem.each { |key, val|
+                # check provided values
+                if !key.is_a?(Symbol)
+                  raise ArgumentError, 'keys of hash argument must be a Symbol'
+                elsif !val.is_a?(Symbol) || (val != :asc && val != :desc)
+                  raise ArgumentError, 'values of hash argument must either be `:asc` or `:desc`'
+                end
+                buffer << "#{val == :asc ? 'ASC' : 'DESC'}(?#{key})"
+              }
+            # .order_by([:var1, :asc], [:var2, :desc])
+            when Array
+              # check provided values
+              if elem.length != 2
+                raise ArgumentError, 'array argument must specify two elements'
+              elsif !elem[0].is_a?(Symbol)
+                raise ArgumentError, '1st element of array argument must contain a Symbol'
+              elsif !elem[1].is_a?(Symbol) || (elem[1] != :asc && elem[1] != :desc)
+                raise ArgumentError, '2nd element of array argument must either be `:asc` or `:desc`'
+              end
+              buffer << "#{elem[1] == :asc ? 'ASC' : 'DESC'}(?#{elem[0]})"
+            # .order_by(:var1, :var2)
+            when Symbol
+              buffer << "?#{elem}"
+            # .order_by('ASC(?var1) DESC(?var2)')
+            when String
+              buffer << elem
+            else
+              raise ArgumentError, 'argument provided to `order()` must either be an Array, Symbol or String'
+          end
+        }
       end
 
       buffer << "OFFSET #{options[:offset]}" if options[:offset]

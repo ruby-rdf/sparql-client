@@ -12,6 +12,9 @@ group :development, :test do
   gem "rdf-spec",    git: "git://github.com/ruby-rdf/rdf-spec.git", branch: "develop"
   gem 'sxp',         git: "git://github.com/gkellogg/sxp-ruby.git"
   gem 'rdf-turtle'
+  gem 'simplecov', require: false
+  gem 'coveralls', require: false
+  gem 'psych', :platforms => [:mri, :rbx]
 end
 
 group :debug do

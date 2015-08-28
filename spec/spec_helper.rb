@@ -1,7 +1,17 @@
 require "bundler/setup"
 require 'rspec/its'
-require 'sparql/client'
 require 'rdf/spec'
+require 'simplecov'
+require 'coveralls'
+
+SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter[
+  SimpleCov::Formatter::HTMLFormatter,
+  Coveralls::SimpleCov::Formatter
+]
+SimpleCov.start do
+  add_filter "/spec/"
+end
+require 'sparql/client'
 
 RSpec.configure do |config|
   config.include(RDF::Spec::Matchers)
