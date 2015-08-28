@@ -6,6 +6,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
 [![Gem Version](https://badge.fury.io/rb/sparql-client.png)](http://badge.fury.io/rb/sparql-client)
 [![Build Status](https://travis-ci.org/ruby-rdf/sparql-client.png?branch=master)](http://travis-ci.org/ruby-rdf/sparql-client)
+[![Coverage Status](https://coveralls.io/repos/ruby-rdf/sparql-client/badge.svg?branch=master&service=github)](https://coveralls.io/github/ruby-rdf/sparql-client?branch=master)
 
 ##Features
 
