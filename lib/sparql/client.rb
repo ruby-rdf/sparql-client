@@ -678,11 +678,11 @@ module SPARQL
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
-      response = @http.request(url, request)
+      response = @http.request(::URI.parse(url.to_s), request)
 
       10.times do
         if response.kind_of? Net::HTTPRedirection
-          response = @http.request(RDF::URI(response['location']), request)
+          response = @http.request(::URI.parse(response['location']), request)
         else
           return block_given? ? block.call(response) : response 
         end          
