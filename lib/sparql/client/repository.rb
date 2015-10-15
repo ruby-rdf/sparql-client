@@ -40,9 +40,10 @@ module SPARQL; class Client
     def supports?(feature)
       case feature.to_sym
         # statement contexts / named graphs
-        when :context   then false
-        when :inference then false  # forward-chaining inference
-        when :validity  then false
+        when :context     then false
+        when :graph_name  then false
+        when :inference   then false  # forward-chaining inference
+        when :validity    then false
         else false
       end
     end
