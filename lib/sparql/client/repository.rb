@@ -288,6 +288,7 @@ module SPARQL; class Client
     # @return [void]
     # @since  0.1.6
     def insert_statements(statements)
+      raise ArgumentError, "Some statement is incomplete" if statements.any?(&:incomplete?)
       update_client.insert_data(statements)
     end
 
@@ -295,6 +296,7 @@ module SPARQL; class Client
     # @private
     # @see RDF::Mutable#insert
     def insert_statement(statement)
+      raise ArgumentError, "Statement #{statement.inspect} is incomplete" if statement.incomplete?
       update_client.insert_data([statement])
     end
 
