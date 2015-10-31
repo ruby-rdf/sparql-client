@@ -40,9 +40,10 @@ module SPARQL; class Client
     def supports?(feature)
       case feature.to_sym
         # statement contexts / named graphs
-        when :context   then false
-        when :inference then false  # forward-chaining inference
-        when :validity  then false
+        when :context     then false
+        when :graph_name  then false
+        when :inference   then false  # forward-chaining inference
+        when :validity    then false
         else false
       end
     end
@@ -287,6 +288,7 @@ module SPARQL; class Client
     # @return [void]
     # @since  0.1.6
     def insert_statements(statements)
+      raise ArgumentError, "Some statement is incomplete" if statements.any?(&:incomplete?)
       update_client.insert_data(statements)
     end
 
@@ -294,6 +296,7 @@ module SPARQL; class Client
     # @private
     # @see RDF::Mutable#insert
     def insert_statement(statement)
+      raise ArgumentError, "Statement #{statement.inspect} is incomplete" if statement.incomplete?
       update_client.insert_data([statement])
     end
 

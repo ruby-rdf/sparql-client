@@ -22,4 +22,4 @@ describe SPARQL::Client::Repository do
     end
     its(:count) {should == @statements.size}
   end
-end unless ENV['CI']
+end

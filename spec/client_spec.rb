@@ -7,7 +7,18 @@ describe SPARQL::Client do
   let(:query) {'DESCRIBE ?kb WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
   let(:construct_query) {'CONSTRUCT {?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . } WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
   let(:select_query) {'SELECT ?kb WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
+  let(:describe_query) {'DESCRIBE ?kb WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
   let(:ask_query) {'ASK WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
+
+  describe "#initialize" do
+    it "calls block" do
+      expect {|b| described_class.new('http://data.linkedmdb.org/sparql', &b)}.to yield_control
+      described_class.new('http://data.linkedmdb.org/sparql') do |sparql|
+        expect(sparql).to be_a(SPARQL::Client)
+      end
+    end
+  end
+
   context "when querying a remote endpoint" do
     subject {SPARQL::Client.new('http://data.linkedmdb.org/sparql')}
 
@@ -16,6 +27,30 @@ describe SPARQL::Client do
       response.content_type = header
       allow(response).to receive(:body).and_return('body')
       response
+    end
+
+    describe "#ask" do
+      specify do
+        expect(subject.ask.where([:s, :p, :o]).to_s).to eq "ASK WHERE { ?s ?p ?o . }"
+      end
+    end
+
+    describe "#select" do
+      specify do
+        expect(subject.select.where([:s, :p, :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . }"
+      end
+    end
+
+    describe "#describe" do
+      specify do
+        expect(subject.describe.where([:s, :p, :o]).to_s).to eq "DESCRIBE * WHERE { ?s ?p ?o . }"
+      end
+    end
+
+    describe "#construct" do
+      specify do
+        expect(subject.construct([:s, :p, :o]).where([:s, :p, :o]).to_s).to eq "CONSTRUCT { ?s ?p ?o . } WHERE { ?s ?p ?o . }"
+      end
     end
 
     it "should handle successful response with plain header" do
@@ -150,7 +185,7 @@ describe SPARQL::Client do
       it "should use application/n-triples for DESCRIBE" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
           to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
-        subject.query(query)
+        subject.query(describe_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
           with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;p=0.1'})
       end
@@ -185,13 +220,53 @@ describe SPARQL::Client do
   end
 
   context "when querying an RDF::Repository" do
+    before(:all) {require 'sparql'}
     let(:repo) {RDF::Repository.new}
+    let(:graph) {RDF::Graph.new << RDF::Statement(RDF::URI('http://example/s'), RDF::URI('http://example/p'), "o")}
     subject {SPARQL::Client.new(repo)}
 
     it "should query repository" do
-      require 'sparql'  # Can't do this lazily and get double to work
       expect(SPARQL).to receive(:execute).with(query, repo, {})
       subject.query(query)
+    end
+
+    describe "#insert_data" do
+      specify do
+        subject.insert_data(graph)
+        expect(repo.count).to eq 1
+      end
+    end
+    
+    describe "#delete_data" do
+      specify do
+        subject.delete_data(graph)
+        expect(repo.count).to eq 0
+      end
+    end
+    
+    describe "#delete_insert" do
+      specify do
+        expect {subject.delete_insert(graph, graph)}.not_to raise_error
+      end
+    end
+    
+    describe "#clear_graph" do
+      specify do
+        expect {subject.clear_graph('http://example/')}.to raise_error(IOError)
+      end
+    end
+    
+    describe "#clear" do
+      specify do
+        subject.clear(:all)
+        expect(repo.count).to eq 0
+      end
+    end
+
+    describe "#query" do
+      it "raises error on malformed query" do
+        expect {subject.query("Invalid SPARQL")}.to raise_error(SPARQL::MalformedQuery)
+      end
     end
   end
 
