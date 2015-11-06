@@ -71,7 +71,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
     # INSERT DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
     data = RDF::Graph.new do |graph|
-      graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+      graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
     end
     insert_data(data)
 
@@ -79,7 +79,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
     # DELETE DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
     data = RDF::Graph.new do |graph|
-      graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+      graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
     end
     delete_data(data)
 

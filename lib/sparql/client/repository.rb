@@ -10,10 +10,11 @@ module SPARQL; class Client
     ##
     # @param  [String, #to_s]          endpoint
     # @param  [Hash{Symbol => Object}] options
-    def initialize(endpoint, options = {})
+    def initialize(endpoint, options = {}, &block)
       @options = options.dup
       @update_client = SPARQL::Client.new(options.delete(:update_endpoint), options) if options[:update_endpoint]
       @client  = SPARQL::Client.new(endpoint, options)
+      super(@options, &block)
     end
 
     ##
@@ -239,7 +240,7 @@ module SPARQL; class Client
     # @yield  [statement]
     # @yieldparam [Statement]
     # @return [Enumerable<Statement>]
-    def query_pattern(pattern, &block)
+    def query_pattern(pattern, options = {}, &block)
       pattern = pattern.dup
       pattern.subject   ||= RDF::Query::Variable.new
       pattern.predicate ||= RDF::Query::Variable.new
