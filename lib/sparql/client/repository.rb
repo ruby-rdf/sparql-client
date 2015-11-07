@@ -192,10 +192,27 @@ module SPARQL; class Client
     # considered to be a pattern, and used to query
     # self to find matching statements to delete.
     #
-    # @param  [Enumerable<RDF::Statement>] statements
-    # @raise  [TypeError] if `self` is immutable
-    # @return [Mutable]
+    # @overload delete(*statements)
+    #   @param  [Array<RDF::Statement>] statements
+    #   @raise  [TypeError] if `self` is immutable
+    #   @return [self]
+    #
+    # @overload delete(statements)
+    #   @param  [Enumerable<RDF::Statement>] statements
+    #   @raise  [TypeError] if `self` is immutable
+    #   @return [self]
+    #
+    # @see RDF::Mutable#delete
     def delete(*statements)
+      statements.map! do |value|
+        if value.respond_to?(:each_statement)
+          delete_statements(value)
+          nil
+        else
+          value
+        end
+      end
+      statements.compact!
       delete_statements(statements) unless statements.empty?
       return self
     end
@@ -263,7 +280,6 @@ module SPARQL; class Client
     # @param  [RDF::Enumerable] statements
     # @return [void]
     def delete_statements(statements)
-
       constant = statements.all? do |value|
         # needs to be flattened... urgh
         !value.respond_to?(:each_statement) && begin
