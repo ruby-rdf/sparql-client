@@ -58,7 +58,7 @@ describe SPARQL::Client::Update do
 
     it "should support non-empty input" do
       data = RDF::Graph.new do |graph|
-        graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+        graph << [RDF::URI('http://example.org/jhacker'), RDF::URI("http://xmlns.com/foaf/0.1/name"), "J. Random Hacker"]
       end
       expect(subject.insert_data(data).to_s).to eq "INSERT DATA {\n<http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> \"J. Random Hacker\" .\n}\n"
     end
@@ -82,7 +82,7 @@ describe SPARQL::Client::Update do
 
     it "should support non-empty input" do
       data = RDF::Graph.new do |graph|
-        graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+        graph << [RDF::URI('http://example.org/jhacker'), RDF::URI("http://xmlns.com/foaf/0.1/name"), "J. Random Hacker"]
       end
       expect(subject.delete_data(data).to_s).to eq "DELETE DATA {\n<http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> \"J. Random Hacker\" .\n}\n"
     end

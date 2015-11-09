@@ -10,10 +10,11 @@ module SPARQL; class Client
     ##
     # @param  [String, #to_s]          endpoint
     # @param  [Hash{Symbol => Object}] options
-    def initialize(endpoint, options = {})
+    def initialize(endpoint, options = {}, &block)
       @options = options.dup
       @update_client = SPARQL::Client.new(options.delete(:update_endpoint), options) if options[:update_endpoint]
       @client  = SPARQL::Client.new(endpoint, options)
+      super(@options, &block)
     end
 
     ##
@@ -191,10 +192,27 @@ module SPARQL; class Client
     # considered to be a pattern, and used to query
     # self to find matching statements to delete.
     #
-    # @param  [Enumerable<RDF::Statement>] statements
-    # @raise  [TypeError] if `self` is immutable
-    # @return [Mutable]
+    # @overload delete(*statements)
+    #   @param  [Array<RDF::Statement>] statements
+    #   @raise  [TypeError] if `self` is immutable
+    #   @return [self]
+    #
+    # @overload delete(statements)
+    #   @param  [Enumerable<RDF::Statement>] statements
+    #   @raise  [TypeError] if `self` is immutable
+    #   @return [self]
+    #
+    # @see RDF::Mutable#delete
     def delete(*statements)
+      statements.map! do |value|
+        if value.respond_to?(:each_statement)
+          delete_statements(value)
+          nil
+        else
+          value
+        end
+      end
+      statements.compact!
       delete_statements(statements) unless statements.empty?
       return self
     end
@@ -239,7 +257,7 @@ module SPARQL; class Client
     # @yield  [statement]
     # @yieldparam [Statement]
     # @return [Enumerable<Statement>]
-    def query_pattern(pattern, &block)
+    def query_pattern(pattern, options = {}, &block)
       pattern = pattern.dup
       pattern.subject   ||= RDF::Query::Variable.new
       pattern.predicate ||= RDF::Query::Variable.new
@@ -262,7 +280,6 @@ module SPARQL; class Client
     # @param  [RDF::Enumerable] statements
     # @return [void]
     def delete_statements(statements)
-
       constant = statements.all? do |value|
         # needs to be flattened... urgh
         !value.respond_to?(:each_statement) && begin

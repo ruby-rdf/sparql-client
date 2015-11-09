@@ -153,7 +153,7 @@ module SPARQL
     #
     # @example Inserting data constructed ad-hoc
     #   client.insert_data(RDF::Graph.new { |graph|
-    #     graph << [:jhacker, RDF::FOAF.name, "J. Random Hacker"]
+    #     graph << [:jhacker, RDF::Vocab::FOAF.name, "J. Random Hacker"]
     #   })
     #
     # @example Inserting data sourced from a file or URL
