@@ -354,12 +354,7 @@ module SPARQL; class Client
     ##
     # @private
     def build_patterns(patterns)
-      patterns.map do |pattern|
-        case pattern
-          when RDF::Query::Pattern then pattern
-          else RDF::Query::Pattern.new(*pattern.to_a)
-        end
-      end
+      patterns.map {|pattern| RDF::Query::Pattern.from(pattern)}
     end
 
     ##

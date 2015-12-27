@@ -265,7 +265,9 @@ describe SPARQL::Client do
 
     describe "#query" do
       it "raises error on malformed query" do
-        expect {subject.query("Invalid SPARQL")}.to raise_error(SPARQL::MalformedQuery)
+        expect do
+          expect {subject.query("Invalid SPARQL")}.to raise_error(SPARQL::MalformedQuery)
+        end.to write("ERROR").to(:error)
       end
     end
   end

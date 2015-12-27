@@ -20,7 +20,7 @@ end
 group :debug do
   gem 'shotgun'
   gem "wirble"
-  gem "byebug", platforms: [:mri_20, :mri_21]
+  gem "byebug", platforms: :mri
 end
 
 platforms :rbx do
