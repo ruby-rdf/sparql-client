@@ -14,3 +14,6 @@ gemfile:
   - Gemfile-pure
 cache: bundler
 sudo: false
+matrix:
+  allow_failures:
+    - rvm: rbx-2
