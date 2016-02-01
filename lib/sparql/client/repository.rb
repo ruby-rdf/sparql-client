@@ -12,7 +12,8 @@ module SPARQL; class Client
     #   Endpoint of this repository
     # @param [String, #to_s] title (nil)
     # @param [Hash{Symbol => Object}] options passed to RDF::Repository
-    def initialize(uri:, **options, &block)
+    def initialize(uri: nil, **options, &block)
+      raise ArgumentError, "uri is a required parameter" unless uri
       @options = options.merge(uri: uri)
       @update_client = SPARQL::Client.new(options.delete(:update_endpoint), options) if options[:update_endpoint]
       @client  = SPARQL::Client.new(uri, options)
