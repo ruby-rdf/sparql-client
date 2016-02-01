@@ -8,12 +8,14 @@ module SPARQL; class Client
     attr_reader :client
 
     ##
-    # @param  [String, #to_s]          endpoint
-    # @param  [Hash{Symbol => Object}] options
-    def initialize(endpoint, options = {}, &block)
-      @options = options.dup
+    # @param [URI, #to_s]    uri
+    #   Endpoint of this repository
+    # @param [String, #to_s] title (nil)
+    # @param [Hash{Symbol => Object}] options passed to RDF::Repository
+    def initialize(uri:, **options, &block)
+      @options = options.merge(uri: uri)
       @update_client = SPARQL::Client.new(options.delete(:update_endpoint), options) if options[:update_endpoint]
-      @client  = SPARQL::Client.new(endpoint, options)
+      @client  = SPARQL::Client.new(uri, options)
       super(@options, &block)
     end
 

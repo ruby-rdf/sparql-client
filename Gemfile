@@ -9,9 +9,12 @@ gem "jruby-openssl",      platforms: :jruby
 gem "nokogiri",           '~> 1.6'
 
 group :development, :test do
+  gem "ebnf",           git: "git://github.com/gkellogg/ebnf.git", branch: "develop"
+  gem 'rdf-isomorphic', git: "git://github.com/ruby-rdf/rdf-isomorphic.git", branch: "develop"
   gem "rdf-spec",    git: "git://github.com/ruby-rdf/rdf-spec.git", branch: "develop"
+  gem "rdf-xsd",     git: "git://github.com/ruby-rdf/rdf-xsd.git", branch: "develop"
   gem 'sxp',         git: "git://github.com/gkellogg/sxp-ruby.git"
-  gem 'rdf-turtle'
+  gem 'rdf-turtle',     git: "git://github.com/ruby-rdf/rdf-turtle.git", branch: "develop"
   gem 'simplecov', require: false
   gem 'coveralls', require: false
   gem 'psych', :platforms => [:mri, :rbx]
