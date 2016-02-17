@@ -216,7 +216,7 @@ module SPARQL; class Client
         end
       end
       statements.compact!
-      delete_statements(statements) unless statements.empty?
+      delete_statements(statements) unless statements.empty? || statements.nil?
       return self
     end
 
@@ -283,6 +283,7 @@ module SPARQL; class Client
     # @param  [RDF::Enumerable] statements
     # @return [void]
     def delete_statements(statements)
+      return self if statements.empty?
       constant = statements.all? do |value|
         # needs to be flattened... urgh
         !value.respond_to?(:each_statement) && begin
@@ -308,6 +309,7 @@ module SPARQL; class Client
     # @return [void]
     # @since  0.1.6
     def insert_statements(statements)
+      return self if statements.empty?
       raise ArgumentError, "Some statement is incomplete" if statements.any?(&:incomplete?)
       update_client.insert_data(statements)
     end
