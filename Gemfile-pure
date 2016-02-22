@@ -2,24 +2,28 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "rdf",                git: "git://github.com/ruby-rdf/rdf.git", branch: "develop"
-gem "rdf-aggregate-repo", git: "git://github.com/ruby-rdf/rdf-aggregate-repo.git", branch: "develop"
-gem "sparql",             git: "git://github.com/ruby-rdf/sparql.git", branch: "develop"
+gem 'rdf',                github: "ruby-rdf/rdf",       branch: "develop"
+gem 'rdf-aggregate-repo', github: "ruby-rdf/rdf-aggregate-repo",  branch: "develop"
+gem 'sparql',             github: "ruby-rdf/sparql",       branch: "develop"
 gem "jruby-openssl",      platforms: :jruby
-#gem "nokogiri" 
+#gem "nokogiri",           '~> 1.6'
 
 group :development, :test do
-  gem "rdf-spec",    git: "git://github.com/ruby-rdf/rdf-spec.git", branch: "develop"
-  gem 'sxp',         git: "git://github.com/gkellogg/sxp-ruby.git"
-  gem 'rdf-turtle'
-  gem 'simplecov', require: false
-  gem 'coveralls', require: false
+  gem 'ebnf',           github: "gkellogg/ebnf",                branch: "develop"
+  gem 'rdf-isomorphic', github: "ruby-rdf/rdf-isomorphic",      branch: "develop"
+  gem 'rdf-spec',       github: "ruby-rdf/rdf-spec",            branch: "develop"
+  gem 'rdf-turtle',     github: "ruby-rdf/rdf-turtle",          branch: "develop"
+  gem "rdf-xsd",        github: "ruby-rdf/rdf-xsd",             branch: "develop"
+  gem 'sxp',            github: "gkellogg/sxp-ruby"
+  gem "redcarpet",      platform: :ruby
+  gem 'simplecov',      require: false, platform: :mri
+  gem 'coveralls',      require: false, platform: :mri
 end
 
 group :debug do
   gem 'shotgun'
   gem "wirble"
-  gem "byebug", platforms: [:mri_20, :mri_21]
+  gem "byebug", platforms: :mri
 end
 
 platforms :rbx do

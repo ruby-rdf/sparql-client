@@ -10,11 +10,11 @@ describe SPARQL::Client::Repository do
 
   # @see lib/rdf/spec/repository.rb in RDF-spec
   it_behaves_like 'an RDF::Repository' do
-    let(:repository) { SPARQL::Client::Repository.new(@base_repo) }
+    let(:repository) { SPARQL::Client::Repository.new(uri: @base_repo) }
   end
 
   context "Problematic Tests", skip: true do
-    subject {SPARQL::Client::Repository.new(@base_repo)}
+    subject {SPARQL::Client::Repository.new(uri: @base_repo)}
     before :each do
       @statements = RDF::Spec.quads
   

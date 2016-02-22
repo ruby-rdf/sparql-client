@@ -336,7 +336,7 @@ module SPARQL; class Client
     ##
     # @example SELECT * WHERE \{ ?s ?p ?o . OPTIONAL \{ ?s a ?o . ?s \<http://purl.org/dc/terms/abstract\> ?o . \} \}
     #   query.select.where([:s, :p, :o]).
-    #     optional([:s, RDF.type, :o], [:s, RDF::DC.abstract, :o])
+    #     optional([:s, RDF.type, :o], [:s, RDF::Vocab::DC.abstract, :o])
     #
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#optionals
@@ -354,12 +354,7 @@ module SPARQL; class Client
     ##
     # @private
     def build_patterns(patterns)
-      patterns.map do |pattern|
-        case pattern
-          when RDF::Query::Pattern then pattern
-          else RDF::Query::Pattern.new(*pattern.to_a)
-        end
-      end
+      patterns.map {|pattern| RDF::Query::Pattern.from(pattern)}
     end
 
     ##

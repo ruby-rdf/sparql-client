@@ -71,7 +71,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
     # INSERT DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
     data = RDF::Graph.new do |graph|
-      graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+      graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
     end
     insert_data(data)
 
@@ -79,7 +79,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
     # DELETE DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
     data = RDF::Graph.new do |graph|
-      graph << [RDF::URI('http://example.org/jhacker'), RDF::FOAF.name, "J. Random Hacker"]
+      graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
     end
     delete_data(data)
 
@@ -92,11 +92,11 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
 ##Dependencies
 
-* [Ruby](http://ruby-lang.org/) (>= 1.9.3)
-* [RDF.rb](http://rubygems.org/gems/rdf) (>= 1.1)
+* [Ruby](http://ruby-lang.org/) (>= 2.0)
+* [RDF.rb](http://rubygems.org/gems/rdf) (>= 2.0)
 * [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (>= 1.4)
 * Soft dependency on [SPARQL](http://rubygems.org/gems/sparql) (>= 1.1)
-* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.5)
+* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.6)
 
 ##Installation
 
