@@ -216,7 +216,7 @@ module SPARQL; class Client
         end
       end
       statements.compact!
-      delete_statements(statements) unless statements.empty? || statements.nil?
+      delete_statements(statements) unless statements.empty?
       return self
     end
 
@@ -309,9 +309,8 @@ module SPARQL; class Client
     # @return [void]
     # @since  0.1.6
     def insert_statements(statements)
-      return self if statements.empty?
       raise ArgumentError, "Some statement is incomplete" if statements.any?(&:incomplete?)
-      update_client.insert_data(statements)
+      update_client.insert_data(statements) unless statements.empty?
     end
 
     ##
