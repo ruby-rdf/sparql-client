@@ -650,7 +650,7 @@ module SPARQL
           proxy_url = URI.parse(value) unless value.nil? || value.empty?
       end
       klass = Net::HTTP::Persistent.new(self.class.to_s, proxy_url)
-      klass.keep_alive = 120 # increase to 2 minutes
+      klass.keep_alive =  @options[:keep_alive] || 120
       klass.read_timeout = @options[:read_timeout] || 60
       klass
     end
