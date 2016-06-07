@@ -122,7 +122,7 @@ describe SPARQL::Client do
 
     it "should enable overriding the http method" do
       stub_request(:get, "http://data.linkedmdb.org/sparql?query=DESCRIBE%20?kb%20WHERE%20%7B%20?kb%20%3Chttp://data.linkedmdb.org/resource/movie/actor_name%3E%20%22Kevin%20Bacon%22%20.%20%7D").
-         to_return(:status => 200, :body => "", :headers => {})
+         to_return(:status => 200, :body => "", :headers => { 'Content-Type' => 'application/n-triples'})
       allow(subject).to receive(:request_method).with(query).and_return(:get)
       expect(subject).to receive(:make_get_request).and_call_original
       subject.query(query)
@@ -152,7 +152,7 @@ describe SPARQL::Client do
 
       it 'follows redirects' do
         WebMock.stub_request(:any, 'http://sparql.linkedmdb.org/sparql').
-          to_return(:body => '{}', :status => 200)
+          to_return(:body => '{}', :status => 200, :headers => { :content_type => SPARQL::Client::RESULT_JSON})
         subject.query(ask_query)
         expect(WebMock).to have_requested(:post, "http://sparql.linkedmdb.org/sparql").
           with(:body => 'query=ASK+WHERE+%7B+%3Fkb+%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E+%22Kevin+Bacon%22+.+%7D')
