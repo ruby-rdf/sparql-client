@@ -539,6 +539,8 @@ module SPARQL
       options = {:content_type => response.content_type} if options.empty?
       if reader = RDF::Reader.for(options)
         reader.new(response.body)
+      else
+        raise ArgumentError, "no suitable rdf reader was found."
       end
     end
 
