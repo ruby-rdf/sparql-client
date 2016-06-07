@@ -55,7 +55,7 @@ describe SPARQL::Client do
 
     it "should handle successful response with plain header" do
       expect(subject).to receive(:request).and_yield response('text/plain')
-      expect(RDF::Reader).to receive(:for).with(:content_type => 'text/plain')
+      expect(RDF::Reader).to receive(:for).with(:content_type => 'text/plain').and_call_original
       subject.query(query)
     end
 
