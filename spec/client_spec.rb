@@ -55,7 +55,7 @@ describe SPARQL::Client do
 
     it "should handle successful response with plain header" do
       expect(subject).to receive(:request).and_yield response('text/plain')
-      expect(RDF::Reader).to receive(:for).with(:content_type => 'text/plain')
+      expect(RDF::Reader).to receive(:for).with(:content_type => 'text/plain').and_return RDF::Reader.for(content_type: 'text/plain')
       subject.query(query)
     end
 
@@ -117,6 +117,7 @@ describe SPARQL::Client do
       client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', options)
       client.instance_variable_set :@http, double(:request => response('text/plain'))
       expect(Net::HTTP::Get).to receive(:new).with(anything, hash_including(options[:headers]))
+      expect(RDF::Reader).to receive(:for).and_return(RDF::Reader.for(:content_type => 'text/plain'))
       client.query(query)
     end
 
