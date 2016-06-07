@@ -536,9 +536,11 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     # @return [RDF::Enumerable]
     def parse_rdf_serialization(response, options = {})
-      options = {:content_type => response.content_type} if options.empty?
+      options = {:content_type => response.content_type} unless options[:content_type]
       if reader = RDF::Reader.for(options)
         reader.new(response.body)
+      else
+        raise RDF::ReaderError, "no suitable rdf reader was found."
       end
     end
 
