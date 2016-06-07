@@ -2,6 +2,7 @@
 require File.join(File.dirname(__FILE__), 'spec_helper')
 require 'webmock/rspec'
 require 'json'
+require 'rdf/turtle'
 
 describe SPARQL::Client do
   let(:query) {'DESCRIBE ?kb WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
@@ -102,7 +103,7 @@ describe SPARQL::Client do
 
     it "should handle successful response with overridden plain header" do
       expect(subject).to receive(:request).and_yield response('text/plain')
-      expect(RDF::Reader).to receive(:for).with(:content_type => 'text/turtle')
+      expect(RDF::Reader).to receive(:for).with(:content_type => 'text/turtle').and_call_original
       subject.query(query, :content_type => 'text/turtle')
     end
 
