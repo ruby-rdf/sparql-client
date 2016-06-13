@@ -35,13 +35,13 @@ module SPARQL
       RESULT_JSON,
       RESULT_XML,
       RESULT_BOOL,
-      "#{RESULT_TSV};p=0.8",
-      "#{RESULT_CSV};p=0.2",
-      '*/*;p=0.1'
+      "#{RESULT_TSV};q=0.8",
+      "#{RESULT_CSV};q=0.2",
+      '*/*;q=0.1'
     ].join(', ').freeze
     GRAPH_ALL  = (
       RDF::Format.content_types.keys + 
-      ['*/*;p=0.1']
+      ['*/*;q=0.1']
     ).join(', ').freeze
 
     ACCEPT_JSON    = {'Accept' => RESULT_JSON}.freeze
