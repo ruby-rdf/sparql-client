@@ -680,7 +680,11 @@ module SPARQL
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
+      pre_http_hook(request) if respond_to?(:pre_http_hook)
+
       response = @http.request(::URI.parse(url.to_s), request)
+
+      post_http_hook(response) if respond_to?(:post_http_hook)
 
       10.times do
         if response.kind_of? Net::HTTPRedirection
