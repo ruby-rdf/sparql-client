@@ -172,7 +172,7 @@ describe SPARQL::Client do
           to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(ask_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;p=0.8, text/csv;p=0.2, */*;p=0.1'})
+          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1'})
       end
 
       it "should use application/n-triples for CONSTRUCT" do
@@ -180,7 +180,7 @@ describe SPARQL::Client do
           to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
         subject.query(construct_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;p=0.1'})
+          with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
       end
 
       it "should use application/n-triples for DESCRIBE" do
@@ -188,7 +188,7 @@ describe SPARQL::Client do
           to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
         subject.query(describe_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;p=0.1'})
+          with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
       end
 
       it "should use application/sparql-results+json for SELECT" do
@@ -196,7 +196,7 @@ describe SPARQL::Client do
           to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;p=0.8, text/csv;p=0.2, */*;p=0.1'})
+          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1'})
       end
     end
 
