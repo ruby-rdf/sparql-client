@@ -22,7 +22,6 @@ end
 
 group :debug do
   gem 'shotgun'
-  gem "wirble"
   gem "byebug", platforms: :mri
 end
 
