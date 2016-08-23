@@ -25,7 +25,7 @@ describe SPARQL::Client do
 
     def response(header)
       response = Net::HTTPSuccess.new '1.1', 200, 'body'
-      response.content_type = header
+      response.content_type = header if header
       allow(response).to receive(:body).and_return('body')
       response
     end
@@ -95,10 +95,9 @@ describe SPARQL::Client do
       subject.query(query, :content_type => SPARQL::Client::RESULT_JSON)
     end
 
-    it "should handle successful response with overridden JSON header" do
-      expect(subject).to receive(:request).and_yield response(SPARQL::Client::RESULT_JSON)
-      expect(subject.class).to receive(:parse_xml_bindings)
-      subject.query(query, :content_type => SPARQL::Client::RESULT_XML)
+    it "should handle successful response with no content type" do
+      expect(subject).to receive(:request).and_yield response(nil)
+      expect { subject.query(query) }.not_to raise_error
     end
 
     it "should handle successful response with overridden plain header" do
