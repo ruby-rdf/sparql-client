@@ -360,6 +360,8 @@ module SPARQL
     # @return [Object]
     def parse_response(response, options = {})
       case options[:content_type] || response.content_type
+        when NilClass
+          response.body
         when RESULT_BOOL # Sesame-specific
           response.body == 'true'
         when RESULT_JSON
