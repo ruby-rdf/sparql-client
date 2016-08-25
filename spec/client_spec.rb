@@ -10,6 +10,7 @@ describe SPARQL::Client do
   let(:select_query) {'SELECT ?kb WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
   let(:describe_query) {'DESCRIBE ?kb WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
   let(:ask_query) {'ASK WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
+  let(:update_query) {'DELETE {?s ?p ?o} WHERE {}'}
 
   describe "#initialize" do
     it "calls block" do
@@ -196,6 +197,33 @@ describe SPARQL::Client do
         subject.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
           with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1'})
+      end
+    end
+
+    context "Alternative Endpoint" do
+      it "should use the default endpoint if no alternative endpoint is provided" do
+        WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
+          to_return(:body => '', :status => 200)
+        subject.update(update_query)
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql")
+      end
+
+      it "should use the alternative endpoint if provided" do
+        WebMock.stub_request(:any, 'http://data.linkedmdb.org/alternative').
+          to_return(:body => '', :status => 200)
+        subject.update(update_query, { endpoint: "http://data.linkedmdb.org/alternative" })
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/alternative")
+      end
+
+      it "should not use the alternative endpoint for a select query" do
+        WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
+          to_return(:body => '', :status => 200)
+        WebMock.stub_request(:any, 'http://data.linkedmdb.org/alternative').
+          to_return(:body => '', :status => 200)
+        subject.update(update_query, { endpoint: "http://data.linkedmdb.org/alternative" })
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/alternative")
+        subject.query(select_query)
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql")
       end
     end
 
