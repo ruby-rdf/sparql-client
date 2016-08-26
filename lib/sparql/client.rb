@@ -324,7 +324,7 @@ module SPARQL
         require 'sparql' unless defined?(::SPARQL::Grammar)
         SPARQL.execute(query, @url, options.merge(update: true))
       else
-        parse_response(response(query, options), options)
+        response(query, options)
       end
       self
     end
