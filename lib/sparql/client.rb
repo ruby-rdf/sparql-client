@@ -291,6 +291,7 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def query(query, options = {})
       @op = :query
+      @alt_endpoint = options[:endpoint]
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
@@ -317,7 +318,7 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#update-operation
     def update(query, options = {})
       @op = :update
-      @alt_endpoint = options[:endpoint] unless options[:endpoint].nil?
+      @alt_endpoint = options[:endpoint]
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
