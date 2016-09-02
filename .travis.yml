@@ -7,9 +7,10 @@ rvm:
   - 1.9.3
   - 2.0
   - 2.1
-  - 2.3.0
+  - 2.2.5
+  - 2.3.1
   - jruby
-  - rbx-2
+  - rbx
 gemfile:
   - Gemfile
   - Gemfile-pure
@@ -17,4 +18,5 @@ cache: bundler
 sudo: false
 matrix:
   allow_failures:
-    - rvm: rbx-2
+    - rvm: rbx
+    - rvm: jruby

@@ -34,6 +34,7 @@ Gem::Specification.new do |gem|
   gem.add_runtime_dependency     'net-http-persistent', '~> 2.9'
   gem.add_development_dependency 'sparql',    '>= 1.99', '< 3'
   gem.add_development_dependency 'rdf-spec',  '>= 1.99', '< 3'
+  gem.add_development_dependency 'rdf-turtle','>= 1.99', '< 3'
   gem.add_development_dependency 'rspec',     '~> 3.0.0'
   gem.add_development_dependency 'rspec-its', '~> 1.0'
   gem.add_development_dependency 'webmock',   '~> 1.15'
