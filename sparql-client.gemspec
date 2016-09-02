@@ -32,6 +32,8 @@ Gem::Specification.new do |gem|
   gem.requirements               = []
   gem.add_runtime_dependency     'rdf',       '>= 1.99', '< 3'
   gem.add_runtime_dependency     'net-http-persistent', '~> 2.9'
+  gem.add_runtime_dependency     'json',      '~> 1.8'
+  gem.add_runtime_dependency     'tins',      '= 1.6.0'
   gem.add_development_dependency 'sparql',    '>= 1.99', '< 3'
   gem.add_development_dependency 'rdf-spec',  '>= 1.99', '< 3'
   gem.add_development_dependency 'rdf-turtle','>= 1.99', '< 3'
@@ -39,9 +41,10 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rspec-its', '~> 1.0'
   gem.add_development_dependency 'webmock',   '~> 1.15'
   gem.add_development_dependency 'yard' ,     '~> 0.8'
+  gem.add_development_dependency 'rack' ,     '~> 0.8'
 
   # Rubinius has it's own dependencies
-  if RUBY_ENGINE == "rbx" && RUBY_VERSION >= "2.1.0"
+  if RUBY_ENGINE == "rbx" && RUBY_VERSION >= "1.6"
      gem.add_runtime_dependency     "json"
   end
 
