@@ -6,8 +6,6 @@ begin
 rescue LoadError => e
 end
 
-require 'sparql/client'
-
 namespace :gem do
   desc "Build the sparql-client-#{File.read('VERSION').chomp}.gem file"
   task :build do
