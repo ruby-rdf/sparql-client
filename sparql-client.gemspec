@@ -30,10 +30,12 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version      = '>= 2.0'
   gem.requirements               = []
-  gem.add_runtime_dependency     'rdf',       '~> 2.0'
+  gem.add_runtime_dependency     'rdf',       '~> 2.0.2'
   gem.add_runtime_dependency     'net-http-persistent', '~> 2.9'
   gem.add_development_dependency 'sparql',    '~> 2.0'
   gem.add_development_dependency 'rdf-spec',  '~> 2.0'
+  gem.add_development_dependency 'rdf-turtle','~> 2.0'
+  gem.add_development_dependency 'rack',      '~> 1.6'
   gem.add_development_dependency 'rspec',     '~> 3.4'
   gem.add_development_dependency 'rspec-its', '~> 1.2'
   gem.add_development_dependency 'webmock',   '~> 1.15'
