@@ -35,13 +35,13 @@ module SPARQL
       RESULT_JSON,
       RESULT_XML,
       RESULT_BOOL,
-      "#{RESULT_TSV};p=0.8",
-      "#{RESULT_CSV};p=0.2",
-      '*/*;p=0.1'
+      "#{RESULT_TSV};q=0.8",
+      "#{RESULT_CSV};q=0.2",
+      '*/*;q=0.1'
     ].join(', ').freeze
     GRAPH_ALL  = (
       RDF::Format.content_types.keys + 
-      ['*/*;p=0.1']
+      ['*/*;q=0.1']
     ).join(', ').freeze
 
     ACCEPT_JSON    = {'Accept' => RESULT_JSON}.freeze
@@ -291,6 +291,7 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def query(query, options = {})
       @op = :query
+      @alt_endpoint = options[:endpoint]
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
@@ -317,13 +318,13 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#update-operation
     def update(query, options = {})
       @op = :update
-      @alt_endpoint = options[:endpoint] unless options[:endpoint].nil?
+      @alt_endpoint = options[:endpoint]
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
         SPARQL.execute(query, @url, options.merge(update: true))
       else
-        parse_response(response(query, options), options)
+        response(query, options)
       end
       self
     end
@@ -360,6 +361,8 @@ module SPARQL
     # @return [Object]
     def parse_response(response, options = {})
       case options[:content_type] || response.content_type
+        when NilClass
+          response.body
         when RESULT_BOOL # Sesame-specific
           response.body == 'true'
         when RESULT_JSON
@@ -536,9 +539,11 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     # @return [RDF::Enumerable]
     def parse_rdf_serialization(response, options = {})
-      options = {:content_type => response.content_type} if options.empty?
+      options = {:content_type => response.content_type} unless options[:content_type]
       if reader = RDF::Reader.for(options)
         reader.new(response.body)
+      else
+        raise RDF::ReaderError, "no suitable rdf reader was found."
       end
     end
 
@@ -678,7 +683,11 @@ module SPARQL
 
       request.basic_auth(url.user, url.password) if url.user && !url.user.empty?
 
+      pre_http_hook(request) if respond_to?(:pre_http_hook)
+
       response = @http.request(::URI.parse(url.to_s), request)
+
+      post_http_hook(response) if respond_to?(:post_http_hook)
 
       10.times do
         if response.kind_of? Net::HTTPRedirection
