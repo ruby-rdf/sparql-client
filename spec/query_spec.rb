@@ -56,6 +56,16 @@ describe SPARQL::Client::Query do
         expect(subject.ask.where([:s, :p, :o])).not_to be_expects_statements
       end
 
+      it "supports block with no argument for chaining" do
+        expected = "ASK WHERE { ?s ?p ?o . FILTER(regex(?s, 'Abiline, Texas')) }"
+        expect(subject.ask.where([:s, :p, :o]) {filter("regex(?s, 'Abiline, Texas')")}.to_s).to eq expected
+      end
+
+      it "supports block with argument for chaining" do
+        expected = "ASK WHERE { ?s ?p ?o . FILTER(regex(?s, 'Abiline, Texas')) }"
+        expect(subject.ask.where([:s, :p, :o]) {|q| q.filter("regex(?s, 'Abiline, Texas')")}.to_s).to eq expected
+      end
+
       context "filter" do
         it "supports filter as a string argument" do
           expected = "ASK WHERE { ?s ?p ?o . FILTER(regex(?s, 'Abiline, Texas')) }"
@@ -173,6 +183,10 @@ describe SPARQL::Client::Query do
       expect(subject.select.where([:s, :p, :o]).optional([:s, RDF.type, :o], [:s, RDF::URI("http://purl.org/dc/terms/abstract"), :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s a ?o . ?s <http://purl.org/dc/terms/abstract> ?o . } }"
     end
 
+    it "should support OPTIONAL with filter in block" do
+      expect(subject.select.where([:s, :p, :o]).optional([:s, RDF.value, :o]) {filter("langmatches(lang(?o), 'en')")}.to_s).to eq "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?o . FILTER(langmatches(lang(?o), 'en')) . } }"
+    end
+
     it "should support multiple OPTIONALs" do
       expect(subject.select.where([:s, :p, :o]).optional([:s, RDF.type, :o]).optional([:s, RDF::URI("http://purl.org/dc/terms/abstract"), :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s a ?o . } OPTIONAL { ?s <http://purl.org/dc/terms/abstract> ?o . } }"
     end
@@ -180,6 +194,10 @@ describe SPARQL::Client::Query do
     it "should support subqueries" do
       subquery = subject.select.where([:s, :p, :o])
       expect(subject.select.where(subquery).where([:s, :p, :o]).to_s).to eq "SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }"
+    end
+
+    it "should support subqueries using block" do
+      expect(subject.select.where([:s, :p, :o]) {select.where([:s, :p, :o])}.to_s).to eq "SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }"
     end
 
     it "expects results not statements" do

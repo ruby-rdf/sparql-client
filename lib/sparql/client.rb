@@ -609,11 +609,15 @@ module SPARQL
     # @private
     def self.serialize_patterns(patterns, use_vars = false)
       patterns.map do |pattern|
-        serialized_pattern = RDF::Statement.from(pattern).to_triple.each_with_index.map do |v, i|
-          if i == 1
-            SPARQL::Client.serialize_predicate(v)
-         else
-            SPARQL::Client.serialize_value(v, use_vars)
+        serialized_pattern = case pattern
+        when SPARQL::Client::QueryElement then [pattern.to_s]
+        else
+          RDF::Statement.from(pattern).to_triple.each_with_index.map do |v, i|
+            if i == 1
+              SPARQL::Client.serialize_predicate(v)
+           else
+              SPARQL::Client.serialize_value(v, use_vars)
+            end
           end
         end
         serialized_pattern.join(' ') + ' .'
@@ -747,6 +751,19 @@ module SPARQL
           raise ArgumentError, "unknown SPARQL protocol version: #{self.options[:protocol].inspect}"
       end
       request
+    end
+
+    # A query element can be used as a component of a query. It may be initialized with a string, which is wrapped in an appropriate container depending on the type of QueryElement. Implements {#to_s} to property serialize when generating a SPARQL query.
+    class QueryElement
+      attr_reader :elements
+
+      def initialize(*args)
+        @elements = args
+      end
+
+      def to_s
+        raise NotImplemented
+      end
     end
   end # Client
 end # SPARQL
