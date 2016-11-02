@@ -9,3 +9,4 @@ tmp
 doc
 coverage
 .bundle
+/.byebug_history

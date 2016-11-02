@@ -204,7 +204,7 @@ describe SPARQL::Client::Query do
       expect(subject.select.where([:s, :p, :o])).not_to be_expects_statements
     end
 
-    context "with property paths"
+    context "with property paths" do
       it "should support the InversePath expression" do
         expect(subject.select.where([:s, ["^",RDF::RDFS.subClassOf], :o]).to_s).to eq "SELECT * WHERE { ?s ^<#{RDF::RDFS.subClassOf}> ?o . }"
       end
@@ -226,6 +226,32 @@ describe SPARQL::Client::Query do
       it "should support the NegatedPropertySet expression" do
         expect(subject.select.where([:s, ["!",[RDF::RDFS.subClassOf,"|",RDF.type]], :o]).to_s).to eq "SELECT * WHERE { ?s !(<#{RDF::RDFS.subClassOf}>|a) ?o . }"
       end
+    end
+
+    context "with unions" do
+      it "should support pattern arguments" do
+        expect(subject.select.where([:s, :p, :o]).union([:s, :p, :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } UNION { ?s ?p ?o . }"
+      end
+
+      it "should support query arguments" do
+        subquery = subject.select.where([:s, :p, :o])
+        expect(subject.select.where([:s, :p, :o]).union(subquery).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } UNION { ?s ?p ?o . }"
+      end
+
+      it "should support block" do
+        subquery = subject.select.where([:s, :p, :o])
+        expect(subject.select.where([:s, :p, :o]).union {|q| q.where([:s, :p, :o])}.to_s).to eq "SELECT * WHERE { ?s ?p ?o . } UNION { ?s ?p ?o . }"
+      end
+
+      it "rejects mixed arguments" do
+        subquery = subject.select.where([:s, :p, :o])
+        expect {subject.select.where([:s, :p, :o]).union([:s, :p, :o], subquery)}.to raise_error(ArgumentError)
+      end
+
+      it "rejects arguments and block" do
+        expect {subject.select.where([:s, :p, :o]).union([:s, :p, :o]) {|q| q.where([:s, :p, :o])}}.to raise_error(ArgumentError)
+      end
+    end
   end
 
   context "when building DESCRIBE queries" do
