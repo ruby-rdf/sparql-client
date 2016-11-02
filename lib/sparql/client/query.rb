@@ -45,6 +45,9 @@ module SPARQL; class Client
     # @example SELECT ?s WHERE {?s ?p ?o .}
     #   Query.select(:s).where([:s, :p, :o])
     #
+    # @example SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}
+    #   Query.select(count: {uri: :c}).where([:uri, RDF.type, RDF::OWL.Class])
+    #
     # @param  [Array<Symbol>]          variables
     # @return [Query]
     #
@@ -101,6 +104,10 @@ module SPARQL; class Client
     # @overload self.construct(*variables, options)
     #   @param  [Symbol, #to_s]          form
     #   @param  [Hash{Symbol => Object}] options (see {Client#initialize})
+    #   @option options [Hash{Symbol => Symbol}] :count
+    #     Contents are symbols relating a variable described within the query,
+    #     to the projected variable.
+    #     
     # @yield  [query]
     # @yieldparam [Query]
     def initialize(form = :ask, options = {}, &block)
@@ -126,6 +133,9 @@ module SPARQL; class Client
     #
     # @example SELECT ?s WHERE {?s ?p ?o .}
     #   query.select(:s).where([:s, :p, :o])
+    #
+    # @example SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}
+    #   query.select(count: {uri: :c}).where([:uri, RDF.type, RDF::OWL.Class])
     #
     # @param  [Array<Symbol>] variables
     # @return [Query]
