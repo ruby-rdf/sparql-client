@@ -466,6 +466,59 @@ module SPARQL; class Client
     end
 
     ##
+    # @example SELECT * WHERE \{ ?book dc:title ?title . MINUS \{ ?book dc11:title ?title \} \}
+    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).
+    #     minus([:book, RDF::Vocab::DC11.title, :title])
+    #
+    # @example SELECT * WHERE \{ ?book dc:title ?title MINUS \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN')) \} \}
+    #   query1 = SPARQL::Client::Query.select.
+    #     where([:book, RDF::Vocab::DC11.title, :title]).
+    #     filter("langmatches(?title, 'en')")
+    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).minus(query1)
+    #
+    # The block form can be used for more complicated queries, using the `select` form (note, use either block or argument forms, not both):
+    #
+    # @example SELECT * WHERE \{ ?book dc:title ?title MINUS \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN'))\} \}
+    #   query1 = SPARQL::Client::Query.select.where([:book, RDF::Vocab::DC11.title, :title]).filter("langmatches(?title, 'en')")
+    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).minus do |q|
+    #     q.select.
+    #       where([:book, RDF::Vocab::DC11.title, :title]).
+    #       filter("langmatches(?title, 'en')")
+    #   end
+    #
+    # @param  [Array<RDF::Query::Pattern, Array>] patterns
+    #   splat of zero or more patterns followed by zero or more queries.
+    # @yield [query]
+    #   Yield form with or without argument; without an argument, evaluates within the query.
+    # @yieldparam [SPARQL::Client::Query] query used for adding select clauses.
+    # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#optionals
+    def minus(*patterns, &block)
+      options[:minuses] ||= []
+
+      if block_given?
+        raise ArgumentError, "#minus requires either arguments or a block, not both." unless patterns.empty?
+        # Evaluate calls in a new query instance
+        query = self.class.select
+        case block.arity
+          when 1 then block.call(query)
+          else query.instance_eval(&block)
+        end
+        options[:minuses] << query
+      elsif patterns.all? {|p| p.is_a?(SPARQL::Client::Query)}
+        # With argument form, all must be patterns or queries
+        options[:minuses] += patterns
+      elsif patterns.all? {|p| p.is_a?(Array)}
+        # With argument form, all must be patterns, or queries
+        options[:minuses] << self.class.select.where(*patterns)
+      else
+        raise ArgumentError, "#minus arguments are triple patters or queries, not both."
+      end
+
+      self
+    end
+
+    ##
     # @return expects_statements?
     def expects_statements?
       [:construct, :describe].include?(form)
@@ -651,6 +704,10 @@ module SPARQL; class Client
       end
       if options[:graph]
         buffer << '}' # GRAPH
+      end
+
+      options.fetch(:minuses, []).each do |query|
+        buffer += query.to_s_ggp.unshift('MINUS')
       end
 
       buffer << '}'

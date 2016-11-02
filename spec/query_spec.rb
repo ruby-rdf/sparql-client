@@ -252,6 +252,31 @@ describe SPARQL::Client::Query do
         expect {subject.select.where([:s, :p, :o]).union([:s, :p, :o]) {|q| q.where([:s, :p, :o])}}.to raise_error(ArgumentError)
       end
     end
+
+    context "with minus" do
+      it "should support pattern arguments" do
+        expect(subject.select.where([:s, :p, :o]).minus([:s, :p, :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . MINUS { ?s ?p ?o . } }"
+      end
+
+      it "should support query arguments" do
+        subquery = subject.select.where([:s, :p, :o])
+        expect(subject.select.where([:s, :p, :o]).minus(subquery).to_s).to eq "SELECT * WHERE { ?s ?p ?o . MINUS { ?s ?p ?o . } }"
+      end
+
+      it "should support block" do
+        subquery = subject.select.where([:s, :p, :o])
+        expect(subject.select.where([:s, :p, :o]).minus {|q| q.where([:s, :p, :o])}.to_s).to eq "SELECT * WHERE { ?s ?p ?o . MINUS { ?s ?p ?o . } }"
+      end
+
+      it "rejects mixed arguments" do
+        subquery = subject.select.where([:s, :p, :o])
+        expect {subject.select.where([:s, :p, :o]).minus([:s, :p, :o], subquery)}.to raise_error(ArgumentError)
+      end
+
+      it "rejects arguments and block" do
+        expect {subject.select.where([:s, :p, :o]).minus([:s, :p, :o]) {|q| q.where([:s, :p, :o])}}.to raise_error(ArgumentError)
+      end
+    end
   end
 
   context "when building DESCRIBE queries" do
