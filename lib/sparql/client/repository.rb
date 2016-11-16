@@ -72,6 +72,7 @@ module SPARQL; class Client
         when :graph_name  then false
         when :inference   then false  # forward-chaining inference
         when :validity    then false
+        when :literal_equality then true
         else false
       end
     end
