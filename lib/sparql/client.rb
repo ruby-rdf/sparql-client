@@ -658,7 +658,11 @@ module SPARQL
           value = ENV['https_proxy']
           proxy_url = URI.parse(value) unless value.nil? || value.empty?
       end
-      klass = Net::HTTP::Persistent.new(self.class.to_s, proxy_url)
+      klass = if Net::HTTP::Persistent::VERSION >= '3.0'
+        Net::HTTP::Persistent.new(name: self.class.to_s, proxy: proxy_url)
+      else
+        Net::HTTP::Persistent.new(self.class.to_s, proxy_url)
+      end
       klass.keep_alive =  @options[:keep_alive] || 120
       klass.read_timeout = @options[:read_timeout] || 60
       klass
