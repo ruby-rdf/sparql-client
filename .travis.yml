@@ -18,5 +18,6 @@ cache: bundler
 sudo: false
 matrix:
   allow_failures:
+    - rvm: 1.9.3
     - rvm: rbx
     - rvm: jruby
