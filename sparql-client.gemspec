@@ -31,7 +31,7 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version      = '>= 1.9.3'
   gem.requirements               = []
   gem.add_runtime_dependency     'rdf',       '>= 1.99', '< 2'
-  gem.add_runtime_dependency     'net-http-persistent', '~> 2.9'
+  gem.add_runtime_dependency     'net-http-persistent', '>= 2.9', '< 4'
   gem.add_runtime_dependency     'json',      '~> 1.8'
   gem.add_runtime_dependency     'tins',      '= 1.6.0'
   gem.add_development_dependency 'sparql',    '>= 1.99', '< 2'
