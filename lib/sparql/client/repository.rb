@@ -39,6 +39,30 @@ module SPARQL; class Client
     end
 
     ##
+    # Iterates the given block for each RDF statement.
+    #
+    # If no block was given, returns an enumerator.
+    #
+    # The order in which statements are yielded is undefined.
+    #
+    # @overload each_statement
+    #   @yield  [statement]
+    #     each statement
+    #   @yieldparam  [RDF::Statement] statement
+    #   @yieldreturn [void] ignored
+    #   @return [void]
+    #
+    # @overload each_statement
+    #   @return [Enumerator<RDF::Statement>]
+    def each_statement(&block)
+      if block_given?
+        # Invoke {#each} in the containing class:
+        each(&block)
+      end
+      enum_statement
+    end
+
+    ##
     # @private
     # @see RDF::Enumerable#supports?
     def supports?(feature)
@@ -48,6 +72,7 @@ module SPARQL; class Client
         when :graph_name  then false
         when :inference   then false  # forward-chaining inference
         when :validity    then false
+        when :literal_equality then true
         else false
       end
     end
