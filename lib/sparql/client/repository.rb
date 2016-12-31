@@ -176,7 +176,7 @@ module SPARQL; class Client
     # @see    RDF::Repository#count?
     def count
       begin
-        binding = client.query("SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o }").first.to_hash
+        binding = client.query("SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o }").first.to_h
         binding[:count].value.to_i rescue 0
       rescue SPARQL::Client::MalformedQuery => e
         # SPARQL 1.0 does not include support for aggregate functions:

@@ -36,7 +36,7 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'rdf-spec',  '~> 2.0'
   gem.add_development_dependency 'rspec',     '~> 3.4'
   gem.add_development_dependency 'rspec-its', '~> 1.2'
-  gem.add_development_dependency 'webmock',   '~> 1.15'
+  gem.add_development_dependency 'webmock',   '~> 2.3'
   gem.add_development_dependency 'yard' ,     '~> 0.8'
 
   # Rubinius has it's own dependencies
