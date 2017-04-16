@@ -1,4 +1,4 @@
-#SPARQL Client for RDF.rb
+# SPARQL Client for RDF.rb
 
 This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
@@ -8,7 +8,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 [![Build Status](https://travis-ci.org/ruby-rdf/sparql-client.png?branch=master)](http://travis-ci.org/ruby-rdf/sparql-client)
 [![Coverage Status](https://coveralls.io/repos/ruby-rdf/sparql-client/badge.svg?branch=master&service=github)](https://coveralls.io/github/ruby-rdf/sparql-client?branch=master)
 
-##Features
+## Features
 
 * Executes queries against any SPARQL 1.0/1.1-compatible endpoint over HTTP,
   or against an `RDF::Queryable` instance, using the `SPARQL` gem.
@@ -22,7 +22,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 * Supports accessing endpoints as read/write [`RDF::Repository`][RDF::Repository]
   instances {SPARQL::Client::Repository}.
 
-##Examples
+## Examples
 
 ### Querying a remote SPARQL endpoint
     require 'sparql/client'
@@ -83,14 +83,14 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
     end
     delete_data(data)
 
-##Documentation
+## Documentation
 
 * {SPARQL::Client}
   * {SPARQL::Client::Query}
   * {SPARQL::Client::Repository}
   * {SPARQL::Client::Update}
 
-##Dependencies
+## Dependencies
 
 * [Ruby](http://ruby-lang.org/) (>= 2.2.2)
 * [RDF.rb](http://rubygems.org/gems/rdf) (>= 2.0)
@@ -98,14 +98,14 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 * Soft dependency on [SPARQL](http://rubygems.org/gems/sparql) (>= 2.0)
 * Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.6)
 
-##Installation
+## Installation
 
 The recommended installation method is via [RubyGems](http://rubygems.org/).
 To install the latest official release of the `SPARQL::Client` gem, do:
 
     % [sudo] gem install sparql-client
 
-##Download
+## Download
 
 To get a local working copy of the development repository, do:
 
@@ -116,17 +116,17 @@ follows:
 
     % wget http://github.com/ruby-rdf/sparql-client/tarball/master
 
-##Mailing List
+## Mailing List
 
 * <http://lists.w3.org/Archives/Public/public-rdf-ruby/>
 
-##Authors
+## Authors
 
 * [Arto Bendiken](http://github.com/bendiken) - <http://ar.to/>
 * [Ben Lavender](http://github.com/bhuga) - <http://bhuga.net/>
 * [Gregg Kellogg](http://github.com/gkellogg) - <http://greggkellogg.net/>
 
-##Contributors
+## Contributors
 
 * [Christoph Badura](http://github.com/bad) - <http://github.com/bad>
 * [James Hetherington](http://github.com/jamespjh) - <http://twitter.com/jamespjh>
@@ -140,7 +140,7 @@ follows:
 * [Thomas Feron](http://github.com/thoferon) - <http://github.com/thoferon>
 * [Nick Gottlieb](http://github.com/ngottlieb) - <http://www.nicholasgottlieb.com>
 
-##Contributing
+## Contributing
 This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange development and release activity. All submissions _must_ be on a feature branch based on the _develop_ branch to ease staging and integration.
 
 * Do your best to adhere to the existing coding conventions and idioms.
@@ -155,7 +155,7 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
   of thumb, additions larger than about 15 lines of code), we need an
   explicit [public domain dedication][PDD] on record from you.
 
-##Resources
+## Resources
 
 * <http://ruby-rdf.github.com/sparql-client/>
 * <http://github.com/ruby-rdf/sparql-client>
@@ -164,7 +164,7 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
 * <http://raa.ruby-lang.org/project/sparql-client/>
 * <http://www.ohloh.net/p/rdf>
 
-##License
+## License
 
 This is free and unencumbered public domain software. For more information,
 see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
