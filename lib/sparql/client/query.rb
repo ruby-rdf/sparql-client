@@ -42,6 +42,12 @@ module SPARQL; class Client
     # @example SELECT * WHERE { ?s ?p ?o . }
     #   Query.select.where([:s, :p, :o])
     #
+    # @example SELECT ?s WHERE {?s ?p ?o .}
+    #   Query.select(:s).where([:s, :p, :o])
+    #
+    # @example SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}
+    #   Query.select(count: {uri: :c}).where([:uri, RDF.type, RDF::OWL.Class])
+    #
     # @param  [Array<Symbol>]          variables
     # @return [Query]
     #
@@ -98,6 +104,10 @@ module SPARQL; class Client
     # @overload self.construct(*variables, options)
     #   @param  [Symbol, #to_s]          form
     #   @param  [Hash{Symbol => Object}] options (see {Client#initialize})
+    #   @option options [Hash{Symbol => Symbol}] :count
+    #     Contents are symbols relating a variable described within the query,
+    #     to the projected variable.
+    #     
     # @yield  [query]
     # @yieldparam [Query]
     def initialize(form = :ask, options = {}, &block)
@@ -120,6 +130,12 @@ module SPARQL; class Client
     ##
     # @example SELECT * WHERE { ?s ?p ?o . }
     #   query.select.where([:s, :p, :o])
+    #
+    # @example SELECT ?s WHERE {?s ?p ?o .}
+    #   query.select(:s).where([:s, :p, :o])
+    #
+    # @example SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}
+    #   query.select(count: {uri: :c}).where([:uri, RDF.type, RDF::OWL.Class])
     #
     # @param  [Array<Symbol>] variables
     # @return [Query]
@@ -172,18 +188,54 @@ module SPARQL; class Client
     #   query.select.where([:s, :p, :o])
     #   query.select.whether([:s, :p, :o])
     #
+    # @example SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }
+    #   subquery = query.select.where([:s, :p, :o])
+    #   query.select.where([:s, :p, :o], subquery)
+    #
+    # @example SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }
+    #   query.select.where([:s, :p, :o]) do |q|
+    #     q.select.where([:s, :p, :o])
+    #   end
+    #
+    # Block form can be used for chaining calls in addition to creating sub-select queries.
+    #
+    # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o
+    #   query.select.where([:s, :p, :o]) do
+    #     order(:o)
+    #   end
+    #
     # @param  [Array<RDF::Query::Pattern, Array>] patterns_queries
     #   splat of zero or more patterns followed by zero or more queries.
+    # @yield [query]
+    #   Yield form with or without argument; without an argument, evaluates within the query.
+    # @yieldparam [SPARQL::Client::Query] query Actually a delegator to query. Methods other than `#select` are evaluated against `self`. For `#select`, a new Query is created, and the result added as a subquery.
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#GraphPattern
-    def where(*patterns_queries)
+    def where(*patterns_queries, &block)
       subqueries, patterns = patterns_queries.partition {|pq| pq.is_a? SPARQL::Client::Query}
       @patterns += build_patterns(patterns)
       @subqueries += subqueries
+
+      if block_given?
+        decorated_query = WhereDecorator.new(self)
+        case block.arity
+          when 1 then block.call(decorated_query)
+          else decorated_query.instance_eval(&block)
+        end
+      end
       self
     end
 
     alias_method :whether, :where
+
+    # @private
+    class WhereDecorator < SimpleDelegator
+      def select(*variables)
+        query = SPARQL::Client::Query.select(*variables)
+        __getobj__.instance_variable_get(:@subqueries) << query
+        query
+      end
+    end
 
     ##
     # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o
@@ -338,10 +390,141 @@ module SPARQL; class Client
     #   query.select.where([:s, :p, :o]).
     #     optional([:s, RDF.type, :o], [:s, RDF::Vocab::DC.abstract, :o])
     #
+    # The block form can be used for adding filters:
+    #
+    # @example ASK WHERE { ?s ?p ?o . OPTIONAL { ?s ?p ?o . FILTER(regex(?s, 'Abiline, Texas'))} }
+    #   query.ask.where([:s, :p, :o]).optional([:s, :p, :o]) do
+    #     filter("regex(?s, 'Abiline, Texas')")
+    #   end
+    #
+    # @param  [Array<RDF::Query::Pattern, Array>] patterns
+    #   splat of zero or more patterns followed by zero or more queries.
+    # @yield [query]
+    #   Yield form with or without argument; without an argument, evaluates within the query.
+    # @yieldparam [SPARQL::Client::Query] query used for creating filters on the optional patterns.
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#optionals
-    def optional(*patterns)
+    def optional(*patterns, &block)
       (options[:optionals] ||= []) << build_patterns(patterns)
+
+      if block_given?
+        # Steal options[:filters]
+        query_filters = options[:filters]
+        options[:filters] = []
+        case block.arity
+          when 1 then block.call(self)
+          else instance_eval(&block)
+        end
+        options[:optionals].last.concat(options[:filters])
+        options[:filters] = query_filters
+      end
+
+      self
+    end
+
+    ##
+    # @example SELECT * WHERE \{ ?book dc:title ?title \} UNION \{ ?book dc11:title ?title \}
+    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).
+    #     union([:book, RDF::Vocab::DC11.title, :title])
+    #
+    # @example SELECT * WHERE \{ ?book dc:title ?title \} UNION \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN'))\}
+    #   query1 = SPARQL::Client::Query.select.
+    #     where([:book, RDF::Vocab::DC11.title, :title]).
+    #     filter("langmatches(?title, 'en')")
+    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).union(query1)
+    #
+    # The block form can be used for more complicated queries, using the `select` form (note, use either block or argument forms, not both):
+    #
+    # @example SELECT * WHERE \{ ?book dc:title ?title \} UNION \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN'))\}
+    #   query1 = SPARQL::Client::Query.select.where([:book, RDF::Vocab::DC11.title, :title]).filter("langmatches(?title, 'en')")
+    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).union do |q|
+    #     q.select.
+    #       where([:book, RDF::Vocab::DC11.title, :title]).
+    #       filter("langmatches(?title, 'en')")
+    #   end
+    #
+    # @param  [Array<RDF::Query::Pattern, Array>] patterns
+    #   splat of zero or more patterns followed by zero or more queries.
+    # @yield [query]
+    #   Yield form with or without argument; without an argument, evaluates within the query.
+    # @yieldparam [SPARQL::Client::Query] query used for adding select clauses.
+    # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#optionals
+    def union(*patterns, &block)
+      options[:unions] ||= []
+
+      if block_given?
+        raise ArgumentError, "#union requires either arguments or a block, not both." unless patterns.empty?
+        # Evaluate calls in a new query instance
+        query = self.class.select
+        case block.arity
+          when 1 then block.call(query)
+          else query.instance_eval(&block)
+        end
+        options[:unions] << query
+      elsif patterns.all? {|p| p.is_a?(SPARQL::Client::Query)}
+        # With argument form, all must be patterns or queries
+        options[:unions] += patterns
+      elsif patterns.all? {|p| p.is_a?(Array)}
+        # With argument form, all must be patterns, or queries
+        options[:unions] << self.class.select.where(*patterns)
+      else
+        raise ArgumentError, "#union arguments are triple patters or queries, not both."
+      end
+
+      self
+    end
+
+    ##
+    # @example SELECT * WHERE \{ ?book dc:title ?title . MINUS \{ ?book dc11:title ?title \} \}
+    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).
+    #     minus([:book, RDF::Vocab::DC11.title, :title])
+    #
+    # @example SELECT * WHERE \{ ?book dc:title ?title MINUS \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN')) \} \}
+    #   query1 = SPARQL::Client::Query.select.
+    #     where([:book, RDF::Vocab::DC11.title, :title]).
+    #     filter("langmatches(?title, 'en')")
+    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).minus(query1)
+    #
+    # The block form can be used for more complicated queries, using the `select` form (note, use either block or argument forms, not both):
+    #
+    # @example SELECT * WHERE \{ ?book dc:title ?title MINUS \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN'))\} \}
+    #   query1 = SPARQL::Client::Query.select.where([:book, RDF::Vocab::DC11.title, :title]).filter("langmatches(?title, 'en')")
+    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).minus do |q|
+    #     q.select.
+    #       where([:book, RDF::Vocab::DC11.title, :title]).
+    #       filter("langmatches(?title, 'en')")
+    #   end
+    #
+    # @param  [Array<RDF::Query::Pattern, Array>] patterns
+    #   splat of zero or more patterns followed by zero or more queries.
+    # @yield [query]
+    #   Yield form with or without argument; without an argument, evaluates within the query.
+    # @yieldparam [SPARQL::Client::Query] query used for adding select clauses.
+    # @return [Query]
+    # @see    http://www.w3.org/TR/sparql11-query/#optionals
+    def minus(*patterns, &block)
+      options[:minuses] ||= []
+
+      if block_given?
+        raise ArgumentError, "#minus requires either arguments or a block, not both." unless patterns.empty?
+        # Evaluate calls in a new query instance
+        query = self.class.select
+        case block.arity
+          when 1 then block.call(query)
+          else query.instance_eval(&block)
+        end
+        options[:minuses] << query
+      elsif patterns.all? {|p| p.is_a?(SPARQL::Client::Query)}
+        # With argument form, all must be patterns or queries
+        options[:minuses] += patterns
+      elsif patterns.all? {|p| p.is_a?(Array)}
+        # With argument form, all must be patterns, or queries
+        options[:minuses] << self.class.select.where(*patterns)
+      else
+        raise ArgumentError, "#minus arguments are triple patters or queries, not both."
+      end
+
       self
     end
 
@@ -352,15 +535,17 @@ module SPARQL; class Client
     end
 
     ##
-    # @private
+    # @private 
     def build_patterns(patterns)
       patterns.map {|pattern| RDF::Query::Pattern.from(pattern)}
     end
 
     ##
-    # @private
+    # @example ASK WHERE { ?s ?p ?o . FILTER(regex(?s, 'Abiline, Texas')) }
+    #   query.ask.where([:s, :p, :o]).filter("regex(?s, 'Abiline, Texas')")
+    # @return [Query]
     def filter(string)
-      ((options[:filters] ||= []) << string) if string and not string.empty?
+      ((options[:filters] ||= []) << Filter.new(string)) if string and not string.empty?
       self
     end
 
@@ -445,33 +630,11 @@ module SPARQL; class Client
       buffer << "FROM #{SPARQL::Client.serialize_value(options[:from])}" if options[:from]
 
       unless patterns.empty? && form == :describe
-        buffer << 'WHERE {'
+        buffer += self.to_s_ggp.unshift('WHERE')
+      end
 
-        if options[:graph]
-          buffer << 'GRAPH ' + SPARQL::Client.serialize_value(options[:graph])
-          buffer << '{'
-        end
-
-        @subqueries.each do |sq|
-          buffer << "{ #{sq.to_s} } ."
-        end
-
-        buffer += SPARQL::Client.serialize_patterns(patterns)
-        if options[:optionals]
-          options[:optionals].each do |patterns|
-            buffer << 'OPTIONAL {'
-            buffer += SPARQL::Client.serialize_patterns(patterns)
-            buffer << '}'
-          end
-        end
-        if options[:filters]
-          buffer += options[:filters].map { |filter| "FILTER(#{filter})" }
-        end
-        if options[:graph]
-          buffer << '}' # GRAPH
-        end
-
-        buffer << '}' # WHERE
+      options.fetch(:unions, []).each do |query|
+        buffer += query.to_s_ggp.unshift('UNION')
       end
 
       if options[:group_by]
@@ -524,6 +687,43 @@ module SPARQL; class Client
       buffer.join(' ')
     end
 
+    # Serialize a Group Graph Pattern
+    # @private
+    def to_s_ggp
+      buffer = ["{"]
+
+      if options[:graph]
+        buffer << 'GRAPH ' + SPARQL::Client.serialize_value(options[:graph])
+        buffer << '{'
+      end
+
+      @subqueries.each do |sq|
+        buffer << "{ #{sq.to_s} } ."
+      end
+
+      buffer += SPARQL::Client.serialize_patterns(patterns)
+      if options[:optionals]
+        options[:optionals].each do |patterns|
+          buffer << 'OPTIONAL {'
+          buffer += SPARQL::Client.serialize_patterns(patterns)
+          buffer << '}'
+        end
+      end
+      if options[:filters]
+        buffer += options[:filters].map(&:to_s)
+      end
+      if options[:graph]
+        buffer << '}' # GRAPH
+      end
+
+      options.fetch(:minuses, []).each do |query|
+        buffer += query.to_s_ggp.unshift('MINUS')
+      end
+
+      buffer << '}'
+      buffer
+    end
+
     ##
     # Outputs a developer-friendly representation of this query to `stderr`.
     #
@@ -539,6 +739,17 @@ module SPARQL; class Client
     # @return [String]
     def inspect
       sprintf("#<%s:%#0x(%s)>", self.class.name, __id__, to_s)
+    end
+
+    # Allow Filters to be 
+    class Filter < SPARQL::Client::QueryElement
+      def initialize(*args)
+        super
+      end
+
+      def to_s
+        "FILTER(#{elements.join(' ')})"
+      end
     end
   end
 end; end
