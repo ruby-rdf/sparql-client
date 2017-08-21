@@ -18,7 +18,7 @@ INSERT DATA {
     doap:implements <http://www.w3.org/TR/rdf-concepts/>,
                     <http://sw.deri.org/2008/07/n-quads/>,
                     <http://www.w3.org/2001/sw/RDFCore/ntriples/>;
-    doap:download-page <http://rubyforge.org/projects/rdf/>;
+    doap:download-page <http://rubygems.org/gems/rdf/>;
     doap:bug-database <http://github.com/ruby-rdf/rdf/issues>;
     doap:blog <http://ar.to/>;
     doap:blog <http://blog.datagraph.org/>;

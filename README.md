@@ -160,7 +160,6 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
 * <http://ruby-rdf.github.com/sparql-client/>
 * <http://github.com/ruby-rdf/sparql-client>
 * <http://rubygems.org/gems/sparql-client>
-* <http://rubyforge.org/projects/sparql/>
 * <http://raa.ruby-lang.org/project/sparql-client/>
 * <http://www.ohloh.net/p/rdf>
 

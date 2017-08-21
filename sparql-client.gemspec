@@ -13,7 +13,6 @@ Gem::Specification.new do |gem|
                             or against a local repository. Generates SPARQL queries using a simple DSL.
                             Includes SPARQL::Client::Repository, which allows any endpoint supporting
                             SPARQL Update to be used as an RDF.rb repository.)
-  gem.rubyforge_project  = 'sparql-client'
 
   gem.authors            = ['Arto Bendiken', 'Ben Lavender', 'Gregg Kellogg']
   gem.email              = 'public-rdf-ruby@w3.org'
