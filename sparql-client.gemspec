@@ -29,14 +29,17 @@ Gem::Specification.new do |gem|
 
   gem.required_ruby_version      = '>= 2.2.2'
   gem.requirements               = []
-  gem.add_runtime_dependency     'rdf',       '~> 2.0'
+  #gem.add_runtime_dependency     'rdf',       '~> 3.0'
+  gem.add_runtime_dependency     'rdf',       '>= 2.2', '< 4.0'
   gem.add_runtime_dependency     'net-http-persistent', '>= 2.9', '< 4'
-  gem.add_development_dependency 'sparql',    '~> 2.0'
-  gem.add_development_dependency 'rdf-spec',  '~> 2.0'
-  gem.add_development_dependency 'rspec',     '~> 3.4'
+  #gem.add_development_dependency 'sparql',    '~> 3.0'
+  #gem.add_development_dependency 'rdf-spec',  '~> 3.0'
+  gem.add_development_dependency 'sparql',    '>= 2.2', '< 4.0'
+  gem.add_development_dependency 'rdf-spec',  '>= 2.2', '< 4.0'
+  gem.add_development_dependency 'rspec',     '~> 3.7'
   gem.add_development_dependency 'rspec-its', '~> 1.2'
-  gem.add_development_dependency 'webmock',   '~> 2.3'
-  gem.add_development_dependency 'yard' ,     '~> 0.8'
+  gem.add_development_dependency 'webmock',   '~> 3.0'
+  gem.add_development_dependency 'yard' ,     '~> 0.9'
 
   # Rubinius has it's own dependencies
   if RUBY_ENGINE == "rbx" && RUBY_VERSION >= "2.1.0"
