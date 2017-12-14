@@ -58,7 +58,7 @@ class SPARQL::Client
     end
 
     ##
-    # Load statements into the graph
+    # Clear the graph
     #
     # @example CLEAR GRAPH <http://example.org/data.rdf>
     #   clear.graph(RDF::URI(http://example.org/data.rdf))

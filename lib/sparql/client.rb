@@ -157,7 +157,7 @@ module SPARQL
     #   })
     #
     # @example Inserting data sourced from a file or URL
-    #   data = RDF::Graph.load("http://rdf.rubyforge.org/doap.nt")
+    #   data = RDF::Graph.load("https://raw.githubusercontent.com/ruby-rdf/rdf/develop/etc/doap.nt")
     #   client.insert_data(data)
     #
     # @example Inserting data into a named graph
@@ -178,7 +178,7 @@ module SPARQL
     # This requires that the endpoint support SPARQL 1.1 Update.
     #
     # @example Deleting data sourced from a file or URL
-    #   data = RDF::Graph.load("http://rdf.rubyforge.org/doap.nt")
+    #   data = RDF::Graph.load("https://raw.githubusercontent.com/ruby-rdf/rdf/develop/etc/doap.nt")
     #   client.delete_data(data)
     #
     # @example Deleting data from a named graph

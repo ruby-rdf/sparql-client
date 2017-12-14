@@ -73,7 +73,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
     data = RDF::Graph.new do |graph|
       graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
     end
-    insert_data(data)
+    sparql.insert_data(data)
 
 ### Deleting data from a graph
 
@@ -81,7 +81,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
     data = RDF::Graph.new do |graph|
       graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
     end
-    delete_data(data)
+    sparql.delete_data(data)
 
 ## Documentation
 
@@ -160,7 +160,6 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
 * <http://ruby-rdf.github.com/sparql-client/>
 * <http://github.com/ruby-rdf/sparql-client>
 * <http://rubygems.org/gems/sparql-client>
-* <http://rubyforge.org/projects/sparql/>
 * <http://raa.ruby-lang.org/project/sparql-client/>
 * <http://www.ohloh.net/p/rdf>
 
