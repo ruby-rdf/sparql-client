@@ -10,7 +10,6 @@ module SPARQL; class Client
     ##
     # @param [URI, #to_s]    uri
     #   Endpoint of this repository
-    # @param [String, #to_s] title (nil)
     # @param [Hash{Symbol => Object}] options passed to RDF::Repository
     def initialize(uri: nil, **options, &block)
       raise ArgumentError, "uri is a required parameter" unless uri
