@@ -123,6 +123,14 @@ describe SPARQL::Client::Query do
       expect(subject.select(:o, :count => { :s => :c }).where([:s, :p, :o]).to_s).to eq "SELECT ?o ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
     end
 
+    it "should support VALUES" do
+      expect(subject.select(:s).where([:s, :p, :o]).values(:o, "Object").to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o) { ( "Object" ) } }'
+      expect(subject.select(:s).where([:s, :p, :o]).values(:o, "1", "2").to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o) { ( "1" ) ( "2" ) } }'
+      expect(subject.select(:s).where([:s, :p, :o]).values([:o, :p], ["Object", "Predicate"]).to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o ?p) { ( "Object" "Predicate" ) } }'
+      expect(subject.select(:s).where([:s, :p, :o]).values([:o, :p], ["1", "2"], ["3", "4"]).to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o ?p) { ( "1" "2" ) ( "3" "4" ) } }'
+      expect(subject.select(:s).where([:s, :p, :o]).values([:o, :p], [nil, "2"], ["3", nil]).to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o ?p) { ( UNDEF "2" ) ( "3" UNDEF ) } }'
+    end
+
     it "should support GROUP BY" do
       expect(subject.select(:s).where([:s, :p, :o]).group_by(:s).to_s).to eq "SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s"
       expect(subject.select(:s).where([:s, :p, :o]).group_by('?s').to_s).to eq "SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s"
@@ -239,7 +247,6 @@ describe SPARQL::Client::Query do
       end
 
       it "should support block" do
-        subquery = subject.select.where([:s, :p, :o])
         expect(subject.select.where([:s, :p, :o]).union {|q| q.where([:s, :p, :o])}.to_s).to eq "SELECT * WHERE { ?s ?p ?o . } UNION { ?s ?p ?o . }"
       end
 
@@ -264,7 +271,6 @@ describe SPARQL::Client::Query do
       end
 
       it "should support block" do
-        subquery = subject.select.where([:s, :p, :o])
         expect(subject.select.where([:s, :p, :o]).minus {|q| q.where([:s, :p, :o])}.to_s).to eq "SELECT * WHERE { ?s ?p ?o . MINUS { ?s ?p ?o . } }"
       end
 

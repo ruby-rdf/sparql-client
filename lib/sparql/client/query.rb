@@ -18,12 +18,6 @@ module SPARQL; class Client
     attr_reader :options
 
     ##
-    # Values returned from previous query.
-    #
-    # @return [Array<[key, RDF::Value]>]
-    attr_reader :values
-
-    ##
     # Creates a boolean `ASK` query.
     #
     # @example ASK WHERE { ?s ?p ?o . }
@@ -529,6 +523,71 @@ module SPARQL; class Client
     end
 
     ##
+    # Specify inline data for a query
+    #
+    # @overload values
+    #   Values returned from previous query.
+    #
+    #   @return [Array<Array(key, RDF::Value)>]
+    #
+    # @overload values(vars, *data)
+    #   @example single variable with multiple values
+    #     query.select
+    #      .where([:s, RDF::URI('http://purl.org/dc/terms/title'), :title])
+    #      .values(:title, "This title", "Another title")
+    #
+    #   @example multiple variables with multiple values
+    #     query.select
+    #      .where([:s, RDF::URI('http://purl.org/dc/terms/title'), :title],
+    #             [:s, RDF.type, :type])
+    #      .values([:type, :title],
+    #              [RDF::URI('http://pcdm.org/models#Object'), "This title"],
+    #              [RDF::URI('http://pcdm.org/models#Collection', 'Another title'])
+    #
+    #   @example multiple variables with UNDEF
+    #     query.select
+    #      .where([:s, RDF::URI('http://purl.org/dc/terms/title'), :title],
+    #             [:s, RDF.type, :type])
+    #      .values([:type, :title],
+    #              [nil "This title"],
+    #              [RDF::URI('http://pcdm.org/models#Collection', nil])
+    #
+    #   @param [Symbol, Array<Symbol>] vars
+    #   @param [Array<RDF::Term, String, nil>] *data
+    #   @return [Query]
+    def values(*args)
+      return @values if args.empty?
+      vars, *data = *args
+      vars = Array(vars).map {|var| RDF::Query::Variable.new(var)}
+      if vars.length == 1
+        # data may be a in array form or simple form
+        if data.any? {|d| d.is_a?(Array)} && !data.all? {|d| d.is_a?(Array)}
+          raise ArgumentError, "values data must all be in array form or all simple"
+        end
+        data = data.map {|d| Array(d)}
+      end
+
+      # Each data value must be an array with the same number of entries as vars
+      unless data.all? {|d| d.is_a?(Array) && d.all? {|dd| dd.is_a?(RDF::Value) || dd.is_a?(String) || dd.nil?}}
+        raise ArgumentError, "values data must each be an array of terms, strings, or nil"
+      end
+
+      # Turn strings into Literals
+      data = data.map do |d|
+        d.map do |nil_literal_or_term|
+          case nil_literal_or_term
+          when nil then nil
+          when String then RDF::Literal(nil_literal_or_term)
+          when RDF::Value then graph_uri_or_var
+          else raise ArgumentError
+          end
+        end
+      end
+      options[:values] = [vars, *data]
+      self
+    end
+
+    ##
     # @return expects_statements?
     def expects_statements?
       [:construct, :describe].include?(form)
@@ -711,6 +770,18 @@ module SPARQL; class Client
       end
       if options[:filters]
         buffer += options[:filters].map(&:to_s)
+      end
+      if options[:values]
+        vars = options[:values].first.map {|var| SPARQL::Client.serialize_value(var)}
+        buffer << "VALUES (#{vars.join(' ')}) {"
+        options[:values][1..-1].each do |data_block_value|
+          buffer << '('
+          buffer << data_block_value.map do |value|
+            value.nil? ? 'UNDEF' : SPARQL::Client.serialize_value(value)
+          end.join(' ')
+          buffer << ')'
+        end
+        buffer << '}'
       end
       if options[:graph]
         buffer << '}' # GRAPH
