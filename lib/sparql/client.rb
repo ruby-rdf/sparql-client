@@ -543,7 +543,7 @@ module SPARQL
       if reader = RDF::Reader.for(options)
         reader.new(response.body)
       else
-        raise RDF::ReaderError, "no suitable rdf reader was found."
+        raise RDF::ReaderError, "no RDF reader was found for #{options}."
       end
     end
 
