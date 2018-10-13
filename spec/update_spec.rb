@@ -4,51 +4,51 @@ describe SPARQL::Client::Update do
   subject {SPARQL::Client::Update}
 
   context "when building queries" do
-    it "should support INSERT DATA operations" do
+    it "supports INSERT DATA operations" do
       expect(subject).to respond_to(:insert_data)
     end
 
-    it "should support DELETE DATA operations" do
+    it "supports DELETE DATA operations" do
       expect(subject).to respond_to(:delete_data)
     end
 
-    it "should support DELETE/INSERT operations", pending: true do
+    it "supports DELETE/INSERT operations", pending: true do
       expect(subject).to respond_to(:what)
       expect(subject).to respond_to(:delete)
       expect(subject).to respond_to(:insert)
     end
 
-    it "should support LOAD operations" do
+    it "supports LOAD operations" do
       expect(subject).to respond_to(:load)
     end
 
-    it "should support CLEAR operations" do
+    it "supports CLEAR operations" do
       expect(subject).to respond_to(:clear)
     end
 
-    it "should support CREATE operations" do
+    it "supports CREATE operations" do
       expect(subject).to respond_to(:create)
     end
 
-    it "should support DROP operations" do
+    it "supports DROP operations" do
       expect(subject).to respond_to(:drop)
     end
 
-    it "should support COPY operations", pending: true do
+    it "supports COPY operations", pending: true do
       expect(subject).to respond_to(:copy) # TODO
     end
 
-    it "should support MOVE operations", pending: true do
+    it "supports MOVE operations", pending: true do
       expect(subject).to respond_to(:move) # TODO
     end
 
-    it "should support ADD operations", pending: true do
+    it "supports ADD operations", pending: true do
       expect(subject).to respond_to(:add) # TODO
     end
   end
 
   context "when building INSERT DATA queries" do
-    it "should support empty input" do
+    it "supports empty input" do
       expect(subject.insert_data(RDF::Graph.new).to_s).to eq "INSERT DATA {\n}\n"
     end
 
@@ -56,14 +56,14 @@ describe SPARQL::Client::Update do
       expect(subject.insert_data(RDF::Graph.new)).not_to be_expects_statements
     end
 
-    it "should support non-empty input" do
+    it "supports non-empty input" do
       data = RDF::Graph.new do |graph|
         graph << [RDF::URI('http://example.org/jhacker'), RDF::URI("http://xmlns.com/foaf/0.1/name"), "J. Random Hacker"]
       end
       expect(subject.insert_data(data).to_s).to eq "INSERT DATA {\n<http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> \"J. Random Hacker\" .\n}\n"
     end
 
-    it "should support the GRAPH modifier" do
+    it "supports the GRAPH modifier" do
       [subject.insert_data(RDF::Graph.new, :graph => 'http://example.org/'),
        subject.insert_data(RDF::Graph.new).graph('http://example.org/')].each do |example|
         expect(example.to_s).to eq "INSERT DATA { GRAPH <http://example.org/> {\n}}\n"
@@ -72,7 +72,7 @@ describe SPARQL::Client::Update do
   end
 
   context "when building DELETE DATA queries" do
-    it "should support empty input" do
+    it "supports empty input" do
       expect(subject.delete_data(RDF::Graph.new).to_s).to eq "DELETE DATA {\n}\n"
     end
 
@@ -80,14 +80,14 @@ describe SPARQL::Client::Update do
       expect(subject.delete_data(RDF::Graph.new)).to be_expects_statements
     end
 
-    it "should support non-empty input" do
+    it "supports non-empty input" do
       data = RDF::Graph.new do |graph|
         graph << [RDF::URI('http://example.org/jhacker'), RDF::URI("http://xmlns.com/foaf/0.1/name"), "J. Random Hacker"]
       end
       expect(subject.delete_data(data).to_s).to eq "DELETE DATA {\n<http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> \"J. Random Hacker\" .\n}\n"
     end
 
-    it "should support the GRAPH modifier" do
+    it "supports the GRAPH modifier" do
       [subject.delete_data(RDF::Graph.new, :graph => 'http://example.org/'),
        subject.delete_data(RDF::Graph.new).graph('http://example.org/')].each do |example|
         expect(example.to_s).to eq "DELETE DATA { GRAPH <http://example.org/> {\n}}\n"
@@ -102,7 +102,7 @@ describe SPARQL::Client::Update do
   context "when building LOAD queries" do
     let(:from_url) {'http://example.org/data.rdf'}
 
-    it "should require a source URI" do
+    it "requires a source URI" do
       expect(subject.load(from_url).to_s).to eq "LOAD <#{from_url}>"
     end
 
@@ -110,14 +110,14 @@ describe SPARQL::Client::Update do
       expect(subject.load(from_url)).to be_expects_statements
     end
 
-    it "should support the SILENT modifier" do
+    it "supports the SILENT modifier" do
       [subject.load(from_url).silent,
        subject.load(from_url, :silent => true)].each do |example|
         expect(example.to_s).to eq "LOAD SILENT <#{from_url}>"
       end
     end
 
-    it "should support the INTO GRAPH modifier" do
+    it "supports the INTO GRAPH modifier" do
       [subject.load(from_url).into(from_url),
        subject.load(from_url, :into => from_url)].each do |example|
         expect(example.to_s).to eq "LOAD <#{from_url}> INTO GRAPH <#{from_url}>"
@@ -126,7 +126,7 @@ describe SPARQL::Client::Update do
   end
 
   context "when building CLEAR queries" do
-    it "should support the CLEAR GRAPH operation" do
+    it "supports the CLEAR GRAPH operation" do
       graph_uri = 'http://example.org/'
       [subject.clear.graph(graph_uri),
        subject.clear(:graph, graph_uri)].each do |example|
@@ -134,19 +134,19 @@ describe SPARQL::Client::Update do
       end
     end
 
-    it "should support the CLEAR DEFAULT operation" do
+    it "supports the CLEAR DEFAULT operation" do
       [subject.clear.default, subject.clear(:default)].each do |example|
          expect(example.to_s).to eq "CLEAR DEFAULT"
       end
     end
 
-    it "should support the CLEAR NAMED operation" do
+    it "supports the CLEAR NAMED operation" do
       [subject.clear.named, subject.clear(:named)].each do |example|
         expect(example.to_s).to eq "CLEAR NAMED"
       end
     end
 
-    it "should support the CLEAR ALL operation" do
+    it "supports the CLEAR ALL operation" do
       [subject.clear.all, subject.clear(:all)].each do |example|
         expect(example.to_s).to eq "CLEAR ALL"
       end
@@ -156,7 +156,7 @@ describe SPARQL::Client::Update do
       expect(subject.clear.all).not_to be_expects_statements
     end
 
-    it "should support the SILENT modifier" do
+    it "supports the SILENT modifier" do
       [subject.clear(:all).silent,
        subject.clear(:all, :silent => true)].each do |example|
         expect(example.to_s).to eq "CLEAR SILENT ALL"
@@ -167,11 +167,11 @@ describe SPARQL::Client::Update do
   context "when building CREATE queries" do
     let(:graph_uri) {'http://example.org/'}
 
-    it "should require a graph URI" do
+    it "requires a graph URI" do
       expect(subject.create(graph_uri).to_s).to eq "CREATE GRAPH <#{graph_uri}>"
     end
 
-    it "should support the SILENT modifier" do
+    it "supports the SILENT modifier" do
       [subject.create(graph_uri).silent,
        subject.create(graph_uri, :silent => true)].each do |example|
         expect(example.to_s).to eq "CREATE SILENT GRAPH <#{graph_uri}>"
@@ -184,7 +184,7 @@ describe SPARQL::Client::Update do
   end
 
   context "when building DROP queries" do
-    it "should support the DROP GRAPH operation" do
+    it "supports the DROP GRAPH operation" do
       graph_uri = 'http://example.org/'
       [subject.drop.graph(graph_uri),
        subject.drop(:graph, graph_uri)].each do |example|
@@ -192,19 +192,19 @@ describe SPARQL::Client::Update do
       end
     end
 
-    it "should support the DROP DEFAULT operation" do
+    it "supports the DROP DEFAULT operation" do
       [subject.drop.default, subject.drop(:default)].each do |example|
          expect(example.to_s).to eq "DROP DEFAULT"
       end
     end
 
-    it "should support the DROP NAMED operation" do
+    it "supports the DROP NAMED operation" do
       [subject.drop.named, subject.drop(:named)].each do |example|
         expect(example.to_s).to eq "DROP NAMED"
       end
     end
 
-    it "should support the DROP ALL operation" do
+    it "supports the DROP ALL operation" do
       [subject.drop.all, subject.drop(:all)].each do |example|
         expect(example.to_s).to eq "DROP ALL"
       end
@@ -214,7 +214,7 @@ describe SPARQL::Client::Update do
       expect(subject.drop.all).not_to be_expects_statements
     end
 
-    it "should support the SILENT modifier" do
+    it "supports the SILENT modifier" do
       [subject.drop(:all).silent,
        subject.drop(:all, :silent => true)].each do |example|
         expect(example.to_s).to eq "DROP SILENT ALL"

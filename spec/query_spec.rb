@@ -4,19 +4,19 @@ describe SPARQL::Client::Query do
   subject {SPARQL::Client::Query}
 
   context "when building queries" do
-    it "should support ASK queries" do
+    it "supports ASK queries" do
       expect(subject).to respond_to(:ask)
     end
 
-    it "should support SELECT queries" do
+    it "supports SELECT queries" do
       expect(subject).to respond_to(:select)
     end
 
-    it "should support DESCRIBE queries" do
+    it "supports DESCRIBE queries" do
       expect(subject).to respond_to(:describe)
     end
 
-    it "should support CONSTRUCT queries" do
+    it "supports CONSTRUCT queries" do
       expect(subject).to respond_to(:construct)
     end
   end
@@ -84,38 +84,38 @@ describe SPARQL::Client::Query do
   end
 
   context "when building SELECT queries" do
-    it "should support basic graph patterns" do
+    it "supports basic graph patterns" do
       expect(subject.select.where([:s, :p, :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . }"
     end
 
-    it "should support projection" do
+    it "supports projection" do
       expect(subject.select(:s).where([:s, :p, :o]).to_s).to eq "SELECT ?s WHERE { ?s ?p ?o . }"
       expect(subject.select(:s, :p).where([:s, :p, :o]).to_s).to eq "SELECT ?s ?p WHERE { ?s ?p ?o . }"
       expect(subject.select(:s, :p, :o).where([:s, :p, :o]).to_s).to eq "SELECT ?s ?p ?o WHERE { ?s ?p ?o . }"
     end
 
-    it "should support FROM" do
+    it "supports FROM" do
       uri = "http://example.org/dft.ttl"
       expect(subject.select.from(RDF::URI.new(uri)).where([:s, :p, :o]).to_s).to eq "SELECT * FROM <#{uri}> WHERE { ?s ?p ?o . }"
     end
 
-    it "should support DISTINCT" do
+    it "supports DISTINCT" do
       expect(subject.select(:s, :distinct => true).where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
       expect(subject.select(:s).distinct.where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
       expect(subject.select.distinct.where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT * WHERE { ?s ?p ?o . }"
     end
 
-    it "should support REDUCED" do
+    it "supports REDUCED" do
       expect(subject.select(:s, :reduced => true).where([:s, :p, :o]).to_s).to eq "SELECT REDUCED ?s WHERE { ?s ?p ?o . }"
       expect(subject.select(:s).reduced.where([:s, :p, :o]).to_s).to eq "SELECT REDUCED ?s WHERE { ?s ?p ?o . }"
     end
 
-    it "should support GRAPH" do
+    it "supports GRAPH" do
       expect(subject.select.graph(:g).where([:s, :p, :o]).to_s).to eq "SELECT * WHERE { GRAPH ?g { ?s ?p ?o . } }"
       expect(subject.select.graph('http://example.org/').where([:s, :p, :o]).to_s).to eq "SELECT * WHERE { GRAPH <http://example.org/> { ?s ?p ?o . } }"
     end
 
-    it "should support COUNT" do
+    it "supports COUNT" do
       expect(subject.select(:count => { :s => :c }).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
       expect(subject.select(:count => { :s => :c }, :distinct => true).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(DISTINCT ?s) AS ?c ) WHERE { ?s ?p ?o . }"
       expect(subject.select(:count => { :s => '?c' }).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
@@ -123,7 +123,7 @@ describe SPARQL::Client::Query do
       expect(subject.select(:o, :count => { :s => :c }).where([:s, :p, :o]).to_s).to eq "SELECT ?o ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
     end
 
-    it "should support VALUES" do
+    it "supports VALUES" do
       expect(subject.select(:s).where([:s, :p, :o]).values(:o, "Object").to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o) { ( "Object" ) } }'
       expect(subject.select(:s).where([:s, :p, :o]).values(:o, "1", "2").to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o) { ( "1" ) ( "2" ) } }'
       expect(subject.select(:s).where([:s, :p, :o]).values([:o, :p], ["Object", "Predicate"]).to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o ?p) { ( "Object" "Predicate" ) } }'
@@ -131,12 +131,12 @@ describe SPARQL::Client::Query do
       expect(subject.select(:s).where([:s, :p, :o]).values([:o, :p], [nil, "2"], ["3", nil]).to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o ?p) { ( UNDEF "2" ) ( "3" UNDEF ) } }'
     end
 
-    it "should support GROUP BY" do
+    it "supports GROUP BY" do
       expect(subject.select(:s).where([:s, :p, :o]).group_by(:s).to_s).to eq "SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s"
       expect(subject.select(:s).where([:s, :p, :o]).group_by('?s').to_s).to eq "SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s"
     end
 
-    it "should support ORDER BY" do
+    it "supports ORDER BY" do
       expect(subject.select.where([:s, :p, :o]).order_by(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
       expect(subject.select.where([:s, :p, :o]).order_by(:o, :p).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ?p"
       expect(subject.select.where([:s, :p, :o]).order_by('?o').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
@@ -157,70 +157,70 @@ describe SPARQL::Client::Query do
       expect { subject.select.where([:s, :p, :o]).order_by(42 => :asc).to_s }.to raise_error(ArgumentError)
     end
 
-    it "should support ORDER BY ASC" do
+    it "supports ORDER BY ASC" do
       expect(subject.select.where([:s, :p, :o]).order.asc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
       expect(subject.select.where([:s, :p, :o]).asc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
       expect { subject.select.where([:s, :p, :o]).order.asc(:o, :p).to_s }.to raise_error(ArgumentError)
     end
 
-    it "should support ORDER BY DESC" do
+    it "supports ORDER BY DESC" do
       expect(subject.select.where([:s, :p, :o]).order.desc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
       expect(subject.select.where([:s, :p, :o]).desc(:o).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
       expect { subject.select.where([:s, :p, :o]).order.desc(:o, :p).to_s }.to raise_error(ArgumentError)
     end
 
-    it "should support OFFSET" do
+    it "supports OFFSET" do
       expect(subject.select.where([:s, :p, :o]).offset(100).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } OFFSET 100"
     end
 
-    it "should support LIMIT" do
+    it "supports LIMIT" do
       expect(subject.select.where([:s, :p, :o]).limit(10).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } LIMIT 10"
     end
 
-    it "should support OFFSET with LIMIT" do
+    it "supports OFFSET with LIMIT" do
       expect(subject.select.where([:s, :p, :o]).offset(100).limit(10).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } OFFSET 100 LIMIT 10"
       expect(subject.select.where([:s, :p, :o]).slice(100, 10).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } OFFSET 100 LIMIT 10"
     end
 
-    it "should support string PREFIX" do
+    it "supports string PREFIX" do
       prefixes = ["dc: <http://purl.org/dc/elements/1.1/>", "foaf: <http://xmlns.com/foaf/0.1/>"]
       expect(subject.select.prefix(prefixes[0]).prefix(prefixes[1]).where([:s, :p, :o]).to_s).to eq "PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE { ?s ?p ?o . }"
     end
 
-    it "should support hash PREFIX" do
+    it "supports hash PREFIX" do
       prefixes = [{dc: RDF::URI("http://purl.org/dc/elements/1.1/")}, {foaf: RDF::URI("http://xmlns.com/foaf/0.1/")}]
       expect(subject.select.prefix(prefixes[0]).prefix(prefixes[1]).where([:s, :p, :o]).to_s).to eq "PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE { ?s ?p ?o . }"
     end
 
-    it "should support multiple values in PREFIX hash" do
+    it "supports multiple values in PREFIX hash" do
       expect(subject.select.prefix(dc: RDF::URI("http://purl.org/dc/elements/1.1/"), foaf: RDF::URI("http://xmlns.com/foaf/0.1/")).where([:s, :p, :o]).to_s).to eq "PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE { ?s ?p ?o . }"
     end
 
-    it "should raise an ArgumentError for invalid PREFIX type" do
+    it "raises an ArgumentError for invalid PREFIX type" do
       inavlid_prefix_types = [RDF::URI('missing prefix hash'), 0, []]
       inavlid_prefix_types.each do |invalid_arg|
         expect { subject.select.prefix(invalid_arg) }.to raise_error ArgumentError, "prefix must be a kind of String or a Hash"
       end
     end
 
-    it "should support OPTIONAL" do
+    it "supports OPTIONAL" do
       expect(subject.select.where([:s, :p, :o]).optional([:s, RDF.type, :o], [:s, RDF::URI("http://purl.org/dc/terms/abstract"), :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s a ?o . ?s <http://purl.org/dc/terms/abstract> ?o . } }"
     end
 
-    it "should support OPTIONAL with filter in block" do
+    it "supports OPTIONAL with filter in block" do
       expect(subject.select.where([:s, :p, :o]).optional([:s, RDF.value, :o]) {filter("langmatches(lang(?o), 'en')")}.to_s).to eq "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#value> ?o . FILTER(langmatches(lang(?o), 'en')) . } }"
     end
 
-    it "should support multiple OPTIONALs" do
+    it "supports multiple OPTIONALs" do
       expect(subject.select.where([:s, :p, :o]).optional([:s, RDF.type, :o]).optional([:s, RDF::URI("http://purl.org/dc/terms/abstract"), :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s a ?o . } OPTIONAL { ?s <http://purl.org/dc/terms/abstract> ?o . } }"
     end
 
-    it "should support subqueries" do
+    it "supports subqueries" do
       subquery = subject.select.where([:s, :p, :o])
       expect(subject.select.where(subquery).where([:s, :p, :o]).to_s).to eq "SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }"
     end
 
-    it "should support subqueries using block" do
+    it "supports subqueries using block" do
       expect(subject.select.where([:s, :p, :o]) {select.where([:s, :p, :o])}.to_s).to eq "SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }"
     end
 
@@ -229,40 +229,40 @@ describe SPARQL::Client::Query do
     end
 
     context "with property paths" do
-      it "should support the InversePath expression" do
+      it "supports the InversePath expression" do
         expect(subject.select.where([:s, ["^",RDF::RDFS.subClassOf], :o]).to_s).to eq "SELECT * WHERE { ?s ^<#{RDF::RDFS.subClassOf}> ?o . }"
       end
-      it "should support the SequencePath expression" do
+      it "supports the SequencePath expression" do
         expect(subject.select.where([:s, [RDF.type,"/",RDF::RDFS.subClassOf], :o]).to_s).to eq "SELECT * WHERE { ?s a/<#{RDF::RDFS.subClassOf}> ?o . }"
       end
-      it "should support the AlternativePath expression" do
+      it "supports the AlternativePath expression" do
         expect(subject.select.where([:s, [RDF.type,"|",RDF::RDFS.subClassOf], :o]).to_s).to eq "SELECT * WHERE { ?s a|<#{RDF::RDFS.subClassOf}> ?o . }"
       end
-      it "should support the ZeroOrMore expression" do
+      it "supports the ZeroOrMore expression" do
         expect(subject.select.where([:s, [RDF::RDFS.subClassOf,"*"], :o]).to_s).to eq "SELECT * WHERE { ?s <#{RDF::RDFS.subClassOf}>* ?o . }"
       end
-      it "should support the OneOrMore expression" do
+      it "supports the OneOrMore expression" do
         expect(subject.select.where([:s, [RDF::RDFS.subClassOf,"+"], :o]).to_s).to eq "SELECT * WHERE { ?s <#{RDF::RDFS.subClassOf}>+ ?o . }"
       end
-      it "should support the ZeroOrOne expression" do
+      it "supports the ZeroOrOne expression" do
         expect(subject.select.where([:s, [RDF::RDFS.subClassOf,"?"], :o]).to_s).to eq "SELECT * WHERE { ?s <#{RDF::RDFS.subClassOf}>? ?o . }"
       end
-      it "should support the NegatedPropertySet expression" do
+      it "supports the NegatedPropertySet expression" do
         expect(subject.select.where([:s, ["!",[RDF::RDFS.subClassOf,"|",RDF.type]], :o]).to_s).to eq "SELECT * WHERE { ?s !(<#{RDF::RDFS.subClassOf}>|a) ?o . }"
       end
     end
 
     context "with unions" do
-      it "should support pattern arguments" do
+      it "supports pattern arguments" do
         expect(subject.select.where([:s, :p, :o]).union([:s, :p, :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } UNION { ?s ?p ?o . }"
       end
 
-      it "should support query arguments" do
+      it "supports query arguments" do
         subquery = subject.select.where([:s, :p, :o])
         expect(subject.select.where([:s, :p, :o]).union(subquery).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } UNION { ?s ?p ?o . }"
       end
 
-      it "should support block" do
+      it "supports block" do
         expect(subject.select.where([:s, :p, :o]).union {|q| q.where([:s, :p, :o])}.to_s).to eq "SELECT * WHERE { ?s ?p ?o . } UNION { ?s ?p ?o . }"
       end
 
@@ -277,16 +277,16 @@ describe SPARQL::Client::Query do
     end
 
     context "with minus" do
-      it "should support pattern arguments" do
+      it "supports pattern arguments" do
         expect(subject.select.where([:s, :p, :o]).minus([:s, :p, :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . MINUS { ?s ?p ?o . } }"
       end
 
-      it "should support query arguments" do
+      it "supports query arguments" do
         subquery = subject.select.where([:s, :p, :o])
         expect(subject.select.where([:s, :p, :o]).minus(subquery).to_s).to eq "SELECT * WHERE { ?s ?p ?o . MINUS { ?s ?p ?o . } }"
       end
 
-      it "should support block" do
+      it "supports block" do
         expect(subject.select.where([:s, :p, :o]).minus {|q| q.where([:s, :p, :o])}.to_s).to eq "SELECT * WHERE { ?s ?p ?o . MINUS { ?s ?p ?o . } }"
       end
 
@@ -302,17 +302,17 @@ describe SPARQL::Client::Query do
   end
 
   context "when building DESCRIBE queries" do
-    it "should support basic graph patterns" do
+    it "supports basic graph patterns" do
       expect(subject.describe.where([:s, :p, :o]).to_s).to eq "DESCRIBE * WHERE { ?s ?p ?o . }"
     end
 
-    it "should support projection" do
+    it "supports projection" do
       expect(subject.describe(:s).where([:s, :p, :o]).to_s).to eq "DESCRIBE ?s WHERE { ?s ?p ?o . }"
       expect(subject.describe(:s, :p).where([:s, :p, :o]).to_s).to eq "DESCRIBE ?s ?p WHERE { ?s ?p ?o . }"
       expect(subject.describe(:s, :p, :o).where([:s, :p, :o]).to_s).to eq "DESCRIBE ?s ?p ?o WHERE { ?s ?p ?o . }"
     end
 
-    it "should support RDF::URI arguments" do
+    it "supports RDF::URI arguments" do
       uris = ['http://www.bbc.co.uk/programmes/b007stmh#programme', 'http://www.bbc.co.uk/programmes/b00lg2xb#programme']
       expect(subject.describe(RDF::URI.new(uris[0]),RDF::URI.new(uris[1])).to_s).to eq "DESCRIBE <#{uris[0]}> <#{uris[1]}>"
     end
@@ -323,7 +323,7 @@ describe SPARQL::Client::Query do
   end
 
   context "when building CONSTRUCT queries" do
-    it "should support basic graph patterns" do
+    it "supports basic graph patterns" do
       expect(subject.construct([:s, :p, :o]).where([:s, :p, :o]).to_s).to eq "CONSTRUCT { ?s ?p ?o . } WHERE { ?s ?p ?o . }"
     end
 
