@@ -100,6 +100,9 @@ module SPARQL
         @url, @options = RDF::URI.new(url.to_s), options.dup
         @headers = @options.delete(:headers) || {}
         @http = http_klass(@url.scheme)
+
+        # Close the http connection when object is deallocated
+        ObjectSpace.define_finalizer(self, proc {@http.shutdown if @http.respond_to?(:shutdown)})
       end
 
       if block_given?
@@ -108,6 +111,16 @@ module SPARQL
           else instance_eval(&block)
         end
       end
+    end
+
+    ##
+    # Closes a client instance by finishing the connection.
+    # The client is unavailable for any further data operations; an IOError is raised if such an attempt is made. I/O streams are automatically closed when they are claimed by the garbage collector.
+    # @return [void] `self`
+    def close
+      @http.shutdown if @http
+      @http = nil
+      self
     end
 
     ##
@@ -293,6 +306,7 @@ module SPARQL
     # @option options [String] :content_type
     # @option options [Hash] :headers
     # @return [Array<RDF::Query::Solution>]
+    # @raise [IOError] if connection is closed
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def query(query, options = {})
       @op = :query
@@ -320,6 +334,7 @@ module SPARQL
     # @option options [String] :content_type
     # @option options [Hash] :headers
     # @return [void] `self`
+    # @raise [IOError] if connection is closed
     # @see    http://www.w3.org/TR/sparql11-protocol/#update-operation
     def update(query, options = {})
       @op = :update
@@ -343,6 +358,7 @@ module SPARQL
     # @option options [String] :content_type
     # @option options [Hash] :headers
     # @return [String]
+    # @raise [IOError] if connection is closed
     def response(query, options = {})
       headers = options[:headers] || @headers
       headers['Accept'] = options[:content_type] if options[:content_type]
@@ -663,11 +679,7 @@ module SPARQL
           value = ENV['https_proxy']
           proxy_url = URI.parse(value) unless value.nil? || value.empty?
       end
-      klass = if Net::HTTP::Persistent::VERSION >= '3.0'
-        Net::HTTP::Persistent.new(name: self.class.to_s, proxy: proxy_url)
-      else
-        Net::HTTP::Persistent.new(self.class.to_s, proxy_url)
-      end
+      klass = Net::HTTP::Persistent.new(name: self.class.to_s, proxy: proxy_url)
       klass.keep_alive =  @options[:keep_alive] || 120
       klass.read_timeout = @options[:read_timeout] || 60
       klass
@@ -686,6 +698,7 @@ module SPARQL
     # @yield  [response]
     # @yieldparam [Net::HTTPResponse] response
     # @return [Net::HTTPResponse]
+    # @raise [IOError] if connection is closed
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def request(query, headers = {}, &block)
       # Make sure an appropriate Accept header is present
@@ -704,6 +717,7 @@ module SPARQL
 
       pre_http_hook(request) if respond_to?(:pre_http_hook)
 
+      raise IOError, "Client has been closed" unless @http
       response = @http.request(::URI.parse(url.to_s), request)
 
       post_http_hook(response) if respond_to?(:post_http_hook)

@@ -20,6 +20,6 @@ describe SPARQL::Client::Repository do
   
       @base_repo.insert(*@statements)
     end
-    its(:count) {should == @statements.size}
+    its(:count) {is_expected.to eql @statements.size}
   end
 end
