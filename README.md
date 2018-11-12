@@ -58,25 +58,6 @@ query.each_solution do |solution|
 end
 ```
 
-### Executing a tuple query with a custom prefix
-
-```ruby
-# PREFIX dbpedia: <http://dbpedia.org/ontology/> 
-# SELECT ?place_name  
-# WHERE {
-#  ?link dbpedia:place ?place_name .
-# }
-# LIMIT 10
-query = sparql.select(:place_name).
-              prefix('dbpedia: <http://dbpedia.org/ontology/>').
-              where([:link, 'dbpedia:place', :place_name]).
-              limit(10)
-
-query.each_solution do |solution|
-  puts solution.inspect
-end
-```
-
 ### Executing a graph query and iterating over the returned statements
 
 
