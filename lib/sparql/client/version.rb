@@ -1,4 +1,4 @@
-module SPARQL; class Client
+class SPARQL::Client
   module VERSION
     FILE = File.expand_path('../../../../VERSION', __FILE__)
     MAJOR, MINOR, TINY, EXTRA = File.read(FILE).chomp.split('.')
@@ -16,4 +16,4 @@ module SPARQL; class Client
     # @return [Array(Integer, Integer, Integer)]
     def self.to_a() [MAJOR, MINOR, TINY] end
   end
-end; end
+end
