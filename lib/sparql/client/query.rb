@@ -369,8 +369,8 @@ class SPARQL::Client
     # @overload prefix(prefix: uri)
     #   @example PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE \{ ?s ?p ?o . \}
     #     query.select.
-    #       prefix(dc: RDF::URI("http://purl.org/dc/elements/1.1/")).
-    #       prefix(foaf: RDF::URI("http://xmlns.com/foaf/0.1/")).
+    #       prefix(:dc, RDF::URI("http://purl.org/dc/elements/1.1/")).
+    #       prefix(:foaf, RDF::URI("http://xmlns.com/foaf/0.1/")).
     #       where([:s, :p, :o])
     #
     #   @param [RDF::URI] uri
