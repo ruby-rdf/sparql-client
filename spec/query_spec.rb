@@ -182,27 +182,14 @@ describe SPARQL::Client::Query do
       expect(subject.select.where([:s, :p, :o]).slice(100, 10).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } OFFSET 100 LIMIT 10"
     end
 
-    context 'when building PREFIX queries' do
-      before do
-        @string_prefixes = [
-          "dc: <http://purl.org/dc/elements/1.1/>", 
-          "foaf: <http://xmlns.com/foaf/0.1/>"
-        ]
-        @rdf_uri_prefixes = [
-          [:dc, RDF::URI("http://purl.org/dc/elements/1.1/")], 
-          [:foaf, RDF::URI("http://xmlns.com/foaf/0.1/")]
-        ]
-        # string and rdf_uri prefixes should be equivalent
-        # e.g. prefix("dc: <http://purl.org/dc/elements/1.1/>")
-        # prefix(:dc, RDF::URI('http://purl.org/dc/elements/1.1/'))
-        @expected_prefix_query = "PREFIX #{@string_prefixes[0]} PREFIX #{@string_prefixes[1]} SELECT * WHERE { ?s ?p ?o . }"
-      end
-      it "should support string PREFIX" do
-        expect(subject.select.prefix(@string_prefixes[0]).prefix(@string_prefixes[1]).where([:s, :p, :o]).to_s).to eq @expected_prefix_query
-      end
-      it "should support RDF::URI PREFIX" do
-        expect(subject.select.prefix(*@rdf_uri_prefixes[0]).prefix(*@rdf_uri_prefixes[1]).where([:s, :p, :o]).to_s).to eq @expected_prefix_query
-      end
+    it "should support string PREFIX" do
+      prefixes = ["dc: <http://purl.org/dc/elements/1.1/>", "foaf: <http://xmlns.com/foaf/0.1/>"]
+      expect(subject.select.prefix(prefixes[0]).prefix(prefixes[1]).where([:s, :p, :o]).to_s).to eq "PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE { ?s ?p ?o . }"
+    end
+
+    it "should support RDF::URI PREFIX" do
+      prefixes = [[:dc, RDF::URI("http://purl.org/dc/elements/1.1/")], [:foaf, RDF::URI("http://xmlns.com/foaf/0.1/")]]
+      expect(subject.select.prefix(*prefixes[0]).prefix(*prefixes[1]).where([:s, :p, :o]).to_s).to eq "PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE { ?s ?p ?o . }"
     end
 
     it "should support OPTIONAL" do
