@@ -387,14 +387,16 @@ class SPARQL::Client
     #   @param [string] string
     #   @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#prefNames
-    def prefix(*args)
-      case args.length
-      when 1
-        (options[:prefixes] ||= []) << args[0]
-      when 2
-        (options[:prefixes] ||= []) << "#{args[0]}: <#{args[1]}>"
+    def prefix(val)
+      options[:prefixes] ||= []
+      if val.kind_of? String
+        options[:prefixes] << val
+      elsif val.kind_of? Hash
+        val.each do |k, v|
+          options[:prefixes] << "#{k}: <#{v}>"
+        end
       else
-        raise ArgumentError, "wrong number of arguments (#{args.length} for 1 or 2)"
+        raise ArgumentError, "prefix must be a kind of String or a Hash"
       end
       self
     end
