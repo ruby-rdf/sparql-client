@@ -192,6 +192,13 @@ describe SPARQL::Client::Query do
       expect(subject.select.prefix(*prefixes[0]).prefix(*prefixes[1]).where([:s, :p, :o]).to_s).to eq "PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE { ?s ?p ?o . }"
     end
 
+    it "should raise an ArgumentError for incorrect numbers arguments" do
+      prefixes = [[],Array.new(3, 'test')]
+      prefixes.each do |args|
+        expect { subject.select.prefix(*args) }.to raise_error ArgumentError, "wrong number of arguments (#{args.length} for 1 or 2)"
+      end
+    end
+
     it "should support OPTIONAL" do
       expect(subject.select.where([:s, :p, :o]).optional([:s, RDF.type, :o], [:s, RDF::URI("http://purl.org/dc/terms/abstract"), :o]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s a ?o . ?s <http://purl.org/dc/terms/abstract> ?o . } }"
     end
