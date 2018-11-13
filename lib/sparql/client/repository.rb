@@ -1,4 +1,4 @@
-module SPARQL; class Client
+class SPARQL::Client
   ##
   # A read-only repository view of a SPARQL endpoint.
   #
@@ -345,4 +345,4 @@ module SPARQL; class Client
     end
 
   end
-end; end
+end
