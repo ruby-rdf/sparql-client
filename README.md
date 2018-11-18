@@ -30,6 +30,13 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 require 'sparql/client'
 sparql = SPARQL::Client.new("http://dbpedia.org/sparql")
 ```
+### Querying a remote SPARQL endpoint with a specified default graph
+
+```ruby
+require 'sparql/client'
+sparql = SPARQL::Client.new("http://dbpedia.org/sparql", { :graph => "http://dbpedia.org" })
+```
+
 
 ### Querying a `RDF::Repository` instance
 
