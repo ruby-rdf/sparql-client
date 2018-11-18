@@ -726,6 +726,7 @@ module SPARQL
     def make_get_request(query, headers = {})
       url = self.url.dup
       url.query_values = (url.query_values || {}).merge(:query => query.to_s)
+      set_url_default_graph url unless @options[:graph].nil?
       request = Net::HTTP::Get.new(url.request_uri, self.headers.merge(headers))
       request
     end
@@ -740,21 +741,47 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded
     def make_post_request(query, headers = {})
       if @alt_endpoint.nil?
-        endpoint = url.request_uri 
+        url = self.url.dup
+        set_url_default_graph url unless @options[:graph].nil?
+        endpoint = url.request_uri
       else
         endpoint = @alt_endpoint
       end
+
       request = Net::HTTP::Post.new(endpoint, self.headers.merge(headers))
       case (self.options[:protocol] || DEFAULT_PROTOCOL).to_s
         when '1.1'
           request['Content-Type'] = 'application/sparql-' + (@op || :query).to_s
           request.body = query.to_s
         when '1.0'
-          request.set_form_data((@op || :query) => query.to_s)
+          form_data = {(@op || :query) => query.to_s}
+          form_data.merge!(
+            {:'default-graph-uri' => @options[:graph]}
+          ) if !@options[:graph].nil? && (@op.eql? :query)
+          form_data.merge!(
+            {:'using-graph-uri' => @options[:graph]}
+          ) if !@options[:graph].nil? && (@op.eql? :update)
+          request.set_form_data(form_data)
         else
           raise ArgumentError, "unknown SPARQL protocol version: #{self.options[:protocol].inspect}"
       end
       request
+    end
+
+    ##
+    # Setup url query parameter to use a specified default graph
+    #
+    # @see    https://www.w3.org/TR/sparql11-protocol/#query-operation
+    # @see    https://www.w3.org/TR/sparql11-protocol/#update-operation
+    def set_url_default_graph url
+      case @op
+      when :query
+        url.query_values = (url.query_values || {})
+          .merge(:'default-graph-uri' => CGI::escape(@options[:graph]))
+      when :update
+        url.query_values = (url.query_values || {})
+          .merge(:'using-graph-uri' => CGI::escape(@options[:graph]))
+      end
     end
 
     # A query element can be used as a component of a query. It may be initialized with a string, which is wrapped in an appropriate container depending on the type of QueryElement. Implements {#to_s} to property serialize when generating a SPARQL query.
