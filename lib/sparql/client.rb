@@ -40,7 +40,7 @@ module SPARQL
       '*/*;q=0.1'
     ].join(', ').freeze
     GRAPH_ALL  = (
-      RDF::Format.content_types.keys + 
+      RDF::Format.content_types.keys +
       ['*/*;q=0.1']
     ).join(', ').freeze
 
@@ -701,8 +701,8 @@ module SPARQL
         if response.kind_of? Net::HTTPRedirection
           response = @http.request(::URI.parse(response['location']), request)
         else
-          return block_given? ? block.call(response) : response 
-        end          
+          return block_given? ? block.call(response) : response
+        end
       end
       raise ServerError, "Infinite redirect at #{url}. Redirected more than 10 times."
     end
@@ -774,13 +774,20 @@ module SPARQL
     # @see    https://www.w3.org/TR/sparql11-protocol/#query-operation
     # @see    https://www.w3.org/TR/sparql11-protocol/#update-operation
     def set_url_default_graph url
+      if @options[:graph].is_a? Array
+        graphs = @options[:graph].map {|graph|
+          CGI::escape(graph)
+        }
+      else
+        graphs = CGI::escape(@options[:graph])
+      end
       case @op
       when :query
         url.query_values = (url.query_values || {})
-          .merge(:'default-graph-uri' => CGI::escape(@options[:graph]))
+          .merge(:'default-graph-uri' => graphs)
       when :update
         url.query_values = (url.query_values || {})
-          .merge(:'using-graph-uri' => CGI::escape(@options[:graph]))
+          .merge(:'using-graph-uri' => graphs)
       end
     end
 
