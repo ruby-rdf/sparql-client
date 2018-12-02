@@ -227,6 +227,51 @@ describe SPARQL::Client do
       end
     end
 
+    context "with multiple Graphs" do
+      let(:get_graph_client){ SPARQL::Client.new('http://data.linkedmdb.org/sparql', {:method => 'get', :graph => 'http://data.linkedmdb.org/graph1'}) }
+      let(:post_graph_client10){ SPARQL::Client.new('http://data.linkedmdb.org/sparql', {:method => 'post', :graph => 'http://data.linkedmdb.org/graph1', :protocol => '1.0'}) }
+      let(:post_graph_client11){ SPARQL::Client.new('http://data.linkedmdb.org/sparql', {:method => 'post', :graph => 'http://data.linkedmdb.org/graph1', :protocol => '1.1'}) }
+
+      it "should create 'query via GET' requests" do
+        WebMock.stub_request(:get, 'http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1&query=SELECT%20%3Fkb%20WHERE%20%7B%20%3Fkb%20%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E%20%22Kevin%20Bacon%22%20.%20%7D').
+          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+        get_graph_client.query(select_query)
+        expect(WebMock).to have_requested(:get, "http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1&query=SELECT%20%3Fkb%20WHERE%20%7B%20%3Fkb%20%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E%20%22Kevin%20Bacon%22%20.%20%7D")
+      end
+
+      it "should create 'query via URL-encoded Post' requests" do
+        WebMock.stub_request(:post, 'http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1').
+          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+        post_graph_client10.query(select_query)
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1").
+          with(:body => "query=SELECT+%3Fkb+WHERE+%7B+%3Fkb+%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E+%22Kevin+Bacon%22+.+%7D&default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1")
+      end
+
+      it "should create 'query via Post directly' requests" do
+        WebMock.stub_request(:post, 'http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1').
+          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+        post_graph_client11.query(select_query)
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1").
+          with(:body => select_query)
+      end
+
+      it "should create requests for 'update via URL-encoded POST'" do
+        WebMock.stub_request(:post, 'http://data.linkedmdb.org/sparql?using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1').
+          to_return(:body => '{}', :status => 200)
+        post_graph_client10.update(update_query)
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql?using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1").
+          with(:body => "update=DELETE+%7B%3Fs+%3Fp+%3Fo%7D+WHERE+%7B%7D&using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1")
+      end
+
+      it "should create requests for 'update via POST directly'" do
+        WebMock.stub_request(:post, 'http://data.linkedmdb.org/sparql?using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1').
+          to_return(:body => '{}', :status => 200)
+        post_graph_client11.update(update_query)
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql?using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1").
+          with(:body => update_query)
+      end
+    end
+
     context "Error response" do
       {
         "bad request" => {status: 400, error: SPARQL::Client::MalformedQuery },
