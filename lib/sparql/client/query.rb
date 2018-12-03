@@ -1,4 +1,4 @@
-module SPARQL; class Client
+class SPARQL::Client
   ##
   # A SPARQL query builder.
   #
@@ -366,16 +366,38 @@ module SPARQL; class Client
     end
 
     ##
-    # @example PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE \{ ?s ?p ?o . \}
-    #   query.select.
-    #     prefix(dc: RDF::URI("http://purl.org/dc/elements/1.1/")).
-    #     prefix(foaf: RDF::URI("http://xmlns.com/foaf/0.1/")).
-    #     where([:s, :p, :o])
+    # @overload prefix(prefix: uri)
+    #   @example PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE \{ ?s ?p ?o . \}
+    #     query.select.
+    #       prefix(dc: RDF::URI("http://purl.org/dc/elements/1.1/")).
+    #       prefix(foaf: RDF::URI("http://xmlns.com/foaf/0.1/")).
+    #       where([:s, :p, :o])
     #
-    # @return [Query]
+    #   @param [RDF::URI] uri
+    #   @param [Symbol, String] prefix
+    #   @return [Query]
+    #
+    # @overload prefix(string)
+    #   @example PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE \{ ?s ?p ?o . \}
+    #     query.select.
+    #       prefix("dc: <http://purl.org/dc/elements/1.1/>").
+    #       prefix("foaf: <http://xmlns.com/foaf/0.1/>").
+    #       where([:s, :p, :o])
+    #
+    #   @param [string] string
+    #   @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#prefNames
-    def prefix(string)
-      (options[:prefixes] ||= []) << string
+    def prefix(val)
+      options[:prefixes] ||= []
+      if val.kind_of? String
+        options[:prefixes] << val
+      elsif val.kind_of? Hash
+        val.each do |k, v|
+          options[:prefixes] << "#{k}: <#{v}>"
+        end
+      else
+        raise ArgumentError, "prefix must be a kind of String or a Hash"
+      end
       self
     end
 
@@ -823,4 +845,4 @@ module SPARQL; class Client
       end
     end
   end
-end; end
+end

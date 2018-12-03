@@ -182,9 +182,25 @@ describe SPARQL::Client::Query do
       expect(subject.select.where([:s, :p, :o]).slice(100, 10).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } OFFSET 100 LIMIT 10"
     end
 
-    it "should support PREFIX" do
+    it "should support string PREFIX" do
       prefixes = ["dc: <http://purl.org/dc/elements/1.1/>", "foaf: <http://xmlns.com/foaf/0.1/>"]
-      expect(subject.select.prefix(prefixes[0]).prefix(prefixes[1]).where([:s, :p, :o]).to_s).to eq "PREFIX #{prefixes[0]} PREFIX #{prefixes[1]} SELECT * WHERE { ?s ?p ?o . }"
+      expect(subject.select.prefix(prefixes[0]).prefix(prefixes[1]).where([:s, :p, :o]).to_s).to eq "PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE { ?s ?p ?o . }"
+    end
+
+    it "should support hash PREFIX" do
+      prefixes = [{dc: RDF::URI("http://purl.org/dc/elements/1.1/")}, {foaf: RDF::URI("http://xmlns.com/foaf/0.1/")}]
+      expect(subject.select.prefix(prefixes[0]).prefix(prefixes[1]).where([:s, :p, :o]).to_s).to eq "PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE { ?s ?p ?o . }"
+    end
+
+    it "should support multiple values in PREFIX hash" do
+      expect(subject.select.prefix(dc: RDF::URI("http://purl.org/dc/elements/1.1/"), foaf: RDF::URI("http://xmlns.com/foaf/0.1/")).where([:s, :p, :o]).to_s).to eq "PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE { ?s ?p ?o . }"
+    end
+
+    it "should raise an ArgumentError for invalid PREFIX type" do
+      inavlid_prefix_types = [RDF::URI('missing prefix hash'), 0, []]
+      inavlid_prefix_types.each do |invalid_arg|
+        expect { subject.select.prefix(invalid_arg) }.to raise_error ArgumentError, "prefix must be a kind of String or a Hash"
+      end
     end
 
     it "should support OPTIONAL" do

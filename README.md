@@ -25,70 +25,92 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 ## Examples
 
 ### Querying a remote SPARQL endpoint
-    require 'sparql/client'
 
-    sparql = SPARQL::Client.new("http://dbpedia.org/sparql")
+```ruby
+require 'sparql/client'
+sparql = SPARQL::Client.new("http://dbpedia.org/sparql")
+```
+### Querying a remote SPARQL endpoint with a specified default graph
+
+```ruby
+require 'sparql/client'
+sparql = SPARQL::Client.new("http://dbpedia.org/sparql", { :graph => "http://dbpedia.org" })
+```
+
 
 ### Querying a `RDF::Repository` instance
 
-    require 'rdf/trig'
-    repository = RDF::Repository.load("http://example/dataset.trig")
-
-    sparql = SPARQL::Client.new(repository)
+```ruby
+require 'rdf/trig'
+repository = RDF::Repository.load("http://example/dataset.trig")
+sparql = SPARQL::Client.new(repository)
+```
 
 ### Executing a boolean query and outputting the result
 
-    # ASK WHERE { ?s ?p ?o }
-    result = sparql.ask.whether([:s, :p, :o]).true?
-
-    puts result.inspect   #=> true or false
+```ruby
+# ASK WHERE { ?s ?p ?o }
+result = sparql.ask.whether([:s, :p, :o]).true?
+puts result.inspect   #=> true or false
+```
 
 ### Executing a tuple query and iterating over the returned solutions
 
-    # SELECT * WHERE { ?s ?p ?o } OFFSET 100 LIMIT 10
-    query = sparql.select.where([:s, :p, :o]).offset(100).limit(10)
+```ruby
+# SELECT * WHERE { ?s ?p ?o } OFFSET 100 LIMIT 10
+query = sparql.select.where([:s, :p, :o]).offset(100).limit(10)
 
-    query.each_solution do |solution|
-      puts solution.inspect
-    end
+query.each_solution do |solution|
+  puts solution.inspect
+end
+```
 
 ### Executing a graph query and iterating over the returned statements
 
-    # CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } LIMIT 10
-    query = sparql.construct([:s, :p, :o]).where([:s, :p, :o]).limit(10)
 
-    query.each_statement do |statement|
-      puts statement.inspect
-    end
+```ruby
+# CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } LIMIT 10
+query = sparql.construct([:s, :p, :o]).where([:s, :p, :o]).limit(10)
+
+query.each_statement do |statement|
+  puts statement.inspect
+end
+```
 
 ### Executing an arbitrary textual SPARQL query string
 
-    result = sparql.query("ASK WHERE { ?s ?p ?o }")
+```ruby
+result = sparql.query("ASK WHERE { ?s ?p ?o }")
 
-    puts result.inspect   #=> true or false
+puts result.inspect   #=> true or false
+```
 
 ### Inserting data into a graph
 
-    # INSERT DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
-    data = RDF::Graph.new do |graph|
-      graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
-    end
-    sparql.insert_data(data)
+```ruby
+# INSERT DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
+data = RDF::Graph.new do |graph|
+  graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
+end
+sparql.insert_data(data)
+```
 
 ### Deleting data from a graph
 
-    # DELETE DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
-    data = RDF::Graph.new do |graph|
-      graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
-    end
-    sparql.delete_data(data)
+```ruby
+# DELETE DATA { <http://example.org/jhacker> <http://xmlns.com/foaf/0.1/name> "J. Random Hacker" .}
+data = RDF::Graph.new do |graph|
+  graph << [RDF::URI('http://example.org/jhacker'), RDF::Vocab::FOAF.name, "J. Random Hacker"]
+end
+sparql.delete_data(data)
+```
 
 ## Documentation
 
-* {SPARQL::Client}
-  * {SPARQL::Client::Query}
-  * {SPARQL::Client::Repository}
-  * {SPARQL::Client::Update}
+* [SPARQL::Client](https://www.rubydoc.info/github/ruby-rdf/sparql-client/SPARQL/Client)
+  * [SPARQL::Client::Query](https://www.rubydoc.info/github/ruby-rdf/sparql-client/SPARQL/Client/Query)
+  * [SPARQL::Client::Repository](https://www.rubydoc.info/github/ruby-rdf/sparql-client/SPARQL/Client/Repository)
+  * [SPARQL::Client::Update](https://www.rubydoc.info/github/ruby-rdf/sparql-client/SPARQL/Client/Update)
 
 ## Dependencies
 
