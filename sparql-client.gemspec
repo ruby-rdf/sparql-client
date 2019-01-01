@@ -33,10 +33,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'webmock',   '~> 3.1'
   gem.add_development_dependency 'yard' ,     '~> 0.9.12'
 
-  # Rubinius has it's own dependencies
-  if RUBY_ENGINE == "rbx" && RUBY_VERSION >= "2.1.0"
-     gem.add_runtime_dependency     "json"
-  end
-
   gem.post_install_message       = nil
 end
