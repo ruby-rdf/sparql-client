@@ -86,6 +86,11 @@ module SPARQL
     # @option options [Symbol] :method (DEFAULT_METHOD)
     # @option options [Number] :protocol (DEFAULT_PROTOCOL)
     # @option options [Hash] :headers
+    #   HTTP Request headers
+    #
+    #   Defaults `Accept` header based on available reader content types if triples are expected and to SPARQL result types otherwise, to allow for content negotiation based on available readers.
+    #
+    #   Defaults  `User-Agent` header, unless one is specified.
     # @option options [Hash] :read_timeout
     def initialize(url, options = {}, &block)
       case url
@@ -339,7 +344,7 @@ module SPARQL
     # @option options [Hash] :headers
     # @return [String]
     def response(query, options = {})
-      headers = options[:headers] || {}
+      headers = options[:headers] || @headers
       headers['Accept'] = options[:content_type] if options[:content_type]
       request(query, headers) do |response|
         case response
@@ -615,7 +620,7 @@ module SPARQL
           RDF::Statement.from(pattern).to_triple.each_with_index.map do |v, i|
             if i == 1
               SPARQL::Client.serialize_predicate(v)
-           else
+            else
               SPARQL::Client.serialize_value(v, use_vars)
             end
           end
@@ -673,6 +678,11 @@ module SPARQL
     #
     # @param  [String, #to_s]          query
     # @param  [Hash{String => String}] headers
+      #   HTTP Request headers
+      #
+      #   Defaults `Accept` header based on available reader content types if triples are expected and to SPARQL result types otherwise, to allow for content negotiation based on available readers.
+      #
+      #   Defaults  `User-Agent` header, unless one is specified.
     # @yield  [response]
     # @yieldparam [Net::HTTPResponse] response
     # @return [Net::HTTPResponse]
@@ -686,6 +696,7 @@ module SPARQL
       else
         RESULT_ALL
       end
+      headers['User-Agent'] ||= "Ruby SPARQL::Client/#{SPARQL::Client::VERSION}"
 
       request = send("make_#{request_method(query)}_request", query, headers)
 
