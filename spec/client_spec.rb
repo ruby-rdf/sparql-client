@@ -167,7 +167,7 @@ describe SPARQL::Client do
     end
 
     context "Accept Header" do
-      it "should use application/sparql-results+json for ASK" do
+      it "includes application/sparql-results+json for ASK" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
           to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(ask_query)
@@ -175,7 +175,7 @@ describe SPARQL::Client do
           with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1'})
       end
 
-      it "should use application/n-triples for CONSTRUCT" do
+      it "includes application/n-triples for CONSTRUCT" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
           to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
         subject.query(construct_query)
@@ -183,7 +183,7 @@ describe SPARQL::Client do
           with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
       end
 
-      it "should use application/n-triples for DESCRIBE" do
+      it "includes application/n-triples for DESCRIBE" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
           to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
         subject.query(describe_query)
@@ -191,12 +191,39 @@ describe SPARQL::Client do
           with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
       end
 
-      it "should use application/sparql-results+json for SELECT" do
+      it "includes application/sparql-results+json for SELECT" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
           to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
           with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1'})
+      end
+    end
+
+    context 'User-Agent header' do
+      it "uses default if not specified" do
+        WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
+          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+        subject.query(select_query)
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
+          with(:headers => {'User-Agent' => "Ruby SPARQL::Client/#{SPARQL::Client::VERSION}"})
+      end
+
+      it "uses user-provided value in query" do
+        WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
+          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+        subject.query(select_query, headers: {'User-Agent' => 'Foo'})
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
+          with(:headers => {'User-Agent' => "Foo"})
+      end
+
+      it "uses user-provided value in initialization" do
+        client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', headers: {'User-Agent' => 'Foo'})
+        WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
+          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+        client.query(select_query)
+        expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
+          with(:headers => {'User-Agent' => "Foo"})
       end
     end
 
