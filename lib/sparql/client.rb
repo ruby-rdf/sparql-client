@@ -86,8 +86,13 @@ module SPARQL
     # @option options [Symbol] :method (DEFAULT_METHOD)
     # @option options [Number] :protocol (DEFAULT_PROTOCOL)
     # @option options [Hash] :headers
+    #   HTTP Request headers
+    #
+    #   Defaults `Accept` header based on available reader content types if triples are expected and to SPARQL result types otherwise, to allow for content negotiation based on available readers.
+    #
+    #   Defaults  `User-Agent` header, unless one is specified.
     # @option options [Hash] :read_timeout
-    def initialize(url, options = {}, &block)
+    def initialize(url, **options, &block)
       case url
       when RDF::Queryable
         @url, @options = url, options.dup
@@ -95,6 +100,9 @@ module SPARQL
         @url, @options = RDF::URI.new(url.to_s), options.dup
         @headers = @options.delete(:headers) || {}
         @http = http_klass(@url.scheme)
+
+        # Close the http connection when object is deallocated
+        ObjectSpace.define_finalizer(self, proc {@http.shutdown if @http.respond_to?(:shutdown)})
       end
 
       if block_given?
@@ -106,12 +114,22 @@ module SPARQL
     end
 
     ##
+    # Closes a client instance by finishing the connection.
+    # The client is unavailable for any further data operations; an IOError is raised if such an attempt is made. I/O streams are automatically closed when they are claimed by the garbage collector.
+    # @return [void] `self`
+    def close
+      @http.shutdown if @http
+      @http = nil
+      self
+    end
+
+    ##
     # Executes a boolean `ASK` query.
     #
     # @param (see Query.ask)
     # @return [Query]
-    def ask(*args)
-      call_query_method(:ask, *args)
+    def ask(*args, **options)
+      call_query_method(:ask, *args, **options)
     end
 
     ##
@@ -119,8 +137,8 @@ module SPARQL
     #
     # @param (see Query.select)
     # @return [Query]
-    def select(*args)
-      call_query_method(:select, *args)
+    def select(*args, **options)
+      call_query_method(:select, *args, **options)
     end
 
     ##
@@ -128,8 +146,8 @@ module SPARQL
     #
     # @param (see Query.describe)
     # @return [Query]
-    def describe(*args)
-      call_query_method(:describe, *args)
+    def describe(*args, **options)
+      call_query_method(:describe, *args, **options)
     end
 
     ##
@@ -137,8 +155,8 @@ module SPARQL
     #
     # @param (see Query.construct)
     # @return [Query]
-    def construct(*args)
-      call_query_method(:construct, *args)
+    def construct(*args, **options)
+      call_query_method(:construct, *args, **options)
     end
 
     ##
@@ -161,15 +179,15 @@ module SPARQL
     #   client.insert_data(data)
     #
     # @example Inserting data into a named graph
-    #   client.insert_data(data, :graph => "http://example.org/")
+    #   client.insert_data(data, graph: "http://example.org/")
     #
     # @param  [RDF::Enumerable] data
     # @param  [Hash{Symbol => Object}] options
     # @option options [RDF::URI, String] :graph
     # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#insertData
-    def insert_data(data, options = {})
-      self.update(Update::InsertData.new(data, options))
+    def insert_data(data, **options)
+      self.update(Update::InsertData.new(data, **options))
     end
 
     ##
@@ -182,15 +200,15 @@ module SPARQL
     #   client.delete_data(data)
     #
     # @example Deleting data from a named graph
-    #   client.delete_data(data, :graph => "http://example.org/")
+    #   client.delete_data(data, graph: "http://example.org/")
     #
     # @param  [RDF::Enumerable] data
     # @param  [Hash{Symbol => Object}] options
     # @option options [RDF::URI, String] :graph
     # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#deleteData
-    def delete_data(data, options = {})
-      self.update(Update::DeleteData.new(data, options))
+    def delete_data(data, **options)
+      self.update(Update::DeleteData.new(data, **options))
     end
 
     ##
@@ -205,8 +223,8 @@ module SPARQL
     # @option options [RDF::URI, String] :graph
     # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#deleteInsert
-    def delete_insert(delete_graph, insert_graph = nil, where_graph = nil, options = {})
-      self.update(Update::DeleteInsert.new(delete_graph, insert_graph, where_graph, options))
+    def delete_insert(delete_graph, insert_graph = nil, where_graph = nil, **options)
+      self.update(Update::DeleteInsert.new(delete_graph, insert_graph, where_graph, **options))
     end
 
     ##
@@ -222,8 +240,8 @@ module SPARQL
     # @option options [Boolean] :silent
     # @return [void] `self`
     # @see    http://www.w3.org/TR/sparql11-update/#clear
-    def clear_graph(graph_uri, options = {})
-      self.clear(:graph, graph_uri, options)
+    def clear_graph(graph_uri, **options)
+      self.clear(:graph, graph_uri, **options)
     end
 
     ##
@@ -249,7 +267,7 @@ module SPARQL
     #   @option options [Boolean] :silent
     #   @return [void] `self`
     #
-    # @overload clear(what, *arguments, options = {})
+    # @overload clear(what, *arguments, **options)
     #   @param  [Symbol, #to_sym] what
     #   @param  [Array] arguments splat of other arguments to {Update::Clear}.
     #   @param  [Hash{Symbol => Object}] options
@@ -263,9 +281,9 @@ module SPARQL
 
     ##
     # @private
-    def call_query_method(meth, *args)
+    def call_query_method(meth, *args, **options)
       client = self
-      result = Query.send(meth, *args)
+      result = Query.send(meth, *args, **options)
       (class << result; self; end).send(:define_method, :execute) do
         client.query(self)
       end
@@ -288,21 +306,22 @@ module SPARQL
     # @option options [String] :content_type
     # @option options [Hash] :headers
     # @return [Array<RDF::Query::Solution>]
+    # @raise [IOError] if connection is closed
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
-    def query(query, options = {})
+    def query(query, **options)
       @op = :query
       @alt_endpoint = options[:endpoint]
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
         begin
-          SPARQL.execute(query, @url, options)
+          SPARQL.execute(query, @url, **options)
         rescue SPARQL::MalformedQuery
           $stderr.puts "error running #{query}: #{$!}"
           raise
         end
       else
-        parse_response(response(query, options), options)
+        parse_response(response(query, **options), **options)
       end
     end
 
@@ -315,16 +334,17 @@ module SPARQL
     # @option options [String] :content_type
     # @option options [Hash] :headers
     # @return [void] `self`
+    # @raise [IOError] if connection is closed
     # @see    http://www.w3.org/TR/sparql11-protocol/#update-operation
-    def update(query, options = {})
+    def update(query, **options)
       @op = :update
       @alt_endpoint = options[:endpoint]
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
-        SPARQL.execute(query, @url, options.merge(update: true))
+        SPARQL.execute(query, @url, update: true, **options)
       else
-        response(query, options)
+        response(query, **options)
       end
       self
     end
@@ -338,8 +358,9 @@ module SPARQL
     # @option options [String] :content_type
     # @option options [Hash] :headers
     # @return [String]
-    def response(query, options = {})
-      headers = options[:headers] || {}
+    # @raise [IOError] if connection is closed
+    def response(query, **options)
+      headers = options[:headers] || @headers
       headers['Accept'] = options[:content_type] if options[:content_type]
       request(query, headers) do |response|
         case response
@@ -359,7 +380,7 @@ module SPARQL
     # @param  [Net::HTTPSuccess] response
     # @param  [Hash{Symbol => Object}] options
     # @return [Object]
-    def parse_response(response, options = {})
+    def parse_response(response, **options)
       case options[:content_type] || response.content_type
         when NilClass
           response.body
@@ -374,7 +395,7 @@ module SPARQL
         when RESULT_TSV
           self.class.parse_tsv_bindings(response.body, nodes)
         else
-          parse_rdf_serialization(response, options)
+          parse_rdf_serialization(response, **options)
       end
     end
 
@@ -411,9 +432,9 @@ module SPARQL
         when :uri
           RDF::URI.new(value['value'])
         when :literal
-          RDF::Literal.new(value['value'], :datatype => value['datatype'], :language => value['xml:lang'])
+          RDF::Literal.new(value['value'], datatype: value['datatype'], language: value['xml:lang'])
         when :'typed-literal'
-          RDF::Literal.new(value['value'], :datatype => value['datatype'])
+          RDF::Literal.new(value['value'], datatype: value['datatype'])
         else nil
       end
     end
@@ -529,7 +550,7 @@ module SPARQL
         when :literal
           lang     = value.respond_to?(:attr) ? value.attr('xml:lang') : value.attributes['xml:lang']
           datatype = value.respond_to?(:attr) ? value.attr('datatype') : value.attributes['datatype']
-          RDF::Literal.new(value.text, :language => lang, :datatype => datatype)
+          RDF::Literal.new(value.text, language: lang, datatype: datatype)
         else nil
       end
     end
@@ -538,8 +559,8 @@ module SPARQL
     # @param  [Net::HTTPSuccess] response
     # @param  [Hash{Symbol => Object}] options
     # @return [RDF::Enumerable]
-    def parse_rdf_serialization(response, options = {})
-      options = {:content_type => response.content_type} unless options[:content_type]
+    def parse_rdf_serialization(response, **options)
+      options = {content_type: response.content_type} unless options[:content_type]
       if reader = RDF::Reader.for(options)
         reader.new(response.body)
       else
@@ -615,7 +636,7 @@ module SPARQL
           RDF::Statement.from(pattern).to_triple.each_with_index.map do |v, i|
             if i == 1
               SPARQL::Client.serialize_predicate(v)
-           else
+            else
               SPARQL::Client.serialize_value(v, use_vars)
             end
           end
@@ -658,11 +679,7 @@ module SPARQL
           value = ENV['https_proxy']
           proxy_url = URI.parse(value) unless value.nil? || value.empty?
       end
-      klass = if Net::HTTP::Persistent::VERSION >= '3.0'
-        Net::HTTP::Persistent.new(name: self.class.to_s, proxy: proxy_url)
-      else
-        Net::HTTP::Persistent.new(self.class.to_s, proxy_url)
-      end
+      klass = Net::HTTP::Persistent.new(name: self.class.to_s, proxy: proxy_url)
       klass.keep_alive =  @options[:keep_alive] || 120
       klass.read_timeout = @options[:read_timeout] || 60
       klass
@@ -673,9 +690,15 @@ module SPARQL
     #
     # @param  [String, #to_s]          query
     # @param  [Hash{String => String}] headers
+      #   HTTP Request headers
+      #
+      #   Defaults `Accept` header based on available reader content types if triples are expected and to SPARQL result types otherwise, to allow for content negotiation based on available readers.
+      #
+      #   Defaults  `User-Agent` header, unless one is specified.
     # @yield  [response]
     # @yieldparam [Net::HTTPResponse] response
     # @return [Net::HTTPResponse]
+    # @raise [IOError] if connection is closed
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
     def request(query, headers = {}, &block)
       # Make sure an appropriate Accept header is present
@@ -686,6 +709,7 @@ module SPARQL
       else
         RESULT_ALL
       end
+      headers['User-Agent'] ||= "Ruby SPARQL::Client/#{SPARQL::Client::VERSION}"
 
       request = send("make_#{request_method(query)}_request", query, headers)
 
@@ -693,6 +717,7 @@ module SPARQL
 
       pre_http_hook(request) if respond_to?(:pre_http_hook)
 
+      raise IOError, "Client has been closed" unless @http
       response = @http.request(::URI.parse(url.to_s), request)
 
       post_http_hook(response) if respond_to?(:post_http_hook)
@@ -725,7 +750,7 @@ module SPARQL
     # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-get
     def make_get_request(query, headers = {})
       url = self.url.dup
-      url.query_values = (url.query_values || {}).merge(:query => query.to_s)
+      url.query_values = (url.query_values || {}).merge(query: query.to_s)
       set_url_default_graph url unless @options[:graph].nil?
       request = Net::HTTP::Get.new(url.request_uri, self.headers.merge(headers))
       request

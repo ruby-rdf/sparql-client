@@ -12,12 +12,12 @@ class SPARQL::Client
     #   insert_data(data)
     #
     # @example INSERT DATA \{ GRAPH <http://example.org/> \{\}\}
-    #   insert_data(RDF::Graph.new, :graph => 'http://example.org/')
+    #   insert_data(RDF::Graph.new, graph: 'http://example.org/')
     #   insert_data(RDF::Graph.new).graph('http://example.org/')
     #
     # @param (see InsertData#initialize)
-    def self.insert_data(*arguments)
-      InsertData.new(*arguments)
+    def self.insert_data(*arguments, **options)
+      InsertData.new(*arguments, **options)
     end
 
     ##
@@ -30,12 +30,12 @@ class SPARQL::Client
     #   delete_data(data)
     #
     # @example DELETE DATA \{ GRAPH <http://example.org/> \{\}\}
-    #   delete_data(RDF::Graph.new, :graph => 'http://example.org/')
+    #   delete_data(RDF::Graph.new, graph: 'http://example.org/')
     #   delete_data(RDF::Graph.new).graph('http://example.org/')
     #
     # @param (see DeleteData#initialize)
-    def self.delete_data(*arguments)
-      DeleteData.new(*arguments)
+    def self.delete_data(*arguments, **options)
+      DeleteData.new(*arguments, **options)
     end
 
     ##
@@ -53,8 +53,8 @@ class SPARQL::Client
     #   load(RDF::URI(http://example.org/data.rdf), into: RDF::URI(http://example.org/data.rdf))
     #
     # @param (see Load#initialize)
-    def self.load(*arguments)
-      Load.new(*arguments)
+    def self.load(*arguments, **options)
+      Load.new(*arguments, **options)
     end
 
     ##
@@ -81,8 +81,8 @@ class SPARQL::Client
     #   clear(:all, silent: true)
     #
     # @param (see Clear#initialize)
-    def self.clear(*arguments)
-      Clear.new(*arguments)
+    def self.clear(*arguments, **options)
+      Clear.new(*arguments, **options)
     end
 
     ##
@@ -96,8 +96,8 @@ class SPARQL::Client
     #   create(RDF::URI(http://example.org/data.rdf), silent: true)
     #
     # @param (see Create#initialize)
-    def self.create(*arguments)
-      Create.new(*arguments)
+    def self.create(*arguments, **options)
+      Create.new(*arguments, **options)
     end
 
     ##
@@ -124,15 +124,15 @@ class SPARQL::Client
     #   drop(:all, silent: true)
     #
     # @param (see Drop#initialize)
-    def self.drop(*arguments)
-      Drop.new(*arguments)
+    def self.drop(*arguments, **options)
+      Drop.new(*arguments, **options)
     end
 
     class Operation
       attr_reader :options
 
-      def initialize(*arguments)
-        @options = arguments.last.is_a?(Hash) ? arguments.pop.dup : {}
+      def initialize(*arguments, **options)
+        @options = options.dup
         unless arguments.empty?
           send(arguments.shift, *arguments)
         end
@@ -171,9 +171,9 @@ class SPARQL::Client
       #   
       # @param [Array<RDF::Statement>, RDF::Enumerable] data
       # @param  [Hash{Symbol => Object}] options
-      def initialize(data, options = {})
+      def initialize(data, **options)
         @data = data
-        super(options)
+        super(**options)
       end
 
       ##
@@ -221,9 +221,9 @@ class SPARQL::Client
       #   
       # @param [Array<RDF::Statement>, RDF::Enumerable] data
       # @param  [Hash{Symbol => Object}] options
-      def initialize(data, options = {})
+      def initialize(data, **options)
         @data = data
-        super(options)
+        super(**options)
       end
 
       ##
@@ -253,11 +253,11 @@ class SPARQL::Client
       attr_reader :delete_graph
       attr_reader :where_graph
 
-      def initialize(_delete_graph, _insert_graph = nil, _where_graph = nil, options = {})
+      def initialize(_delete_graph, _insert_graph = nil, _where_graph = nil, **options)
         @delete_graph = _delete_graph
         @insert_graph = _insert_graph
         @where_graph = _where_graph
-        super(options)
+        super(**options)
       end
 
       ##
@@ -324,11 +324,10 @@ class SPARQL::Client
       # @param  [Hash{Symbol => Object}] options
       # @option [RDF::URI] :into
       # @option [Boolean] :silent
-      def initialize(from, options = {})
-        options = options.dup
+      def initialize(from, into: nil,**options)
         @from = RDF::URI(from)
-        @into = RDF::URI(options.delete(:into)) if options[:into]
-        super(options)
+        @into = RDF::URI(into) if into
+        super(**options)
       end
 
       ##
@@ -420,9 +419,9 @@ class SPARQL::Client
       attr_reader :uri
 
       # @param  [Hash{Symbol => Object}] options
-      def initialize(uri, options = {})
+      def initialize(uri, **options)
         @uri = RDF::URI(uri)
-        super(options)
+        super(**options)
       end
 
       def to_s

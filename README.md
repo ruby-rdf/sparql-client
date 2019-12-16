@@ -30,11 +30,20 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 require 'sparql/client'
 sparql = SPARQL::Client.new("http://dbpedia.org/sparql")
 ```
+
+### Querying a remote SPARQL endpoint with a custom User-Agent
+By default, SPARQL::Client adds a `User-Agent` field to requests, but applications may choose to provide their own, using the `headers` option:
+
+```ruby
+require 'sparql/client'
+sparql = SPARQL::Client.new("http://dbpedia.org/sparql", headers: {'User-Agent' => 'MyBotName'})
+```
+
 ### Querying a remote SPARQL endpoint with a specified default graph
 
 ```ruby
 require 'sparql/client'
-sparql = SPARQL::Client.new("http://dbpedia.org/sparql", { :graph => "http://dbpedia.org" })
+sparql = SPARQL::Client.new("http://dbpedia.org/sparql", { graph: "http://dbpedia.org" })
 ```
 
 
@@ -114,11 +123,11 @@ sparql.delete_data(data)
 
 ## Dependencies
 
-* [Ruby](http://ruby-lang.org/) (>= 2.2.2)
-* [RDF.rb](http://rubygems.org/gems/rdf) (~> 3.0)
-* [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (>= 1.4)
-* Soft dependency on [SPARQL](http://rubygems.org/gems/sparql) (~> 3.0)
-* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.7)
+* [Ruby](http://ruby-lang.org/) (>= 2.4)
+* [RDF.rb](http://rubygems.org/gems/rdf) (~> 3.1)
+* [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (~> 3.1)
+* Soft dependency on [SPARQL](http://rubygems.org/gems/sparql) (~> 3.1)
+* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.10)
 
 ## Installation
 

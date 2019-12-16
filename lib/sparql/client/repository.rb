@@ -14,9 +14,9 @@ class SPARQL::Client
     def initialize(uri: nil, **options, &block)
       raise ArgumentError, "uri is a required parameter" unless uri
       @options = options.merge(uri: uri)
-      @update_client = SPARQL::Client.new(options.delete(:update_endpoint), options) if options[:update_endpoint]
-      @client  = SPARQL::Client.new(uri, options)
-      super(@options, &block)
+      @update_client = SPARQL::Client.new(options.delete(:update_endpoint), **options) if options[:update_endpoint]
+      @client  = SPARQL::Client.new(uri, **options)
+      super(**@options, &block)
     end
 
     ##
@@ -115,7 +115,7 @@ class SPARQL::Client
     # @see    RDF::Repository#each_subject?
     def each_subject(&block)
       if block_given?
-        client.select(:s, :distinct => true).where([:s, :p, :o]).each_solution { |solution| block.call(solution[:s]) }
+        client.select(:s, distinct: true).where([:s, :p, :o]).each_solution { |solution| block.call(solution[:s]) }
       end
       enum_subject
     end
@@ -129,7 +129,7 @@ class SPARQL::Client
     # @see    RDF::Repository#each_predicate?
     def each_predicate(&block)
       if block_given?
-        client.select(:p, :distinct => true).where([:s, :p, :o]).each_solution { |solution| block.call(solution[:p]) }
+        client.select(:p, distinct: true).where([:s, :p, :o]).each_solution { |solution| block.call(solution[:p]) }
       end
       enum_predicate
     end
@@ -143,7 +143,7 @@ class SPARQL::Client
     # @see    RDF::Repository#each_object?
     def each_object(&block)
       if block_given?
-        client.select(:o, :distinct => true).where([:s, :p, :o]).each_solution { |solution| block.call(solution[:o]) }
+        client.select(:o, distinct: true).where([:s, :p, :o]).each_solution { |solution| block.call(solution[:o]) }
       end
       enum_object
     end
@@ -262,10 +262,10 @@ class SPARQL::Client
     # @return [void] ignored
     # @see    RDF::Queryable#query
     # @see    RDF::Query#execute
-    def query_execute(query, options = {}, &block)
+    def query_execute(query, **options, &block)
       return nil unless block_given?
-      q = SPARQL::Client::Query.select(query.variables).where(*query.patterns)
-      client.query(q, options).each do |solution|
+      q = SPARQL::Client::Query.select(query.variables, **{}).where(*query.patterns)
+      client.query(q, **options).each do |solution|
         yield solution
       end
     end
@@ -275,7 +275,7 @@ class SPARQL::Client
     #
     # @example
     #     repository.query([nil, RDF::DOAP.developer, nil])
-    #     repository.query(:predicate => RDF::DOAP.developer)
+    #     repository.query({predicate: RDF::DOAP.developer})
     #
     # @todo This should use basic SPARQL query mechanism.
     #
@@ -284,7 +284,7 @@ class SPARQL::Client
     # @yield  [statement]
     # @yieldparam [Statement]
     # @return [Enumerable<Statement>]
-    def query_pattern(pattern, options = {}, &block)
+    def query_pattern(pattern, **options, &block)
       pattern = pattern.dup
       pattern.subject   ||= RDF::Query::Variable.new
       pattern.predicate ||= RDF::Query::Variable.new
