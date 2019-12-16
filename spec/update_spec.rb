@@ -64,7 +64,7 @@ describe SPARQL::Client::Update do
     end
 
     it "supports the GRAPH modifier" do
-      [subject.insert_data(RDF::Graph.new, :graph => 'http://example.org/'),
+      [subject.insert_data(RDF::Graph.new, graph: 'http://example.org/'),
        subject.insert_data(RDF::Graph.new).graph('http://example.org/')].each do |example|
         expect(example.to_s).to eq "INSERT DATA { GRAPH <http://example.org/> {\n}}\n"
       end
@@ -88,7 +88,7 @@ describe SPARQL::Client::Update do
     end
 
     it "supports the GRAPH modifier" do
-      [subject.delete_data(RDF::Graph.new, :graph => 'http://example.org/'),
+      [subject.delete_data(RDF::Graph.new, graph: 'http://example.org/'),
        subject.delete_data(RDF::Graph.new).graph('http://example.org/')].each do |example|
         expect(example.to_s).to eq "DELETE DATA { GRAPH <http://example.org/> {\n}}\n"
       end
@@ -112,14 +112,14 @@ describe SPARQL::Client::Update do
 
     it "supports the SILENT modifier" do
       [subject.load(from_url).silent,
-       subject.load(from_url, :silent => true)].each do |example|
+       subject.load(from_url, silent: true)].each do |example|
         expect(example.to_s).to eq "LOAD SILENT <#{from_url}>"
       end
     end
 
     it "supports the INTO GRAPH modifier" do
       [subject.load(from_url).into(from_url),
-       subject.load(from_url, :into => from_url)].each do |example|
+       subject.load(from_url, into: from_url)].each do |example|
         expect(example.to_s).to eq "LOAD <#{from_url}> INTO GRAPH <#{from_url}>"
       end
     end
@@ -158,7 +158,7 @@ describe SPARQL::Client::Update do
 
     it "supports the SILENT modifier" do
       [subject.clear(:all).silent,
-       subject.clear(:all, :silent => true)].each do |example|
+       subject.clear(:all, silent: true)].each do |example|
         expect(example.to_s).to eq "CLEAR SILENT ALL"
       end
     end
@@ -173,7 +173,7 @@ describe SPARQL::Client::Update do
 
     it "supports the SILENT modifier" do
       [subject.create(graph_uri).silent,
-       subject.create(graph_uri, :silent => true)].each do |example|
+       subject.create(graph_uri, silent: true)].each do |example|
         expect(example.to_s).to eq "CREATE SILENT GRAPH <#{graph_uri}>"
       end
     end
@@ -216,7 +216,7 @@ describe SPARQL::Client::Update do
 
     it "supports the SILENT modifier" do
       [subject.drop(:all).silent,
-       subject.drop(:all, :silent => true)].each do |example|
+       subject.drop(:all, silent: true)].each do |example|
         expect(example.to_s).to eq "DROP SILENT ALL"
       end
     end

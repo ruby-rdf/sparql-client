@@ -26,8 +26,8 @@ class SPARQL::Client
     # @param  [Hash{Symbol => Object}] options (see {#initialize})
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#ask
-    def self.ask(options = {})
-      self.new(:ask, options)
+    def self.ask(**options)
+      self.new(:ask, **options)
     end
 
     ##
@@ -45,14 +45,13 @@ class SPARQL::Client
     # @param  [Array<Symbol>]          variables
     # @return [Query]
     #
-    # @overload self.select(*variables, options)
+    # @overload self.select(*variables, **options)
     #   @param  [Array<Symbol>]          variables
     #   @param  [Hash{Symbol => Object}] options (see {#initialize})
     #   @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#select
-    def self.select(*variables)
-      options = variables.last.is_a?(Hash) ? variables.pop : {}
-      self.new(:select, options).select(*variables)
+    def self.select(*variables, **options)
+      self.new(:select, **options).select(*variables)
     end
 
     ##
@@ -64,14 +63,13 @@ class SPARQL::Client
     # @param  [Array<Symbol, RDF::URI>] variables
     # @return [Query]
     #
-    # @overload self.describe(*variables, options)
+    # @overload self.describe(*variables, **options)
     #   @param  [Array<Symbol, RDF::URI>] variables
     #   @param  [Hash{Symbol => Object}] options (see {#initialize})
     #   @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#describe
-    def self.describe(*variables)
-      options = variables.last.is_a?(Hash) ? variables.pop : {}
-      self.new(:describe, options).describe(*variables)
+    def self.describe(*variables, **options)
+      self.new(:describe, **options).describe(*variables)
     end
 
     ##
@@ -83,19 +81,18 @@ class SPARQL::Client
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
     #
-    # @overload self.construct(*variables, options)
+    # @overload self.construct(*variables, **options)
     #   @param  [Array<RDF::Query::Pattern, Array>] patterns
     #   @param  [Hash{Symbol => Object}] options (see {#initialize})
     #   @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#construct
-    def self.construct(*patterns)
-      options = patterns.last.is_a?(Hash) ? patterns.pop : {}
-      self.new(:construct, options).construct(*patterns) # FIXME
+    def self.construct(*patterns, **options)
+      self.new(:construct, **options).construct(*patterns) # FIXME
     end
 
     ##
     # @param  [Symbol, #to_s]          form
-    # @overload self.construct(*variables, options)
+    # @overload self.construct(*variables, **options)
     #   @param  [Symbol, #to_s]          form
     #   @param  [Hash{Symbol => Object}] options (see {Client#initialize})
     #   @option options [Hash{Symbol => Symbol}] :count
@@ -104,10 +101,10 @@ class SPARQL::Client
     #     
     # @yield  [query]
     # @yieldparam [Query]
-    def initialize(form = :ask, options = {}, &block)
+    def initialize(form = :ask, **options, &block)
       @subqueries = []
       @form = form.respond_to?(:to_sym) ? form.to_sym : form.to_s.to_sym
-      super([], options, &block)
+      super([], **options, &block)
     end
 
     ##
@@ -131,11 +128,15 @@ class SPARQL::Client
     # @example SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}
     #   query.select(count: {uri: :c}).where([:uri, RDF.type, RDF::OWL.Class])
     #
-    # @param  [Array<Symbol>] variables
+    # @param  [Array<Symbol>, Hash{Symbol => RDF::Query::Variable}] variables
     # @return [Query]
     # @see    http://www.w3.org/TR/sparql11-query/#select
     def select(*variables)
-      @values = variables.map { |var| [var, RDF::Query::Variable.new(var)] }
+      @values = if variables.length == 1 && variables.first.is_a?(Hash)
+        variables.to_a
+      else
+        variables.map { |var| [var, RDF::Query::Variable.new(var)] }
+      end
       self
     end
 
@@ -240,7 +241,7 @@ class SPARQL::Client
     #   query.select.where([:s, :p, :o]).order_by(:o, :p)
     #
     # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o) DESC(?p)
-    #   query.select.where([:s, :p, :o]).order_by(:o => :asc, :p => :desc)
+    #   query.select.where([:s, :p, :o]).order_by(o: :asc, p: :desc)
     #
     # @param  [Array<Symbol, String>] variables
     # @return [Query]
@@ -727,7 +728,7 @@ class SPARQL::Client
         buffer << 'ORDER BY'
         options[:order_by].map { |elem|
           case elem
-            # .order_by({ :var1 => :asc, :var2 => :desc})
+            # .order_by({ var1: :asc, var2: :desc})
             when Hash
               elem.each { |key, val|
                 # check provided values

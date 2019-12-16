@@ -100,13 +100,13 @@ describe SPARQL::Client::Query do
     end
 
     it "supports DISTINCT" do
-      expect(subject.select(:s, :distinct => true).where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
+      expect(subject.select(:s, distinct: true).where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
       expect(subject.select(:s).distinct.where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT ?s WHERE { ?s ?p ?o . }"
       expect(subject.select.distinct.where([:s, :p, :o]).to_s).to eq "SELECT DISTINCT * WHERE { ?s ?p ?o . }"
     end
 
     it "supports REDUCED" do
-      expect(subject.select(:s, :reduced => true).where([:s, :p, :o]).to_s).to eq "SELECT REDUCED ?s WHERE { ?s ?p ?o . }"
+      expect(subject.select(:s, reduced: true).where([:s, :p, :o]).to_s).to eq "SELECT REDUCED ?s WHERE { ?s ?p ?o . }"
       expect(subject.select(:s).reduced.where([:s, :p, :o]).to_s).to eq "SELECT REDUCED ?s WHERE { ?s ?p ?o . }"
     end
 
@@ -116,11 +116,11 @@ describe SPARQL::Client::Query do
     end
 
     it "supports COUNT" do
-      expect(subject.select(:count => { :s => :c }).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
-      expect(subject.select(:count => { :s => :c }, :distinct => true).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(DISTINCT ?s) AS ?c ) WHERE { ?s ?p ?o . }"
-      expect(subject.select(:count => { :s => '?c' }).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
-      expect(subject.select(:count => { '?s' => '?c' }).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
-      expect(subject.select(:o, :count => { :s => :c }).where([:s, :p, :o]).to_s).to eq "SELECT ?o ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
+      expect(subject.select(count: { s: :c }).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
+      expect(subject.select(count: { s: :c }, distinct: true).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(DISTINCT ?s) AS ?c ) WHERE { ?s ?p ?o . }"
+      expect(subject.select(count: { s: '?c' }).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
+      expect(subject.select(count: { '?s' => '?c' }).where([:s, :p, :o]).to_s).to eq "SELECT  ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
+      expect(subject.select(:o, count: { s: :c }).where([:s, :p, :o]).to_s).to eq "SELECT ?o ( COUNT(?s) AS ?c ) WHERE { ?s ?p ?o . }"
     end
 
     it "supports VALUES" do
@@ -142,9 +142,9 @@ describe SPARQL::Client::Query do
       expect(subject.select.where([:s, :p, :o]).order_by('?o').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o"
       expect(subject.select.where([:s, :p, :o]).order_by('ASC(?o)').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
       expect(subject.select.where([:s, :p, :o]).order_by('DESC(?o)').to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
-      expect(subject.select.where([:s, :p, :o]).order_by(:o => :asc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
-      expect(subject.select.where([:s, :p, :o]).order_by(:o => :desc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
-      expect(subject.select.where([:s, :p, :o]).order_by(:o => :asc, :p => :desc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o) DESC(?p)"
+      expect(subject.select.where([:s, :p, :o]).order_by(o: :asc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
+      expect(subject.select.where([:s, :p, :o]).order_by(o: :desc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
+      expect(subject.select.where([:s, :p, :o]).order_by(o: :asc, p: :desc).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o) DESC(?p)"
       expect(subject.select.where([:s, :p, :o]).order_by([:o, :asc]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)"
       expect(subject.select.where([:s, :p, :o]).order_by([:o, :desc]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)"
       expect(subject.select.where([:s, :p, :o]).order_by([:o, :asc], [:p, :desc]).to_s).to eq "SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o) DESC(?p)"
@@ -153,7 +153,7 @@ describe SPARQL::Client::Query do
       expect { subject.select.where([:s, :p, :o]).order_by([:o]).to_s }.to raise_error(ArgumentError)
       expect { subject.select.where([:s, :p, :o]).order_by([:o, :csa]).to_s }.to raise_error(ArgumentError)
       expect { subject.select.where([:s, :p, :o]).order_by([:o, :asc, 42]).to_s }.to raise_error(ArgumentError)
-      expect { subject.select.where([:s, :p, :o]).order_by(:o => 42).to_s }.to raise_error(ArgumentError)
+      expect { subject.select.where([:s, :p, :o]).order_by(o: 42).to_s }.to raise_error(ArgumentError)
       expect { subject.select.where([:s, :p, :o]).order_by(42 => :asc).to_s }.to raise_error(ArgumentError)
     end
 

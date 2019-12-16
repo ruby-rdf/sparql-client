@@ -15,8 +15,8 @@ group :development, :test do
   gem "rdf-xsd",        git: "https://github.com/ruby-rdf/rdf-xsd",             branch: "develop"
   gem 'sxp',            git: "https://github.com/dryruby/sxp.rb",               branch: "develop"
   gem "redcarpet",      platform: :ruby
-  gem 'simplecov',      require: false, platform: :mri
-  gem 'coveralls',      require: false, platform: :mri
+  gem 'simplecov',      platforms: :mri
+  gem 'coveralls',      '~> 0.8', platforms: :mri
 end
 
 group :debug do

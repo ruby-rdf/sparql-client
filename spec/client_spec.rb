@@ -57,7 +57,7 @@ describe SPARQL::Client do
 
     it "handles successful response with plain header" do
       expect(subject).to receive(:request).and_yield response('text/plain')
-      expect(RDF::Reader).to receive(:for).with(:content_type => 'text/plain').and_call_original
+      expect(RDF::Reader).to receive(:for).with(content_type: 'text/plain').and_call_original
       subject.query(query)
     end
 
@@ -93,7 +93,7 @@ describe SPARQL::Client do
     it "handles successful response with overridden XML header" do
       expect(subject).to receive(:request).and_yield response(SPARQL::Client::RESULT_XML)
       expect(subject.class).to receive(:parse_json_bindings)
-      subject.query(query, :content_type => SPARQL::Client::RESULT_JSON)
+      subject.query(query, content_type: SPARQL::Client::RESULT_JSON)
     end
 
     it "handles successful response with no content type" do
@@ -103,27 +103,27 @@ describe SPARQL::Client do
 
     it "handles successful response with overridden plain header" do
       expect(subject).to receive(:request).and_yield response('text/plain')
-      expect(RDF::Reader).to receive(:for).with(:content_type => 'text/turtle').and_call_original
-      subject.query(query, :content_type => 'text/turtle')
+      expect(RDF::Reader).to receive(:for).with(content_type: 'text/turtle').and_call_original
+      subject.query(query, content_type: 'text/turtle')
     end
 
     it "handles successful response with custom headers" do
       expect(subject).to receive(:request).with(anything, "Authorization" => "Basic XXX==").
         and_yield response('text/plain')
-      subject.query(query, :headers => {"Authorization" => "Basic XXX=="})
+      subject.query(query, headers: {"Authorization" => "Basic XXX=="})
     end
 
     it "handles successful response with initial custom headers" do
-      options = {:headers => {"Authorization" => "Basic XXX=="}, :method => :get}
-      client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', options)
-      client.instance_variable_set :@http, double(:request => response('text/plain'))
+      options = {headers: {"Authorization" => "Basic XXX=="}, method: :get}
+      client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', **options)
+      client.instance_variable_set :@http, double(request: response('text/plain'))
       expect(Net::HTTP::Get).to receive(:new).with(anything, hash_including(options[:headers]))
       client.query(query)
     end
 
     it "enables overriding the http method" do
       stub_request(:get, "http://data.linkedmdb.org/sparql?query=DESCRIBE%20?kb%20WHERE%20%7B%20?kb%20%3Chttp://data.linkedmdb.org/resource/movie/actor_name%3E%20%22Kevin%20Bacon%22%20.%20%7D").
-         to_return(:status => 200, :body => "", :headers => { 'Content-Type' => 'application/n-triples'})
+         to_return(status: 200, body: "", headers: { 'Content-Type' => 'application/n-triples'})
       allow(subject).to receive(:request_method).with(query).and_return(:get)
       expect(subject).to receive(:make_get_request).and_call_original
       subject.query(query)
@@ -132,16 +132,16 @@ describe SPARQL::Client do
     it "supports international characters in response body" do
       client = SPARQL::Client.new('http://dbpedia.org/sparql')
       json = {
-        :results => {
-          :bindings => [
-            :name => {:type => :literal, "xml:lang" => "jp", :value => "東京"}
+        results: {
+          bindings: [
+            name: {type: :literal, "xml:lang" => "jp", value: "東京"}
           ],
         }
       }.to_json
       WebMock.stub_request(:any, 'http://dbpedia.org/sparql').
-        to_return(:body => json, :status => 200, :headers => { 'Content-Type' => SPARQL::Client::RESULT_JSON})
+        to_return(body: json, status: 200, headers: { 'Content-Type' => SPARQL::Client::RESULT_JSON})
       query = "SELECT ?name WHERE { <http://dbpedia.org/resource/Tokyo> <http://dbpedia.org/property/nativeName> ?name }"
-      result = client.query(query, :content_type => SPARQL::Client::RESULT_JSON).first
+      result = client.query(query, content_type: SPARQL::Client::RESULT_JSON).first
       expect(result[:name].to_s).to eq "東京"
     end
 
@@ -153,20 +153,20 @@ describe SPARQL::Client do
     context "Redirects" do
       before do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '{}', :status => 303, :headers => { 'Location' => 'http://sparql.linkedmdb.org/sparql' })
+          to_return(body: '{}', status: 303, headers: { 'Location' => 'http://sparql.linkedmdb.org/sparql' })
       end
 
       it 'follows redirects' do
         WebMock.stub_request(:any, 'http://sparql.linkedmdb.org/sparql').
-          to_return(:body => '{}', :status => 200, :headers => { :content_type => SPARQL::Client::RESULT_JSON})
+          to_return(body: '{}', status: 200, headers: { content_type: SPARQL::Client::RESULT_JSON})
         subject.query(ask_query)
         expect(WebMock).to have_requested(:post, "http://sparql.linkedmdb.org/sparql").
-          with(:body => 'query=ASK+WHERE+%7B+%3Fkb+%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E+%22Kevin+Bacon%22+.+%7D')
+          with(body: 'query=ASK+WHERE+%7B+%3Fkb+%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E+%22Kevin+Bacon%22+.+%7D')
       end
 
       it 'raises an error on infinate redirects' do
         WebMock.stub_request(:any, 'http://sparql.linkedmdb.org/sparql').
-          to_return(:body => '{}', :status => 303, :headers => { 'Location' => 'http://sparql.linkedmdb.org/sparql' })
+          to_return(body: '{}', status: 303, headers: { 'Location' => 'http://sparql.linkedmdb.org/sparql' })
         expect{ subject.query(ask_query) }.to raise_error SPARQL::Client::ServerError
       end
     end
@@ -174,85 +174,85 @@ describe SPARQL::Client do
     context "Accept Header" do
       it "uses application/sparql-results+json for ASK" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+          to_return(body: '{}', status: 200, headers: { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(ask_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1'})
+          with(headers: {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1'})
       end
 
       it "uses application/n-triples for CONSTRUCT" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
+          to_return(body: '', status: 200, headers: { 'Content-Type' => 'application/n-triples'})
         subject.query(construct_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
+          with(headers: {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
       end
 
       it "uses application/n-triples for DESCRIBE" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '', :status => 200, :headers => { 'Content-Type' => 'application/n-triples'})
+          to_return(body: '', status: 200, headers: { 'Content-Type' => 'application/n-triples'})
         subject.query(describe_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
+          with(headers: {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
       end
 
       it "uses application/sparql-results+json for SELECT" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+          to_return(body: '{}', status: 200, headers: { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1'})
+          with(headers: {'Accept'=>'application/sparql-results+json, application/sparql-results+xml, text/boolean, text/tab-separated-values;q=0.8, text/csv;q=0.2, */*;q=0.1'})
       end
     end
 
     context 'User-Agent header' do
       it "uses default if not specified" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+          to_return(body: '{}', status: 200, headers: { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'User-Agent' => "Ruby SPARQL::Client/#{SPARQL::Client::VERSION}"})
+          with(headers: {'User-Agent' => "Ruby SPARQL::Client/#{SPARQL::Client::VERSION}"})
       end
 
       it "uses user-provided value in query" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+          to_return(body: '{}', status: 200, headers: { 'Content-Type' => 'application/sparql-results+json'})
         subject.query(select_query, headers: {'User-Agent' => 'Foo'})
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'User-Agent' => "Foo"})
+          with(headers: {'User-Agent' => "Foo"})
       end
 
       it "uses user-provided value in initialization" do
         client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', headers: {'User-Agent' => 'Foo'})
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+          to_return(body: '{}', status: 200, headers: { 'Content-Type' => 'application/sparql-results+json'})
         client.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(:headers => {'User-Agent' => "Foo"})
+          with(headers: {'User-Agent' => "Foo"})
       end
     end
 
     context "Alternative Endpoint" do
       it "uses the default endpoint if no alternative endpoint is provided" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '', :status => 200)
+          to_return(body: '', status: 200)
         subject.update(update_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql")
       end
 
       it "uses the alternative endpoint if provided" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/alternative').
-          to_return(:body => '', :status => 200)
-        subject.update(update_query, { endpoint: "http://data.linkedmdb.org/alternative" })
+          to_return(body: '', status: 200)
+        subject.update(update_query, endpoint: "http://data.linkedmdb.org/alternative")
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/alternative")
       end
 
       it "does not use the alternative endpoint for a select query" do
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-          to_return(:body => '', :status => 200)
+          to_return(body: '', status: 200)
         WebMock.stub_request(:any, 'http://data.linkedmdb.org/alternative').
-          to_return(:body => '', :status => 200)
-        subject.update(update_query, { endpoint: "http://data.linkedmdb.org/alternative" })
+          to_return(body: '', status: 200)
+        subject.update(update_query, endpoint: "http://data.linkedmdb.org/alternative")
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/alternative")
         subject.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql")
@@ -260,47 +260,47 @@ describe SPARQL::Client do
     end
 
     context "with multiple Graphs" do
-      let(:get_graph_client){ SPARQL::Client.new('http://data.linkedmdb.org/sparql', {:method => 'get', :graph => 'http://data.linkedmdb.org/graph1'}) }
-      let(:post_graph_client10){ SPARQL::Client.new('http://data.linkedmdb.org/sparql', {:method => 'post', :graph => 'http://data.linkedmdb.org/graph1', :protocol => '1.0'}) }
-      let(:post_graph_client11){ SPARQL::Client.new('http://data.linkedmdb.org/sparql', {:method => 'post', :graph => 'http://data.linkedmdb.org/graph1', :protocol => '1.1'}) }
+      let(:get_graph_client){ SPARQL::Client.new('http://data.linkedmdb.org/sparql', method: 'get', graph: 'http://data.linkedmdb.org/graph1') }
+      let(:post_graph_client10){ SPARQL::Client.new('http://data.linkedmdb.org/sparql', method: 'post', graph: 'http://data.linkedmdb.org/graph1', protocol: '1.0') }
+      let(:post_graph_client11){ SPARQL::Client.new('http://data.linkedmdb.org/sparql', method: 'post', graph: 'http://data.linkedmdb.org/graph1', protocol: '1.1') }
 
       it "should create 'query via GET' requests" do
         WebMock.stub_request(:get, 'http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1&query=SELECT%20%3Fkb%20WHERE%20%7B%20%3Fkb%20%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E%20%22Kevin%20Bacon%22%20.%20%7D').
-          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+          to_return(body: '{}', status: 200, headers: { 'Content-Type' => 'application/sparql-results+json'})
         get_graph_client.query(select_query)
         expect(WebMock).to have_requested(:get, "http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1&query=SELECT%20%3Fkb%20WHERE%20%7B%20%3Fkb%20%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E%20%22Kevin%20Bacon%22%20.%20%7D")
       end
 
       it "should create 'query via URL-encoded Post' requests" do
         WebMock.stub_request(:post, 'http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1').
-          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+          to_return(body: '{}', status: 200, headers: { 'Content-Type' => 'application/sparql-results+json'})
         post_graph_client10.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1").
-          with(:body => "query=SELECT+%3Fkb+WHERE+%7B+%3Fkb+%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E+%22Kevin+Bacon%22+.+%7D&default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1")
+          with(body: "query=SELECT+%3Fkb+WHERE+%7B+%3Fkb+%3Chttp%3A%2F%2Fdata.linkedmdb.org%2Fresource%2Fmovie%2Factor_name%3E+%22Kevin+Bacon%22+.+%7D&default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1")
       end
 
       it "should create 'query via Post directly' requests" do
         WebMock.stub_request(:post, 'http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1').
-          to_return(:body => '{}', :status => 200, :headers => { 'Content-Type' => 'application/sparql-results+json'})
+          to_return(body: '{}', status: 200, headers: { 'Content-Type' => 'application/sparql-results+json'})
         post_graph_client11.query(select_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql?default-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1").
-          with(:body => select_query)
+          with(body: select_query)
       end
 
       it "should create requests for 'update via URL-encoded POST'" do
         WebMock.stub_request(:post, 'http://data.linkedmdb.org/sparql?using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1').
-          to_return(:body => '{}', :status => 200)
+          to_return(body: '{}', status: 200)
         post_graph_client10.update(update_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql?using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1").
-          with(:body => "update=DELETE+%7B%3Fs+%3Fp+%3Fo%7D+WHERE+%7B%7D&using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1")
+          with(body: "update=DELETE+%7B%3Fs+%3Fp+%3Fo%7D+WHERE+%7B%7D&using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1")
       end
 
       it "should create requests for 'update via POST directly'" do
         WebMock.stub_request(:post, 'http://data.linkedmdb.org/sparql?using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1').
-          to_return(:body => '{}', :status => 200)
+          to_return(body: '{}', status: 200)
         post_graph_client11.update(update_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql?using-graph-uri=http%3A%2F%2Fdata.linkedmdb.org%2Fgraph1").
-          with(:body => update_query)
+          with(body: update_query)
       end
     end
 
@@ -315,7 +315,7 @@ describe SPARQL::Client do
       }.each do |test, params|
         it "detects #{test}" do
           WebMock.stub_request(:any, 'http://data.linkedmdb.org/sparql').
-            to_return(:body => 'the body', :status => params[:status], headers: {'Content-Type' => 'text/plain'})
+            to_return(body: 'the body', status: params[:status], headers: {'Content-Type' => 'text/plain'})
           expect {
             subject.query(select_query)
           }.to raise_error(params[:error], "the body Processing query #{select_query}")
@@ -331,7 +331,7 @@ describe SPARQL::Client do
     subject {SPARQL::Client.new(repo)}
 
     it "queries repository" do
-      expect(SPARQL).to receive(:execute).with(query, repo, {})
+      expect(SPARQL).to receive(:execute).with(query, repo, any_args)
       subject.query(query)
     end
 
@@ -384,11 +384,11 @@ describe SPARQL::Client do
       solutions = SPARQL::Client::parse_xml_bindings(xml, nodes)
       expect(solutions).to eq RDF::Query::Solutions.new([
         RDF::Query::Solution.new(
-          :x => RDF::Node.new("r2"),
-          :hpage => RDF::URI.new("http://work.example.org/bob/"),
-          :name => RDF::Literal.new("Bob", :language => "en"),
-          :age => RDF::Literal.new("30", :datatype => "http://www.w3.org/2001/XMLSchema#integer"),
-          :mbox => RDF::URI.new("mailto:bob@work.example.org"),
+          x: RDF::Node.new("r2"),
+          hpage: RDF::URI.new("http://work.example.org/bob/"),
+          name: RDF::Literal.new("Bob", language: "en"),
+          age: RDF::Literal.new("30", datatype: "http://www.w3.org/2001/XMLSchema#integer"),
+          mbox: RDF::URI.new("mailto:bob@work.example.org"),
         )
       ])
       expect(solutions[0]["x"]).to eq nodes["r2"]
@@ -412,11 +412,11 @@ describe SPARQL::Client do
       solutions = SPARQL::Client::parse_json_bindings(xml, nodes)
       expect(solutions).to eq RDF::Query::Solutions.new([
         RDF::Query::Solution.new(
-          :x => RDF::Node.new("r2"),
-          :hpage => RDF::URI.new("http://work.example.org/bob/"),
-          :name => RDF::Literal.new("Bob", :language => "en"),
-          :age => RDF::Literal.new("30", :datatype => "http://www.w3.org/2001/XMLSchema#integer"),
-          :mbox => RDF::URI.new("mailto:bob@work.example.org"),
+          x: RDF::Node.new("r2"),
+          hpage: RDF::URI.new("http://work.example.org/bob/"),
+          name: RDF::Literal.new("Bob", language: "en"),
+          age: RDF::Literal.new("30", datatype: "http://www.w3.org/2001/XMLSchema#integer"),
+          mbox: RDF::URI.new("mailto:bob@work.example.org"),
         )
       ])
       expect(solutions[0]["x"]).to eq nodes["r2"]
@@ -439,11 +439,11 @@ describe SPARQL::Client do
       nodes = {}
       solutions = SPARQL::Client::parse_csv_bindings(csv, nodes)
       expect(solutions).to eq RDF::Query::Solutions.new([
-        RDF::Query::Solution.new(:x => RDF::URI("http://example/x"),
-                                 :literal => RDF::Literal('String-with-dquote"')),
-        RDF::Query::Solution.new(:x => RDF::Node.new("b0"), :literal => RDF::Literal("Blank node")),
-        RDF::Query::Solution.new(:x => RDF::Literal(""), :literal => RDF::Literal("Missing 'x'")),
-        RDF::Query::Solution.new(:x => RDF::Literal(""), :literal => RDF::Literal("")),
+        RDF::Query::Solution.new(x: RDF::URI("http://example/x"),
+                                 literal: RDF::Literal('String-with-dquote"')),
+        RDF::Query::Solution.new(x: RDF::Node.new("b0"), literal: RDF::Literal("Blank node")),
+        RDF::Query::Solution.new(x: RDF::Literal(""), literal: RDF::Literal("Missing 'x'")),
+        RDF::Query::Solution.new(x: RDF::Literal(""), literal: RDF::Literal("")),
       ])
       expect(solutions[1]["x"]).to eq nodes["b0"]
     end
@@ -455,11 +455,11 @@ describe SPARQL::Client do
       nodes = {}
       solutions = SPARQL::Client::parse_tsv_bindings(tsv, nodes)
       expect(solutions).to eq RDF::Query::Solutions.new([
-        RDF::Query::Solution.new(:x => RDF::URI("http://example/x"),
-                                 :literal => RDF::Literal('String-with-dquote"')),
-        RDF::Query::Solution.new(:x => RDF::Node.new("blank0"), :literal => RDF::Literal("Blank node")),
-        RDF::Query::Solution.new(:x => RDF::Node("blank1"), :literal => RDF::Literal.new("String-with-lang", :language => "en")),
-        RDF::Query::Solution.new(:x => RDF::Node("blank1"), :literal => RDF::Literal::Integer.new("123")),
+        RDF::Query::Solution.new(x: RDF::URI("http://example/x"),
+                                 literal: RDF::Literal('String-with-dquote"')),
+        RDF::Query::Solution.new(x: RDF::Node.new("blank0"), literal: RDF::Literal("Blank node")),
+        RDF::Query::Solution.new(x: RDF::Node("blank1"), literal: RDF::Literal.new("String-with-lang", language: "en")),
+        RDF::Query::Solution.new(x: RDF::Node("blank1"), literal: RDF::Literal::Integer.new("123")),
       ])
       expect(solutions[1]["x"]).to eq nodes["blank0"]
     end

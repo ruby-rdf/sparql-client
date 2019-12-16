@@ -43,7 +43,7 @@ sparql = SPARQL::Client.new("http://dbpedia.org/sparql", headers: {'User-Agent' 
 
 ```ruby
 require 'sparql/client'
-sparql = SPARQL::Client.new("http://dbpedia.org/sparql", { :graph => "http://dbpedia.org" })
+sparql = SPARQL::Client.new("http://dbpedia.org/sparql", { graph: "http://dbpedia.org" })
 ```
 
 
@@ -123,11 +123,11 @@ sparql.delete_data(data)
 
 ## Dependencies
 
-* [Ruby](http://ruby-lang.org/) (>= 2.2.2)
-* [RDF.rb](http://rubygems.org/gems/rdf) (~> 3.0)
-* [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (~> 3.0)
-* Soft dependency on [SPARQL](http://rubygems.org/gems/sparql) (~> 3.0)
-* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.8)
+* [Ruby](http://ruby-lang.org/) (>= 2.4)
+* [RDF.rb](http://rubygems.org/gems/rdf) (~> 3.1)
+* [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (~> 3.1)
+* Soft dependency on [SPARQL](http://rubygems.org/gems/sparql) (~> 3.1)
+* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.10)
 
 ## Installation
 
