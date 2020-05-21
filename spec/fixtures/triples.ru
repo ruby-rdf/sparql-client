@@ -5,10 +5,10 @@ PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
 
 CLEAR ALL;
 INSERT DATA {
-  <http://rubygems.org/gems/rdf> a doap:Project;
+  <https://rubygems.org/gems/rdf> a doap:Project;
     doap:name "RDF.rb";
-    doap:homepage <http://rubygems.org/gems/rdf>;
-    doap:license <http://creativecommons.org/licenses/publicdomain/>;
+    doap:homepage <https://rubygems.org/gems/rdf>;
+    doap:license <http://creativecommons.org/publicdomain/zero/1.0/>;
     doap:shortdesc "A Ruby library for working with Resource Description Framework (RDF) data."@en;
     doap:description "RDF.rb is a pure-Ruby library for working with Resource Description Framework (RDF) data."@en;
     doap:created "2007-10-23";
@@ -18,22 +18,20 @@ INSERT DATA {
     doap:implements <http://www.w3.org/TR/rdf-concepts/>,
                     <http://sw.deri.org/2008/07/n-quads/>,
                     <http://www.w3.org/2001/sw/RDFCore/ntriples/>;
-    doap:download-page <http://rubygems.org/gems/rdf/>;
-    doap:bug-database <http://github.com/ruby-rdf/rdf/issues>;
-    doap:blog <http://ar.to/>;
-    doap:blog <http://blog.datagraph.org/>;
-    doap:vendor <http://datagraph.org/>;
-    foaf:maker <http://ar.to/#self>;
-    dc:creator <http://ar.to/#self>;
-    doap:developer <http://ar.to/#self>,
-                   <http://bhuga.net/#ben>,
-                    <http://greggkellogg.net/foaf#me>;
-    doap:maintainer <http://ar.to/#self>,
-                    <http://bhuga.net/#ben>,
-                    <http://greggkellogg.net/foaf#me>;
-    doap:documenter <http://ar.to/#self>,
-                    <http://bhuga.net/#ben>,
-                    <http://greggkellogg.net/foaf#me>;
+    doap:download-page <httpss://rubygems.org/gems/rdf/>;
+    doap:bug-database <https://gighub.com/ruby-rdf/rdf/issues>;
+    doap:blog <https://ar.to/>;
+    foaf:maker <https://ar.to/#self>;
+    dc:creator <https://ar.to/#self>;
+    doap:developer <https://ar.to/#self>,
+                   <https://bhuga.net/#ben>,
+                    <https://greggkellogg.net/foaf#me>;
+    doap:maintainer <https://ar.to/#self>,
+                    <https://bhuga.net/#ben>,
+                    <https://greggkellogg.net/foaf#me>;
+    doap:documenter <https://ar.to/#self>,
+                    <https://bhuga.net/#ben>,
+                    <https://greggkellogg.net/foaf#me>;
     doap:helper [
       a foaf:Person; foaf:name "Călin Ardelean"; foaf:mbox_sha1sum "274bd18402fc773ffc0606996aa1fb90b603aa29"
     ], [
@@ -54,28 +52,28 @@ INSERT DATA {
       a foaf:Person; foaf:name "Pius Uzamere"; foaf:mbox_sha1sum "bedbbf2451e5beb38d59687c0460032aff92cd3c"
     ] .
 
-  <http://ar.to/#self> a foaf:Person;
+  <https://ar.to/#self> a foaf:Person;
     foaf:name "Arto Bendiken";
     foaf:mbox <mailto:arto@bendiken.net>;
     foaf:mbox_sha1sum "a033f652c84a4d73b8c26d318c2395699dd2bdfb",
                       "d0737cceb55eb7d740578d2db1bc0727e3ed49ce";
     foaf:homepage <http://ar.to/>;
-    foaf:made <http://rubygems.org/gems/rdf>;
-    rdfs:isDefinedBy <http://datagraph.org/bendiken/foaf> .
+    foaf:made <https://rubygems.org/gems/rdf>;
+    rdfs:isDefinedBy <https://ar.to/> .
 
-  <http://bhuga.net/#ben> a foaf:Person;
+  <https://bhuga.net/#ben> a foaf:Person;
     foaf:name "Ben Lavender";
     foaf:mbox <mailto:blavender@gmail.com>;
     foaf:mbox_sha1sum "dbf45f4ffbd27b67aa84f02a6a31c144727d10af";
-    foaf:homepage <http://bhuga.net/>;
-    rdfs:isDefinedBy <http://datagraph.org/bhuga/foaf> .
+    foaf:homepage <https://bhuga.net/>;
+    rdfs:isDefinedBy <https://bhuga.net/> .
 
-  <http://greggkellogg.net/foaf#me> a foaf:Person;
+  <https://greggkellogg.net/foaf#me> a foaf:Person;
     foaf:name "Gregg Kellogg";
     foaf:mbox <mailto:gregg@greggkellogg.net>;
     foaf:mbox_sha1sum "35bc44e6d0070e5ad50ccbe0d24403c96af2b9bd";
-    foaf:homepage <http://greggkellogg.net/>;
-    rdfs:isDefinedBy <http://greggkellogg.net/foaf> .
+    foaf:homepage <https://greggkellogg.net/>;
+    rdfs:isDefinedBy <https://greggkellogg.net/foaf> .
 
   <http://example.org/xi1> <http://example.org/p> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .
   <http://example.org/xi2> <http://example.org/p> "1"^^<http://www.w3.org/2001/XMLSchema#integer> .

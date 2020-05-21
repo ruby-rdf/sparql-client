@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name               = 'sparql-client'
-  gem.homepage           = 'http://ruby-rdf.github.com/sparql-client/'
+  gem.homepage           = 'https://github.com/ruby-rdf/sparql-client/'
   gem.license            = 'Unlicense'
   gem.summary            = 'SPARQL client for RDF.rb.'
   gem.description        = %(Executes SPARQL queries and updates against a remote SPARQL 1.0 or 1.1 endpoint,
