@@ -1,4 +1,4 @@
-@base         <http://rubygems.org/gems/sparql-client> .
+@base         <https://rubygems.org/gems/sparql-client> .
 @prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dc:   <http://purl.org/dc/terms/> .
@@ -7,27 +7,26 @@
 
 <> a doap:Project ;
   doap:name          "SPARQL::Client" ;
-  doap:homepage      <http://rubygems.org/gems/sparql-client> ;
-  doap:license       <http://creativecommons.org/licenses/publicdomain/> ;
+  doap:homepage      <https://github.com/ruby-rdf/sparql-client> ;
+  doap:license       <https://unlicense.org/> ;
   doap:shortdesc     "SPARQL client for RDF.rb."@en ;
   doap:description   """Executes SPARQL queries and updates against a remote SPARQL 1.0 or 1.1 endpoint,
                         or against a local repository. Generates SPARQL queries using a simple DSL."""@en ;
   doap:created       "2007-11-03" ;
-  doap:platform      "Ruby" ;
-  doap:category      <http://dbpedia.org/resource/Resource_Description_Framework>,
-                     <http://dbpedia.org/resource/Ruby_(programming_language)> ;
-  doap:implements    <http://www.w3.org/TR/sparql11-query/>,
-                     <http://www.w3.org/TR/sparql11-update/>,
-                     <http://www.w3.org/TR/sparql11-results-json/>,
-                     <http://www.w3.org/TR/sparql11-results-csv-tsv/>,
-                     <http://www.w3.org/TR/rdf-sparql-XMLres/> ;
-  doap:download-page <http://rubygems.org/gems/sparql-client>;
-  doap:bug-database  <http://rubygems.org/gems/sparql-client/issues> ;
-  doap:blog          <http://ar.to/>, <http://blog.datagraph.org/>, <http://greggkellogg.net/> ;
-  doap:vendor        <http://datagraph.org/> ;
-  doap:developer     <http://ar.to/#self>, <http://bhuga.net/#ben>, <http://greggkellogg.net/foaf#me> ;
-  doap:maintainer    <http://ar.to/#self>, <http://bhuga.net/#ben>, <http://greggkellogg.net/foaf#me> ;
-  doap:documenter    <http://ar.to/#self>, <http://bhuga.net/#ben>, <http://greggkellogg.net/foaf#me> ;
+  doap:programming-language "Ruby" ;
+  doap:category      <https://dbpedia.org/resource/Resource_Description_Framework>,
+                     <https://dbpedia.org/resource/Ruby_(programming_language)> ;
+  doap:implements    <https://www.w3.org/TR/sparql11-query/>,
+                     <https://www.w3.org/TR/sparql11-update/>,
+                     <https://www.w3.org/TR/sparql11-results-json/>,
+                     <https://www.w3.org/TR/sparql11-results-csv-tsv/>,
+                     <https://www.w3.org/TR/rdf-sparql-XMLres/> ;
+  doap:download-page <https://github.com/ruby-rdf/sparql-client>;
+  doap:bug-database  <https://github.com/ruby-rdf/sparql-client/sparql-client/issues> ;
+  doap:blog          <https://ar.to/>, <https://greggkellogg.net/> ;
+  doap:developer     <https://ar.to/#self>, <https://bhuga.net/#ben>, <https://greggkellogg.net/foaf#me> ;
+  doap:maintainer    <https://greggkellogg.net/foaf#me> ;
+  doap:documenter    <https://ar.to/#self>, <https://bhuga.net/#ben>, <https://greggkellogg.net/foaf#me> ;
   doap:helper        [a foaf:Person ;
                       foaf:name "Christoph Badura" ;
                       foaf:mbox_sha1sum "3a9c4bbe13feec63b1c8292ebf90e8da6caa0afd"] ;
@@ -61,28 +60,26 @@
   doap:helper        [a foaf:Person ;
                       foaf:name "Thomas Feron" ;
                       foaf:mbox_sha1sum "8c6ba34fcf8705a63af3858140ba0107b9ee756a"] ;
-  foaf:maker         <http://ar.to/#self> ;
-  dc:creator         <http://ar.to/#self> .
+  foaf:maker         <https://ar.to/#self> ;
+  dc:creator         <https://ar.to/#self> .
 
-<http://ar.to/#self> a foaf:Person ;
+<http:s//ar.to/#self> a foaf:Person ;
   foaf:name          "Arto Bendiken" ;
   foaf:mbox          <mailto:arto@bendiken.net> ;
   foaf:mbox_sha1sum  "a033f652c84a4d73b8c26d318c2395699dd2bdfb",
                      "d0737cceb55eb7d740578d2db1bc0727e3ed49ce" ;
-  foaf:homepage      <http://ar.to/> ;
-  foaf:made          <> ;
-  rdfs:isDefinedBy   <http://datagraph.org/bendiken/foaf> .
+  foaf:homepage      <https://ar.to/> ;
+  foaf:made          <>  .
 
-<http://bhuga.net/#ben> a foaf:Person ;
+<https://bhuga.net/#ben> a foaf:Person ;
   foaf:name          "Ben Lavender" ;
   foaf:mbox          <mailto:blavender@gmail.com> ;
   foaf:mbox_sha1sum  "dbf45f4ffbd27b67aa84f02a6a31c144727d10af" ;
-  foaf:homepage      <http://bhuga.net/> ;
-  rdfs:isDefinedBy   <http://datagraph.org/bhuga/foaf> .
+  foaf:homepage      <https://bhuga.net/> .
 
-<http://greggkellogg.net/foaf#me> a foaf:Person ;
+<https://greggkellogg.net/foaf#me> a foaf:Person ;
   foaf:name          "Gregg Kellogg" ;
   foaf:mbox          <mailto:gregg@greggkellogg.net> ;
   foaf:mbox_sha1sum  "35bc44e6d0070e5ad50ccbe0d24403c96af2b9bd" ;
-  foaf:homepage      <http://greggkellogg.net/>;
-  rdfs:isDefinedBy   <http://greggkellogg.net/foaf> .
+  foaf:homepage      <https://greggkellogg.net/>;
+  rdfs:isDefinedBy   <https://greggkellogg.net/foaf> .

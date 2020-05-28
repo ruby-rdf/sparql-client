@@ -8,7 +8,7 @@ INSERT DATA {
   <https://rubygems.org/gems/rdf> a doap:Project;
     doap:name "RDF.rb";
     doap:homepage <https://rubygems.org/gems/rdf>;
-    doap:license <http://creativecommons.org/publicdomain/zero/1.0/>;
+    doap:license <https://unlicense.org/>;
     doap:shortdesc "A Ruby library for working with Resource Description Framework (RDF) data."@en;
     doap:description "RDF.rb is a pure-Ruby library for working with Resource Description Framework (RDF) data."@en;
     doap:created "2007-10-23";
