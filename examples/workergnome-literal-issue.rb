@@ -1,13 +1,11 @@
 #require 'rdf/turtle'
 require 'sparql/client'
-require 'byebug'
 
 sparql = SPARQL::Client.new("http://data.americanartcollaborative.org/sparql")
 uri = RDF.URI("http://data.crystalbridges.org/object/2258")
 label = RDF::RDFS.label
 
 query = sparql.construct([uri, label, :o]).where([uri, label, :o])
-require 'byebug'; byebug
 query.each_statement do |s|
   puts s.object.inspect
 end

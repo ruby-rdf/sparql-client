@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__), 'spec_helper')
+require_relative 'spec_helper'
 
 describe SPARQL::Client::Query do
   subject {SPARQL::Client::Query}
