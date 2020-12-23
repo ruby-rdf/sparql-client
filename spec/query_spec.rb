@@ -129,6 +129,7 @@ describe SPARQL::Client::Query do
       expect(subject.select(:s).where([:s, :p, :o]).values([:o, :p], ["Object", "Predicate"]).to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o ?p) { ( "Object" "Predicate" ) } }'
       expect(subject.select(:s).where([:s, :p, :o]).values([:o, :p], ["1", "2"], ["3", "4"]).to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o ?p) { ( "1" "2" ) ( "3" "4" ) } }'
       expect(subject.select(:s).where([:s, :p, :o]).values([:o, :p], [nil, "2"], ["3", nil]).to_s).to eq 'SELECT ?s WHERE { ?s ?p ?o . VALUES (?o ?p) { ( UNDEF "2" ) ( "3" UNDEF ) } }'
+      expect(subject.select.where.values(:s, RDF::URI('a'), RDF::URI('b')).to_s).to eq 'SELECT * WHERE { VALUES (?s) { ( <a> ) ( <b> ) } }'
     end
 
     it "supports GROUP BY" do
@@ -329,6 +330,18 @@ describe SPARQL::Client::Query do
 
     it "expects statements not results" do
       expect(subject.construct([:s, :p, :o]).where([:s, :p, :o])).to be_expects_statements
+    end
+  end
+
+  context "issues" do
+    it "issue #96" do
+      expect {
+        require 'sparql/client'
+        SPARQL::Client::Query
+          .select
+          .where(%i[s p o])
+          .values(:s, RDF::URI('http://example.com/1'), RDF::URI('http://example.com/2'))
+      }.not_to raise_error
     end
   end
 end

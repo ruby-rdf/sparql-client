@@ -601,7 +601,7 @@ class SPARQL::Client
           case nil_literal_or_term
           when nil then nil
           when String then RDF::Literal(nil_literal_or_term)
-          when RDF::Value then graph_uri_or_var
+          when RDF::Value then nil_literal_or_term
           else raise ArgumentError
           end
         end
