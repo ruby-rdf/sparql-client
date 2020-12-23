@@ -1,3 +1,5 @@
+require 'delegate'
+
 class SPARQL::Client
   ##
   # A SPARQL query builder.
