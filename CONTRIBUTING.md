@@ -6,7 +6,7 @@ Community contributions are essential for keeping Ruby RDF great. We want to kee
 
 This repository uses [Git Flow](https://github.com/nvie/gitflow) to manage development and release activity. All submissions _must_ be on a feature branch based on the _develop_ branch to ease staging and integration.
 
-* create or respond to an issue on the [Github Repository](http://github.com/ruby-rdf/sparql-client/issues)
+* create or respond to an issue on the [Github Repository](https://github.com/ruby-rdf/sparql-client/issues)
 * Fork and clone the repo:
   `git clone git@github.com:your-username/sparql-client.git`
 * Install bundle:
@@ -28,9 +28,11 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to manage devel
   enough, be assured we will eventually add you in there.
 * Do note that in order for us to merge any non-trivial changes (as a rule
   of thumb, additions larger than about 15 lines of code), we need an
-  explicit [public domain dedication][PDD] on record from you.
+  explicit [public domain dedication][PDD] on record from you,
+  which you will be asked to agree to on the first commit to a repo within the organization.
+  Note that the agreement applies to all repos in the [Ruby RDF](https://github.com/ruby-rdf/) organization.
 
-[YARD]:    http://yardoc.org/
-[YARD-GS]: http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
-[PDD]:     http://lists.w3.org/Archives/Public/public-rdf-ruby/2010May/0013.html
-[pr]:      https://github.com/ruby-rdf/sparql-client/compare/
+[YARD]:    https://yardoc.org/
+[YARD-GS]: https://rubydoc.info/docs/yard/file/docs/GettingStarted.md
+[PDD]:              https://unlicense.org/#unlicensing-contributions
+[pr]:      https://github.com/ruby-rdf/rdf/compare/

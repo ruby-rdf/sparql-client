@@ -1,6 +1,6 @@
-require 'net/http/persistent' # @see http://rubygems.org/gems/net-http-persistent
-require 'rdf'                 # @see http://rubygems.org/gems/rdf
-require 'rdf/ntriples'        # @see http://rubygems.org/gems/rdf
+require 'net/http/persistent' # @see https://rubygems.org/gems/net-http-persistent
+require 'rdf'                 # @see https://rubygems.org/gems/rdf
+require 'rdf/ntriples'        # @see https://rubygems.org/gems/rdf
 begin
   require 'nokogiri'
 rescue LoadError
@@ -11,10 +11,10 @@ module SPARQL
   ##
   # A SPARQL 1.0/1.1 client for RDF.rb.
   #
-  # @see http://www.w3.org/TR/sparql11-query/
-  # @see http://www.w3.org/TR/sparql11-protocol/
-  # @see http://www.w3.org/TR/sparql11-results-json/
-  # @see http://www.w3.org/TR/sparql11-results-csv-tsv/
+  # @see https://www.w3.org/TR/sparql11-query/
+  # @see https://www.w3.org/TR/sparql11-protocol/
+  # @see https://www.w3.org/TR/sparql11-results-json/
+  # @see https://www.w3.org/TR/sparql11-results-csv-tsv/
   class Client
     autoload :Query,      'sparql/client/query'
     autoload :Repository, 'sparql/client/repository'
@@ -185,7 +185,7 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     # @option options [RDF::URI, String] :graph
     # @return [void] `self`
-    # @see    http://www.w3.org/TR/sparql11-update/#insertData
+    # @see    https://www.w3.org/TR/sparql11-update/#insertData
     def insert_data(data, **options)
       self.update(Update::InsertData.new(data, **options))
     end
@@ -206,7 +206,7 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     # @option options [RDF::URI, String] :graph
     # @return [void] `self`
-    # @see    http://www.w3.org/TR/sparql11-update/#deleteData
+    # @see    https://www.w3.org/TR/sparql11-update/#deleteData
     def delete_data(data, **options)
       self.update(Update::DeleteData.new(data, **options))
     end
@@ -222,7 +222,7 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     # @option options [RDF::URI, String] :graph
     # @return [void] `self`
-    # @see    http://www.w3.org/TR/sparql11-update/#deleteInsert
+    # @see    https://www.w3.org/TR/sparql11-update/#deleteInsert
     def delete_insert(delete_graph, insert_graph = nil, where_graph = nil, **options)
       self.update(Update::DeleteInsert.new(delete_graph, insert_graph, where_graph, **options))
     end
@@ -239,7 +239,7 @@ module SPARQL
     # @param  [Hash{Symbol => Object}] options
     # @option options [Boolean] :silent
     # @return [void] `self`
-    # @see    http://www.w3.org/TR/sparql11-update/#clear
+    # @see    https://www.w3.org/TR/sparql11-update/#clear
     def clear_graph(graph_uri, **options)
       self.clear(:graph, graph_uri, **options)
     end
@@ -274,7 +274,7 @@ module SPARQL
     #   @option options [Boolean] :silent
     #   @return [void] `self`
     #
-    # @see    http://www.w3.org/TR/sparql11-update/#clear
+    # @see    https://www.w3.org/TR/sparql11-update/#clear
     def clear(what, *arguments)
       self.update(Update::Clear.new(what, *arguments))
     end
@@ -307,7 +307,7 @@ module SPARQL
     # @option options [Hash] :headers
     # @return [Array<RDF::Query::Solution>]
     # @raise [IOError] if connection is closed
-    # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
+    # @see    https://www.w3.org/TR/sparql11-protocol/#query-operation
     def query(query, **options)
       @op = :query
       @alt_endpoint = options[:endpoint]
@@ -315,7 +315,7 @@ module SPARQL
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
         begin
-          SPARQL.execute(query, @url, **options)
+          SPARQL.execute(query, @url, optimize: true, **options)
         rescue SPARQL::MalformedQuery
           $stderr.puts "error running #{query}: #{$!}"
           raise
@@ -335,14 +335,14 @@ module SPARQL
     # @option options [Hash] :headers
     # @return [void] `self`
     # @raise [IOError] if connection is closed
-    # @see    http://www.w3.org/TR/sparql11-protocol/#update-operation
+    # @see    https://www.w3.org/TR/sparql11-protocol/#update-operation
     def update(query, **options)
       @op = :update
       @alt_endpoint = options[:endpoint]
       case @url
       when RDF::Queryable
         require 'sparql' unless defined?(::SPARQL::Grammar)
-        SPARQL.execute(query, @url, update: true, **options)
+        SPARQL.execute(query, @url, update: true, optimize: true, **options)
       else
         response(query, **options)
       end
@@ -402,7 +402,7 @@ module SPARQL
     ##
     # @param  [String, Hash] json
     # @return [<RDF::Query::Solutions>]
-    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
+    # @see    https://www.w3.org/TR/rdf-sparql-json-res/#results
     def self.parse_json_bindings(json, nodes = {})
       require 'json' unless defined?(::JSON)
       json = JSON.parse(json.to_s) unless json.is_a?(Hash)
@@ -423,8 +423,8 @@ module SPARQL
     ##
     # @param  [Hash{String => String}] value
     # @return [RDF::Value]
-    # @see    http://www.w3.org/TR/sparql11-results-json/#select-encode-terms
-    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
+    # @see    https://www.w3.org/TR/sparql11-results-json/#select-encode-terms
+    # @see    https://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
     def self.parse_json_value(value, nodes = {})
       case value['type'].to_sym
         when :bnode
@@ -442,7 +442,7 @@ module SPARQL
     ##
     # @param  [String, Array<Array<String>>] csv
     # @return [<RDF::Query::Solutions>]
-    # @see    http://www.w3.org/TR/sparql11-results-csv-tsv/
+    # @see    https://www.w3.org/TR/sparql11-results-csv-tsv/
     def self.parse_csv_bindings(csv, nodes = {})
       require 'csv' unless defined?(::CSV)
       csv = CSV.parse(csv.to_s) unless csv.is_a?(Array)
@@ -466,7 +466,7 @@ module SPARQL
     ##
     # @param  [String, Array<Array<String>>] tsv
     # @return [<RDF::Query::Solutions>]
-    # @see    http://www.w3.org/TR/sparql11-results-csv-tsv/
+    # @see    https://www.w3.org/TR/sparql11-results-csv-tsv/
     def self.parse_tsv_bindings(tsv, nodes = {})
       tsv = tsv.lines.map {|l| l.chomp.split("\t")} unless tsv.is_a?(Array)
       vars = tsv.shift.map {|h| h.sub(/^\?/, '')}
@@ -495,7 +495,7 @@ module SPARQL
     ##
     # @param  [String, IO, Nokogiri::XML::Node, REXML::Element] xml
     # @return [<RDF::Query::Solutions>]
-    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#results
+    # @see    https://www.w3.org/TR/rdf-sparql-json-res/#results
     def self.parse_xml_bindings(xml, nodes = {})
       xml.force_encoding(::Encoding::UTF_8) if xml.respond_to?(:force_encoding)
 
@@ -540,7 +540,7 @@ module SPARQL
     ##
     # @param  [Nokogiri::XML::Element, REXML::Element] value
     # @return [RDF::Value]
-    # @see    http://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
+    # @see    https://www.w3.org/TR/rdf-sparql-json-res/#variable-binding-results
     def self.parse_xml_value(value, nodes = {})
       case value.name.to_sym
         when :bnode
@@ -699,7 +699,7 @@ module SPARQL
     # @yieldparam [Net::HTTPResponse] response
     # @return [Net::HTTPResponse]
     # @raise [IOError] if connection is closed
-    # @see    http://www.w3.org/TR/sparql11-protocol/#query-operation
+    # @see    https://www.w3.org/TR/sparql11-protocol/#query-operation
     def request(query, headers = {}, &block)
       # Make sure an appropriate Accept header is present
       headers['Accept'] ||= if (query.respond_to?(:expects_statements?) ?
@@ -747,7 +747,7 @@ module SPARQL
     # @param  [String, #to_s]          query
     # @param  [Hash{String => String}] headers
     # @return [Net::HTTPRequest]
-    # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-get
+    # @see    https://www.w3.org/TR/sparql11-protocol/#query-via-get
     def make_get_request(query, headers = {})
       url = self.url.dup
       url.query_values = (url.query_values || {}).merge(query: query.to_s)
@@ -762,8 +762,8 @@ module SPARQL
     # @param  [String, #to_s]          query
     # @param  [Hash{String => String}] headers
     # @return [Net::HTTPRequest]
-    # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-direct
-    # @see    http://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded
+    # @see    https://www.w3.org/TR/sparql11-protocol/#query-via-post-direct
+    # @see    https://www.w3.org/TR/sparql11-protocol/#query-via-post-urlencoded
     def make_post_request(query, headers = {})
       if @alt_endpoint.nil?
         url = self.url.dup

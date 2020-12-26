@@ -1,3 +1,5 @@
+require 'delegate'
+
 class SPARQL::Client
   ##
   # A SPARQL query builder.
@@ -10,7 +12,7 @@ class SPARQL::Client
     # The form of the query.
     #
     # @return [:select, :ask, :construct, :describe]
-    # @see    http://www.w3.org/TR/sparql11-query/#QueryForms
+    # @see    https://www.w3.org/TR/sparql11-query/#QueryForms
     attr_reader :form
 
     ##
@@ -25,7 +27,7 @@ class SPARQL::Client
     #
     # @param  [Hash{Symbol => Object}] options (see {#initialize})
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#ask
+    # @see    https://www.w3.org/TR/sparql11-query/#ask
     def self.ask(**options)
       self.new(:ask, **options)
     end
@@ -33,13 +35,13 @@ class SPARQL::Client
     ##
     # Creates a tuple `SELECT` query.
     #
-    # @example SELECT * WHERE { ?s ?p ?o . }
+    # @example `SELECT * WHERE { ?s ?p ?o . }`
     #   Query.select.where([:s, :p, :o])
     #
-    # @example SELECT ?s WHERE {?s ?p ?o .}
+    # @example `SELECT ?s WHERE {?s ?p ?o .}`
     #   Query.select(:s).where([:s, :p, :o])
     #
-    # @example SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}
+    # @example `SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}`
     #   Query.select(count: {uri: :c}).where([:uri, RDF.type, RDF::OWL.Class])
     #
     # @param  [Array<Symbol>]          variables
@@ -49,7 +51,7 @@ class SPARQL::Client
     #   @param  [Array<Symbol>]          variables
     #   @param  [Hash{Symbol => Object}] options (see {#initialize})
     #   @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#select
+    # @see    https://www.w3.org/TR/sparql11-query/#select
     def self.select(*variables, **options)
       self.new(:select, **options).select(*variables)
     end
@@ -67,7 +69,7 @@ class SPARQL::Client
     #   @param  [Array<Symbol, RDF::URI>] variables
     #   @param  [Hash{Symbol => Object}] options (see {#initialize})
     #   @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#describe
+    # @see    https://www.w3.org/TR/sparql11-query/#describe
     def self.describe(*variables, **options)
       self.new(:describe, **options).describe(*variables)
     end
@@ -85,7 +87,7 @@ class SPARQL::Client
     #   @param  [Array<RDF::Query::Pattern, Array>] patterns
     #   @param  [Hash{Symbol => Object}] options (see {#initialize})
     #   @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#construct
+    # @see    https://www.w3.org/TR/sparql11-query/#construct
     def self.construct(*patterns, **options)
       self.new(:construct, **options).construct(*patterns) # FIXME
     end
@@ -112,25 +114,25 @@ class SPARQL::Client
     #   query.ask.where([:s, :p, :o])
     #
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#ask
+    # @see    https://www.w3.org/TR/sparql11-query/#ask
     def ask
       @form = :ask
       self
     end
 
     ##
-    # @example SELECT * WHERE { ?s ?p ?o . }
+    # @example `SELECT * WHERE { ?s ?p ?o . }`
     #   query.select.where([:s, :p, :o])
     #
-    # @example SELECT ?s WHERE {?s ?p ?o .}
+    # @example `SELECT ?s WHERE {?s ?p ?o .}`
     #   query.select(:s).where([:s, :p, :o])
     #
-    # @example SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}
+    # @example `SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}`
     #   query.select(count: {uri: :c}).where([:uri, RDF.type, RDF::OWL.Class])
     #
     # @param  [Array<Symbol>, Hash{Symbol => RDF::Query::Variable}] variables
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#select
+    # @see    https://www.w3.org/TR/sparql11-query/#select
     def select(*variables)
       @values = if variables.length == 1 && variables.first.is_a?(Hash)
         variables.to_a
@@ -146,7 +148,7 @@ class SPARQL::Client
     #
     # @param  [Array<Symbol>] variables
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#describe
+    # @see    https://www.w3.org/TR/sparql11-query/#describe
     def describe(*variables)
       @values = variables.map { |var|
         [var, var.is_a?(RDF::URI) ? var : RDF::Query::Variable.new(var)]
@@ -160,7 +162,7 @@ class SPARQL::Client
     #
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#construct
+    # @see    https://www.w3.org/TR/sparql11-query/#construct
     def construct(*patterns)
       options[:template] = build_patterns(patterns)
       self
@@ -172,7 +174,7 @@ class SPARQL::Client
     #
     # @param [RDF::URI] uri
     # @return [Query]
-    # @see http://www.w3.org/TR/sparql11-query/#specifyingDataset
+    # @see https://www.w3.org/TR/sparql11-query/#specifyingDataset
     def from(uri)
       options[:from] = uri
       self
@@ -205,7 +207,7 @@ class SPARQL::Client
     #   Yield form with or without argument; without an argument, evaluates within the query.
     # @yieldparam [SPARQL::Client::Query] query Actually a delegator to query. Methods other than `#select` are evaluated against `self`. For `#select`, a new Query is created, and the result added as a subquery.
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#GraphPattern
+    # @see    https://www.w3.org/TR/sparql11-query/#GraphPattern
     def where(*patterns_queries, &block)
       subqueries, patterns = patterns_queries.partition {|pq| pq.is_a? SPARQL::Client::Query}
       @patterns += build_patterns(patterns)
@@ -245,7 +247,7 @@ class SPARQL::Client
     #
     # @param  [Array<Symbol, String>] variables
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#modOrderBy
+    # @see    https://www.w3.org/TR/sparql11-query/#modOrderBy
     def order(*variables)
       options[:order_by] = variables
       self
@@ -260,7 +262,7 @@ class SPARQL::Client
     #
     # @param  [Array<Symbol, String>] var
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#modOrderBy
+    # @see    https://www.w3.org/TR/sparql11-query/#modOrderBy
     def asc(var)
       (options[:order_by] ||= []) << {var => :asc}
       self
@@ -273,7 +275,7 @@ class SPARQL::Client
     #
     # @param  [Array<Symbol, String>] var
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#modOrderBy
+    # @see    https://www.w3.org/TR/sparql11-query/#modOrderBy
     def desc(var)
       (options[:order_by] ||= []) << {var => :desc}
       self
@@ -285,7 +287,7 @@ class SPARQL::Client
     #
     # @param  [Array<Symbol, String>] variables
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#groupby
+    # @see    https://www.w3.org/TR/sparql11-query/#groupby
     def group(*variables)
       options[:group_by] = variables
       self
@@ -298,7 +300,7 @@ class SPARQL::Client
     #   query.select(:s).distinct.where([:s, :p, :o])
     #
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#modDuplicates
+    # @see    https://www.w3.org/TR/sparql11-query/#modDuplicates
     def distinct(state = true)
       options[:distinct] = state
       self
@@ -309,7 +311,7 @@ class SPARQL::Client
     #   query.select(:s).reduced.where([:s, :p, :o])
     #
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#modDuplicates
+    # @see    https://www.w3.org/TR/sparql11-query/#modDuplicates
     def reduced(state = true)
       options[:reduced] = state
       self
@@ -320,7 +322,7 @@ class SPARQL::Client
     #   query.select.graph(:g).where([:s, :p, :o])
     # @param  [RDF::Value] graph_uri_or_var
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#queryDataset
+    # @see    https://www.w3.org/TR/sparql11-query/#queryDataset
     def graph(graph_uri_or_var)
       options[:graph] = case graph_uri_or_var
         when Symbol then RDF::Query::Variable.new(graph_uri_or_var)
@@ -337,7 +339,7 @@ class SPARQL::Client
     #
     # @param  [Integer, #to_i] start
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#modOffset
+    # @see    https://www.w3.org/TR/sparql11-query/#modOffset
     def offset(start)
       slice(start, nil)
     end
@@ -348,7 +350,7 @@ class SPARQL::Client
     #
     # @param  [Integer, #to_i] length
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#modResultLimit
+    # @see    https://www.w3.org/TR/sparql11-query/#modResultLimit
     def limit(length)
       slice(nil, length)
     end
@@ -387,7 +389,7 @@ class SPARQL::Client
     #
     #   @param [string] string
     #   @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#prefNames
+    # @see    https://www.w3.org/TR/sparql11-query/#prefNames
     def prefix(val)
       options[:prefixes] ||= []
       if val.kind_of? String
@@ -420,7 +422,7 @@ class SPARQL::Client
     #   Yield form with or without argument; without an argument, evaluates within the query.
     # @yieldparam [SPARQL::Client::Query] query used for creating filters on the optional patterns.
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#optionals
+    # @see    https://www.w3.org/TR/sparql11-query/#optionals
     def optional(*patterns, &block)
       (options[:optionals] ||= []) << build_patterns(patterns)
 
@@ -466,7 +468,7 @@ class SPARQL::Client
     #   Yield form with or without argument; without an argument, evaluates within the query.
     # @yieldparam [SPARQL::Client::Query] query used for adding select clauses.
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#optionals
+    # @see    https://www.w3.org/TR/sparql11-query/#optionals
     def union(*patterns, &block)
       options[:unions] ||= []
 
@@ -519,7 +521,7 @@ class SPARQL::Client
     #   Yield form with or without argument; without an argument, evaluates within the query.
     # @yieldparam [SPARQL::Client::Query] query used for adding select clauses.
     # @return [Query]
-    # @see    http://www.w3.org/TR/sparql11-query/#optionals
+    # @see    https://www.w3.org/TR/sparql11-query/#optionals
     def minus(*patterns, &block)
       options[:minuses] ||= []
 
@@ -601,7 +603,7 @@ class SPARQL::Client
           case nil_literal_or_term
           when nil then nil
           when String then RDF::Literal(nil_literal_or_term)
-          when RDF::Value then graph_uri_or_var
+          when RDF::Value then nil_literal_or_term
           else raise ArgumentError
           end
         end

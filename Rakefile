@@ -2,7 +2,7 @@
 $:.unshift(File.expand_path(File.join(File.dirname(__FILE__), 'lib')))
 require 'rubygems'
 begin
-  require 'rakefile' # @see http://github.com/bendiken/rakefile
+  require 'rakefile' # @see https://github.com/artob/rakefile
 rescue LoadError => e
 end
 

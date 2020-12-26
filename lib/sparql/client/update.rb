@@ -155,7 +155,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#insertData
+    # @see https://www.w3.org/TR/sparql11-update/#insertData
     class InsertData < Operation
       # @return [RDF::Enumerable]
       attr_reader :data
@@ -205,7 +205,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#deleteData
+    # @see https://www.w3.org/TR/sparql11-update/#deleteData
     class DeleteData < Operation
       # @return [RDF::Enumerable]
       attr_reader :data
@@ -247,7 +247,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#deleteInsert
+    # @see https://www.w3.org/TR/sparql11-update/#deleteInsert
     class DeleteInsert < Operation
       attr_reader :insert_graph
       attr_reader :delete_graph
@@ -301,7 +301,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#load
+    # @see https://www.w3.org/TR/sparql11-update/#load
     class Load < Operation
       attr_reader :from
       attr_reader :into
@@ -350,7 +350,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#clear
+    # @see https://www.w3.org/TR/sparql11-update/#clear
     class Clear < Operation
       attr_reader :uri
 
@@ -414,7 +414,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#create
+    # @see https://www.w3.org/TR/sparql11-update/#create
     class Create < Operation
       attr_reader :uri
 
@@ -433,7 +433,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#drop
+    # @see https://www.w3.org/TR/sparql11-update/#drop
     class Drop < Clear
       def to_s
         query_text = 'DROP '
@@ -450,7 +450,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#copy
+    # @see https://www.w3.org/TR/sparql11-update/#copy
     class Copy < Operation
       def to_s
         # TODO
@@ -458,7 +458,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#move
+    # @see https://www.w3.org/TR/sparql11-update/#move
     class Move < Operation
       def to_s
         # TODO
@@ -466,7 +466,7 @@ class SPARQL::Client
     end
 
     ##
-    # @see http://www.w3.org/TR/sparql11-update/#add
+    # @see https://www.w3.org/TR/sparql11-update/#add
     class Add < Operation
       def to_s
         # TODO

@@ -179,9 +179,7 @@ class SPARQL::Client
         binding[:count].value.to_i rescue 0
       rescue SPARQL::Client::MalformedQuery => e
         # SPARQL 1.0 does not include support for aggregate functions:
-        count = 0
-        each_statement { count += 1 } # TODO: optimize this
-        count
+        each_statement.count
       end
     end
 
@@ -264,7 +262,9 @@ class SPARQL::Client
     # @see    RDF::Query#execute
     def query_execute(query, **options, &block)
       return nil unless block_given?
-      q = SPARQL::Client::Query.select(query.variables, **{}).where(*query.patterns)
+      q = SPARQL::Client::Query.
+        select(query.variables, **{}).
+        where(*query.patterns)
       client.query(q, **options).each do |solution|
         yield solution
       end

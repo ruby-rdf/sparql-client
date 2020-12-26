@@ -2,11 +2,12 @@
 
 This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
-* <http://ruby-rdf.github.com/sparql-client/>
+* <https://ruby-rdf.github.com/sparql-client/>
 
-[![Gem Version](https://badge.fury.io/rb/sparql-client.png)](http://badge.fury.io/rb/sparql-client)
-[![Build Status](https://travis-ci.org/ruby-rdf/sparql-client.png?branch=master)](http://travis-ci.org/ruby-rdf/sparql-client)
+[![Gem Version](https://badge.fury.io/rb/sparql-client.png)](https://badge.fury.io/rb/sparql-client)
+[![Build Status](https://github.com/ruby-rdf/sparql-client/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/sparql-client/actions?query=workflow%3ACI)
 [![Coverage Status](https://coveralls.io/repos/ruby-rdf/sparql-client/badge.svg?branch=master&service=github)](https://coveralls.io/github/ruby-rdf/sparql-client?branch=master)
+[![Gitter chat](https://badges.gitter.im/ruby-rdf/rdf.png)](https://gitter.im/ruby-rdf/rdf)
 
 ## Features
 
@@ -18,7 +19,7 @@ This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 * Supports tuple result sets in both XML, JSON, CSV and TSV formats, with JSON being
   the preferred default for content-negotiation purposes.
 * Supports graph results in any RDF serialization format understood by RDF.rb.
-* Returns results using the [RDF.rb object model][RDF.rb model].
+* Returns results using the RDF.rb object model.
 * Supports accessing endpoints as read/write [`RDF::Repository`][RDF::Repository]
   instances {SPARQL::Client::Repository}.
 
@@ -123,15 +124,15 @@ sparql.delete_data(data)
 
 ## Dependencies
 
-* [Ruby](http://ruby-lang.org/) (>= 2.4)
-* [RDF.rb](http://rubygems.org/gems/rdf) (~> 3.1)
-* [Net::HTTP::Persistent](http://rubygems.org/gems/net-http-persistent) (~> 3.1)
-* Soft dependency on [SPARQL](http://rubygems.org/gems/sparql) (~> 3.1)
-* Soft dependency on [Nokogiri](http://rubygems.org/gems/nokogiri) (>= 1.10)
+* [Ruby](https://ruby-lang.org/) (>= 2.4)
+* [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.1)
+* [Net::HTTP::Persistent](https://rubygems.org/gems/net-http-persistent) (~> 3.1)
+* Soft dependency on [SPARQL](https://rubygems.org/gems/sparql) (~> 3.1)
+* Soft dependency on [Nokogiri](https://rubygems.org/gems/nokogiri) (>= 1.10)
 
 ## Installation
 
-The recommended installation method is via [RubyGems](http://rubygems.org/).
+The recommended installation method is via [RubyGems](https://rubygems.org/).
 To install the latest official release of the `SPARQL::Client` gem, do:
 
     % [sudo] gem install sparql-client
@@ -145,31 +146,31 @@ To get a local working copy of the development repository, do:
 Alternatively, download the latest development version as a tarball as
 follows:
 
-    % wget http://github.com/ruby-rdf/sparql-client/tarball/master
+    % wget https://github.com/ruby-rdf/sparql-client/tarball/master
 
 ## Mailing List
 
-* <http://lists.w3.org/Archives/Public/public-rdf-ruby/>
+* <https://lists.w3.org/Archives/Public/public-rdf-ruby/>
 
 ## Authors
 
-* [Arto Bendiken](http://github.com/bendiken) - <http://ar.to/>
-* [Ben Lavender](http://github.com/bhuga) - <http://bhuga.net/>
-* [Gregg Kellogg](http://github.com/gkellogg) - <http://greggkellogg.net/>
+* [Arto Bendiken](https://github.com/artob) - <https://ar.to/>
+* [Ben Lavender](https://github.com/bhuga) - <https://bhuga.net/>
+* [Gregg Kellogg](https://github.com/gkellogg) - <https://greggkellogg.net/>
 
 ## Contributors
 
-* [Christoph Badura](http://github.com/bad) - <http://github.com/bad>
-* [James Hetherington](http://github.com/jamespjh) - <http://twitter.com/jamespjh>
-* [Gabriel Horner](http://github.com/cldwalker) - <http://tagaholic.me/>
-* [Nicholas Humfrey](http://github.com/njh) - <http://www.aelius.com/njh/>
-* [Fumihiro Kato](http://github.com/fumi) - <http://fumi.me/>
-* [David Nielsen](http://github.com/drankard) - <http://github.com/drankard>
-* [Thamaraiselvan Poomalai](http://github.com/selvan) - <http://softonaut.blogspot.com/>
-* [Michael Sokol](http://github.com/mikaa123) - <http://sokolmichael.com/>
-* [Yves Raimond](http://github.com/moustaki) - <http://moustaki.org/>
-* [Thomas Feron](http://github.com/thoferon) - <http://github.com/thoferon>
-* [Nick Gottlieb](http://github.com/ngottlieb) - <http://www.nicholasgottlieb.com>
+* [Christoph Badura](https://github.com/bad) - <https://github.com/bad>
+* [James Hetherington](https://github.com/jamespjh) - <https://twitter.com/jamespjh>
+* [Gabriel Horner](https://github.com/cldwalker) - <https://tagaholic.me/>
+* [Nicholas Humfrey](https://github.com/njh) - <https://www.aelius.com/njh/>
+* [Fumihiro Kato](https://github.com/fumi) - <https://fumi.me/>
+* [David Nielsen](https://github.com/drankard) - <https://github.com/drankard>
+* [Thamaraiselvan Poomalai](https://github.com/selvan) - <https://softonaut.blogspot.com/>
+* [Michael Sokol](https://github.com/mikaa123) - <https://sokolmichael.com/>
+* [Yves Raimond](https://github.com/moustaki) - <https://moustaki.org/>
+* [Thomas Feron](https://github.com/thoferon) - <https://github.com/thoferon>
+* [Nick Gottlieb](https://github.com/ngottlieb) - <https://www.nicholasgottlieb.com>
 
 ## Contributing
 This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange development and release activity. All submissions _must_ be on a feature branch based on the _develop_ branch to ease staging and integration.
@@ -184,31 +185,32 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
   list in the the `README`. Alphabetical order applies.
 * Do note that in order for us to merge any non-trivial changes (as a rule
   of thumb, additions larger than about 15 lines of code), we need an
-  explicit [public domain dedication][PDD] on record from you.
+  explicit [public domain dedication][PDD] on record from you,
+  which you will be asked to agree to on the first commit to a repo within the organization.
+  Note that the agreement applies to all repos in the [Ruby RDF](https://github.com/ruby-rdf/) organization.
 
 ## Resources
 
-* <http://ruby-rdf.github.com/sparql-client/>
-* <http://github.com/ruby-rdf/sparql-client>
-* <http://rubygems.org/gems/sparql-client>
-* <http://raa.ruby-lang.org/project/sparql-client/>
-* <http://www.ohloh.net/p/rdf>
+* <https://ruby-rdf.github.com/sparql-client/>
+* <https://github.com/ruby-rdf/sparql-client>
+* <https://rubygems.org/gems/sparql-client>
+* <https://raa.ruby-lang.org/project/sparql-client/>
+* <https://www.ohloh.net/p/rdf>
 
 ## License
 
 This is free and unencumbered public domain software. For more information,
-see <http://unlicense.org/> or the accompanying {file:UNLICENSE} file.
+see <https://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 
-[Ruby]:            http://ruby-lang.org/
-[RDF]:             http://www.w3.org/RDF/
-[SPARQL]:          http://en.wikipedia.org/wiki/SPARQL
-[SPARQL JSON]:     http://www.w3.org/TR/rdf-sparql-json-res/
-[RDF.rb]:          http://rubygems.org/gems/rdf
-[RDF.rb model]:    http://blog.datagraph.org/2010/03/rdf-for-ruby
-[RDF::Repository]: http://rubydoc.info/github/ruby-rdf/rdf/RDF/Repository
-[DSL]:             http://en.wikipedia.org/wiki/Domain-specific_language
+[Ruby]:            https://ruby-lang.org/
+[RDF]:             https://www.w3.org/RDF/
+[SPARQL]:          https://en.wikipedia.org/wiki/SPARQL
+[SPARQL JSON]:     https://www.w3.org/TR/rdf-sparql-json-res/
+[RDF.rb]:          https://rubygems.org/gems/rdf
+[RDF::Repository]: https://rubydoc.info/github/ruby-rdf/rdf/RDF/Repository
+[DSL]:             https://en.wikipedia.org/wiki/Domain-specific_language
                    "domain-specific language"
-[YARD]:            http://yardoc.org/
-[YARD-GS]:         http://rubydoc.info/docs/yard/file/docs/GettingStarted.md
-[PDD]:             http://unlicense.org/#unlicensing-contributions
-[Backports]:       http://rubygems.org/gems/backports
+[YARD]:            https://yardoc.org/
+[YARD-GS]:         https://rubydoc.info/docs/yard/file/docs/GettingStarted.md
+[PDD]:             https://unlicense.org/#unlicensing-contributions
+[Backports]:       https://rubygems.org/gems/backports
