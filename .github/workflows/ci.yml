@@ -24,7 +24,8 @@ jobs:
           - 2.5
           - 2.6
           - 2.7
-          #- ruby-head # Until net-http-persistent updated
+          - 3.0
+          - ruby-head
           - jruby
         gemfile:
           - Gemfile
