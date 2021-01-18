@@ -5,7 +5,7 @@ gemspec
 gem 'rdf',                git: "https://github.com/ruby-rdf/rdf",                 branch: "develop"
 gem 'rdf-aggregate-repo', git: "https://github.com/ruby-rdf/rdf-aggregate-repo",  branch: "develop"
 gem 'sparql',             git: "https://github.com/ruby-rdf/sparql",              branch: "develop"
-gem "nokogiri",           '~> 1.8'
+gem "nokogiri",           '~> 1.11'
 
 group :development, :test do
   gem 'ebnf',           git: "https://github.com/dryruby/ebnf",                 branch: "develop"
