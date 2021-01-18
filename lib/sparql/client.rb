@@ -102,7 +102,7 @@ module SPARQL
         @http = http_klass(@url.scheme)
 
         # Close the http connection when object is deallocated
-        ObjectSpace.define_finalizer(self, proc {@http.shutdown if @http.respond_to?(:shutdown)})
+        ObjectSpace.define_finalizer(self, self.class.finalize(@http))
       end
 
       if block_given?
@@ -110,6 +110,13 @@ module SPARQL
           when 1 then block.call(self)
           else instance_eval(&block)
         end
+      end
+    end
+
+    # Close the http connection when object is deallocated
+    def self.finalize(klass)
+      proc do
+        klass.shutdown if klass.respond_to?(:shutdown)
       end
     end
 
