@@ -126,9 +126,9 @@ sparql.delete_data(data)
 
 * [Ruby](https://ruby-lang.org/) (>= 2.4)
 * [RDF.rb](https://rubygems.org/gems/rdf) (~> 3.1)
-* [Net::HTTP::Persistent](https://rubygems.org/gems/net-http-persistent) (~> 3.1)
+* [Net::HTTP::Persistent](https://rubygems.org/gems/net-http-persistent) (~> 4.0, >= 4.0.1)
 * Soft dependency on [SPARQL](https://rubygems.org/gems/sparql) (~> 3.1)
-* Soft dependency on [Nokogiri](https://rubygems.org/gems/nokogiri) (>= 1.10)
+* Soft dependency on [Nokogiri](https://rubygems.org/gems/nokogiri) (>= 1.11)
 
 ## Installation
 
