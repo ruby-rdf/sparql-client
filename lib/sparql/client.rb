@@ -565,7 +565,8 @@ module SPARQL
           RDF::Literal.new(value.text, language: lang, datatype: datatype)
         when :triple
           # Note, this is order dependent
-          res = value.elements.map(&:elements).flatten.map {|e| parse_xml_value(e, nodes)}
+          res = value.elements.map {|e| e.elements.to_a}.
+            flatten.map {|e| parse_xml_value(e, nodes)}
           RDF::Statement(*res)
         else nil
       end
