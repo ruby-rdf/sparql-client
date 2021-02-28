@@ -442,6 +442,11 @@ module SPARQL
           RDF::Literal.new(value['value'], datatype: value['datatype'], language: value['xml:lang'])
         when :'typed-literal'
           RDF::Literal.new(value['value'], datatype: value['datatype'])
+        when :triple
+          s = parse_json_value(value['value']['subject'], nodes)
+          p = parse_json_value(value['value']['predicate'], nodes)
+          o = parse_json_value(value['value']['object'], nodes)
+          RDF::Statement(s, p, o)
         else nil
       end
     end
@@ -558,6 +563,10 @@ module SPARQL
           lang     = value.respond_to?(:attr) ? value.attr('xml:lang') : value.attributes['xml:lang']
           datatype = value.respond_to?(:attr) ? value.attr('datatype') : value.attributes['datatype']
           RDF::Literal.new(value.text, language: lang, datatype: datatype)
+        when :triple
+          # Note, this is order dependent
+          res = value.elements.map(&:elements).flatten.map {|e| parse_xml_value(e, nodes)}
+          RDF::Statement(*res)
         else nil
       end
     end

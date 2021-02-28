@@ -35,6 +35,23 @@
                 "mbox": {
                     "type": "uri",
                     "value": "mailto:bob@work.example.org"
+                },
+                "triple": {
+                  "type": "triple",
+                  "value": {
+                    "subject": {
+                      "type": "uri",
+                      "value": "http://work.example.org/s"
+                    },
+                    "predicate": {
+                      "type": "uri",
+                      "value": "http://work.example.org/p"
+                    },
+                    "object": {
+                      "type": "uri",
+                      "value": "http://work.example.org/o"
+                    }
+                  }
                 }
             }
         ]
