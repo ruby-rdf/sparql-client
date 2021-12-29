@@ -389,6 +389,10 @@ describe SPARQL::Client do
           name: RDF::Literal.new("Bob", language: "en"),
           age: RDF::Literal.new("30", datatype: "http://www.w3.org/2001/XMLSchema#integer"),
           mbox: RDF::URI.new("mailto:bob@work.example.org"),
+          triple: RDF::Statement(
+            RDF::URI('http://work.example.org/s'),
+            RDF::URI('http://work.example.org/p'),
+            RDF::URI('http://work.example.org/o')),
         )
       ])
       expect(solutions[0]["x"]).to eq nodes["r2"]
@@ -407,9 +411,9 @@ describe SPARQL::Client do
 
   context "when parsing JSON" do
     it "parses binding results correctly" do
-      xml = File.read("spec/fixtures/results.json")
+      json = File.read("spec/fixtures/results.json")
       nodes = {}
-      solutions = SPARQL::Client::parse_json_bindings(xml, nodes)
+      solutions = SPARQL::Client::parse_json_bindings(json, nodes)
       expect(solutions).to eq RDF::Query::Solutions.new([
         RDF::Query::Solution.new(
           x: RDF::Node.new("r2"),
@@ -417,6 +421,10 @@ describe SPARQL::Client do
           name: RDF::Literal.new("Bob", language: "en"),
           age: RDF::Literal.new("30", datatype: "http://www.w3.org/2001/XMLSchema#integer"),
           mbox: RDF::URI.new("mailto:bob@work.example.org"),
+          triple: RDF::Statement(
+            RDF::URI('http://work.example.org/s'),
+            RDF::URI('http://work.example.org/p'),
+            RDF::URI('http://work.example.org/o')),
         )
       ])
       expect(solutions[0]["x"]).to eq nodes["r2"]

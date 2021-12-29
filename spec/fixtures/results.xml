@@ -25,6 +25,13 @@
       <binding name="mbox">
         <uri>mailto:bob@work.example.org</uri>
       </binding>
+      <binding name="triple">
+        <triple>
+          <subject><uri>http://work.example.org/s</uri></subject>
+          <predicate><uri>http://work.example.org/p</uri></predicate>
+          <object><uri>http://work.example.org/o</uri></object>
+        </triple>
+      </binding>
     </result>
   </results>
 </sparql>
