@@ -6,13 +6,20 @@ Gem::Specification.new do |gem|
   gem.date               = File.mtime('VERSION').strftime('%Y-%m-%d')
 
   gem.name               = 'sparql-client'
-  gem.homepage           = 'https://github.com/ruby-rdf/sparql-client/'
+  gem.homepage           = 'https://github.com/ruby-rdf/sparql-client'
   gem.license            = 'Unlicense'
   gem.summary            = 'SPARQL client for RDF.rb.'
   gem.description        = %(Executes SPARQL queries and updates against a remote SPARQL 1.0 or 1.1 endpoint,
                             or against a local repository. Generates SPARQL queries using a simple DSL.
                             Includes SPARQL::Client::Repository, which allows any endpoint supporting
                             SPARQL Update to be used as an RDF.rb repository.)
+  gem.metadata           = {
+    "documentation_uri" => "https://ruby-rdf.github.io/sparql-client",
+    "bug_tracker_uri"   => "https://github.com/ruby-rdf/sparql-client/issues",
+    "homepage_uri"      => "https://github.com/ruby-rdf/sparql-client",
+    "mailing_list_uri"  => "https://lists.w3.org/Archives/Public/public-rdf-ruby/",
+    "source_code_uri"   => "https://github.com/ruby-rdf/sparql-client",
+  }
 
   gem.authors            = ['Arto Bendiken', 'Ben Lavender', 'Gregg Kellogg']
   gem.email              = 'public-rdf-ruby@w3.org'

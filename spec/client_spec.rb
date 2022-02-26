@@ -3,6 +3,7 @@ require_relative 'spec_helper'
 require 'webmock/rspec'
 require 'json'
 require 'rdf/turtle'
+require 'rexml/document'
 
 describe SPARQL::Client do
   let(:query) {'DESCRIBE ?kb WHERE { ?kb <http://data.linkedmdb.org/resource/movie/actor_name> "Kevin Bacon" . }'}
@@ -378,34 +379,38 @@ describe SPARQL::Client do
   end
 
   context "when parsing XML" do
-    it "parses binding results correctly" do
-      xml = File.read("spec/fixtures/results.xml")
-      nodes = {}
-      solutions = SPARQL::Client::parse_xml_bindings(xml, nodes)
-      expect(solutions).to eq RDF::Query::Solutions.new([
-        RDF::Query::Solution.new(
-          x: RDF::Node.new("r2"),
-          hpage: RDF::URI.new("http://work.example.org/bob/"),
-          name: RDF::Literal.new("Bob", language: "en"),
-          age: RDF::Literal.new("30", datatype: "http://www.w3.org/2001/XMLSchema#integer"),
-          mbox: RDF::URI.new("mailto:bob@work.example.org"),
-          triple: RDF::Statement(
-            RDF::URI('http://work.example.org/s'),
-            RDF::URI('http://work.example.org/p'),
-            RDF::URI('http://work.example.org/o')),
-        )
-      ])
-      expect(solutions[0]["x"]).to eq nodes["r2"]
-    end
+    %i(nokogiri rexml).each do |library|
+      context "using #{library}" do
+        it "parses binding results correctly" do
+          xml = File.read("spec/fixtures/results.xml")
+          nodes = {}
+          solutions = SPARQL::Client::parse_xml_bindings(xml, nodes, library: library)
+          expect(solutions).to eq RDF::Query::Solutions.new([
+            RDF::Query::Solution.new(
+              x: RDF::Node.new("r2"),
+              hpage: RDF::URI.new("http://work.example.org/bob/"),
+              name: RDF::Literal.new("Bob", language: "en"),
+              age: RDF::Literal.new("30", datatype: "http://www.w3.org/2001/XMLSchema#integer"),
+              mbox: RDF::URI.new("mailto:bob@work.example.org"),
+              triple: RDF::Statement(
+                RDF::URI('http://work.example.org/s'),
+                RDF::URI('http://work.example.org/p'),
+                RDF::URI('http://work.example.org/o')),
+            )
+          ])
+          expect(solutions[0]["x"]).to eq nodes["r2"]
+        end
 
-    it "parses boolean true results correctly" do
-      xml = File.read("spec/fixtures/bool_true.xml")
-      expect(SPARQL::Client::parse_xml_bindings(xml)).to eq true
-    end
+        it "parses boolean true results correctly" do
+          xml = File.read("spec/fixtures/bool_true.xml")
+          expect(SPARQL::Client::parse_xml_bindings(xml, library: library)).to eq true
+        end
 
-    it "parses boolean false results correctly" do
-      xml = File.read("spec/fixtures/bool_false.xml")
-      expect(SPARQL::Client::parse_xml_bindings(xml)).to eq false
+        it "parses boolean false results correctly" do
+          xml = File.read("spec/fixtures/bool_false.xml")
+          expect(SPARQL::Client::parse_xml_bindings(xml, library: library)).to eq false
+        end
+      end
     end
   end
 
@@ -447,13 +452,19 @@ describe SPARQL::Client do
       nodes = {}
       solutions = SPARQL::Client::parse_csv_bindings(csv, nodes)
       expect(solutions).to eq RDF::Query::Solutions.new([
+        RDF::Query::Solution.new(x: RDF::URI("http://example/x"), literal: RDF::Literal('String')),
         RDF::Query::Solution.new(x: RDF::URI("http://example/x"),
                                  literal: RDF::Literal('String-with-dquote"')),
         RDF::Query::Solution.new(x: RDF::Node.new("b0"), literal: RDF::Literal("Blank node")),
         RDF::Query::Solution.new(x: RDF::Literal(""), literal: RDF::Literal("Missing 'x'")),
         RDF::Query::Solution.new(x: RDF::Literal(""), literal: RDF::Literal("")),
+        RDF::Query::Solution.new(x: RDF::URI("http://example/x"), literal: RDF::Literal('')),
+        RDF::Query::Solution.new(x: RDF::Node.new("b1"), literal: RDF::Literal("String-with-lang")),
+        RDF::Query::Solution.new(x: RDF::Node.new("b2"), literal: RDF::Literal("123")),
       ])
-      expect(solutions[1]["x"]).to eq nodes["b0"]
+      expect(solutions[2]["x"]).to eq nodes["b0"]
+      expect(solutions[6]["x"]).to eq nodes["b1"]
+      expect(solutions[7]["x"]).to eq nodes["b2"]
     end
   end
 
@@ -463,13 +474,25 @@ describe SPARQL::Client do
       nodes = {}
       solutions = SPARQL::Client::parse_tsv_bindings(tsv, nodes)
       expect(solutions).to eq RDF::Query::Solutions.new([
+        RDF::Query::Solution.new(x: RDF::URI("http://example/x"), literal: RDF::Literal('String')),
         RDF::Query::Solution.new(x: RDF::URI("http://example/x"),
                                  literal: RDF::Literal('String-with-dquote"')),
-        RDF::Query::Solution.new(x: RDF::Node.new("blank0"), literal: RDF::Literal("Blank node")),
-        RDF::Query::Solution.new(x: RDF::Node("blank1"), literal: RDF::Literal.new("String-with-lang", language: "en")),
-        RDF::Query::Solution.new(x: RDF::Node("blank1"), literal: RDF::Literal::Integer.new("123")),
+        RDF::Query::Solution.new(x: RDF::Node.new("b0"), literal: RDF::Literal("Blank node")),
+        RDF::Query::Solution.new(x: RDF::Literal(""), literal: RDF::Literal("Missing 'x'")),
+        RDF::Query::Solution.new(x: RDF::Literal(""), literal: RDF::Literal("")),
+        RDF::Query::Solution.new(x: RDF::URI("http://example/x"), literal: RDF::Literal('')),
+        RDF::Query::Solution.new(x: RDF::Node.new("b1"), literal: RDF::Literal("String-with-lang", language: :en)),
+        RDF::Query::Solution.new(x: RDF::Node.new("b2"), literal: RDF::Literal(123)),
+        RDF::Query::Solution.new(x: RDF::Node.new("b3"), literal: RDF::Literal::Decimal.new(123.0)),
+        RDF::Query::Solution.new(x: RDF::Node.new("b4"), literal: RDF::Literal(123.0e1)),
+        RDF::Query::Solution.new(x: RDF::Node.new("b5"), literal: RDF::Literal(0.1e1)),
       ])
-      expect(solutions[1]["x"]).to eq nodes["blank0"]
+      expect(solutions[2]["x"]).to eq nodes["b0"]
+      expect(solutions[6]["x"]).to eq nodes["b1"]
+      expect(solutions[7]["x"]).to eq nodes["b2"]
+      expect(solutions[8]["x"]).to eq nodes["b3"]
+      expect(solutions[9]["x"]).to eq nodes["b4"]
+      expect(solutions[10]["x"]).to eq nodes["b5"]
     end
   end
 end

@@ -491,20 +491,23 @@ module SPARQL
       vars = tsv.shift.map {|h| h.sub(/^\?/, '')}
       solutions = RDF::Query::Solutions.new
       tsv.each do |row|
+        # Flesh out columns which may be missing
+        vars.each_with_index do |_, i|
+          row[i] ||= ""
+        end
         solution = RDF::Query::Solution.new
         row.each_with_index do |v, i|
-          if !v.empty?
-            term = RDF::NTriples.unserialize(v) || case v
-            when /^\d+\.\d*[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
-            when /^\d*\.\d+[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
-            when /^\d*\.\d+$/                 then RDF::Literal::Decimal.new(v)
-            when /^\d+$/                      then RDF::Literal::Integer.new(v)
-            else
-              RDF::Literal(v)
-            end
-            nodes[term.id] = term if term.is_a? RDF::Node
-            solution[vars[i].to_sym] = term
+          term = case v
+          when ""                           then RDF::Literal("")
+          when /^\d+\.\d*[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
+          when /^\d*\.\d+[eE][+-]?[0-9]+$/  then RDF::Literal::Double.new(v)
+          when /^\d*\.\d+$/                 then RDF::Literal::Decimal.new(v)
+          when /^\d+$/                      then RDF::Literal::Integer.new(v)
+          else
+            RDF::NTriples.unserialize(v) || RDF::Literal(v)
           end
+          nodes[term.id] = term if term.is_a? RDF::Node
+          solution[vars[i].to_sym] = term
         end
         solutions << solution
       end
@@ -513,12 +516,14 @@ module SPARQL
 
     ##
     # @param  [String, IO, Nokogiri::XML::Node, REXML::Element] xml
+    # @param  [Symbol] library (:nokogiri)
+    #   One of :nokogiri or :rexml.
     # @return [<RDF::Query::Solutions>]
     # @see    https://www.w3.org/TR/rdf-sparql-json-res/#results
-    def self.parse_xml_bindings(xml, nodes = {})
+    def self.parse_xml_bindings(xml, nodes = {}, library: :nokogiri)
       xml.force_encoding(::Encoding::UTF_8) if xml.respond_to?(:force_encoding)
 
-      if defined?(::Nokogiri)
+      if defined?(::Nokogiri) && library == :nokogiri
         xml = Nokogiri::XML(xml).root unless xml.is_a?(Nokogiri::XML::Document)
         case
           when boolean = xml.xpath("//sparql:boolean", XMLNS)[0]

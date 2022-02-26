@@ -1,5 +1,9 @@
 x,literal
+http://example/x,String
 http://example/x,"String-with-dquote"""
 _:b0,Blank node
 ,Missing 'x'
 ,
+http://example/x,
+_:b1,String-with-lang
+_:b2,123
