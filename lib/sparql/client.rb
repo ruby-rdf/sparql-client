@@ -116,7 +116,14 @@ module SPARQL
     # Close the http connection when object is deallocated
     def self.finalize(klass)
       proc do
-        klass.shutdown if klass.respond_to?(:shutdown)
+        if klass.respond_to?(:shutdown)
+          begin
+            # Attempt asynchronous shutdown
+            Thread.new {klass.shutdown}
+          rescue ThreadError
+            klass.shutdown
+          end
+        end
       end
     end
 
