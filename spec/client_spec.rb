@@ -147,8 +147,11 @@ describe SPARQL::Client do
     end
 
     it "handles successful response with default graph specified" do
-      client = SPARQL::Client.new('http://dbpedia.org/sparql', graph: "https://example.org/")
+      WebMock.stub_request(:post, 'https://dbpedia.org/sparql?default-graph-uri=https://example.org/').
+        to_return(body: '{}', status: 200, headers: { 'Content-Type' => 'application/sparql-results+json'})
+      client = SPARQL::Client.new('https://dbpedia.org/sparql', graph: "https://example.org/")
       client.query(query)
+      expect(WebMock).to have_requested(:post, "https://dbpedia.org/sparql?default-graph-uri=https://example.org/")
     end
 
     it "generates IOError when querying closed client" do
