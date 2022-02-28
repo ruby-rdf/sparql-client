@@ -44,7 +44,7 @@ sparql = SPARQL::Client.new("http://dbpedia.org/sparql", headers: {'User-Agent' 
 
 ```ruby
 require 'sparql/client'
-sparql = SPARQL::Client.new("http://dbpedia.org/sparql", { graph: "http://dbpedia.org" })
+sparql = SPARQL::Client.new("http://dbpedia.org/sparql", graph: "http://dbpedia.org")
 ```
 
 
