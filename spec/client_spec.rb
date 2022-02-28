@@ -109,7 +109,7 @@ describe SPARQL::Client do
     end
 
     it "handles successful response with custom headers" do
-      expect(subject).to receive(:request).with(anything, "Authorization" => "Basic XXX==").
+      expect(subject).to receive(:request).with(anything, {"Authorization" => "Basic XXX=="}).
         and_yield response('text/plain')
       subject.query(query, headers: {"Authorization" => "Basic XXX=="})
     end
@@ -385,7 +385,7 @@ describe SPARQL::Client do
           xml = File.read("spec/fixtures/results.xml")
           nodes = {}
           solutions = SPARQL::Client::parse_xml_bindings(xml, nodes, library: library)
-          expect(solutions).to eq RDF::Query::Solutions.new([
+          expected = RDF::Query::Solutions.new([
             RDF::Query::Solution.new(
               x: RDF::Node.new("r2"),
               hpage: RDF::URI.new("http://work.example.org/bob/"),
@@ -398,7 +398,22 @@ describe SPARQL::Client do
                 RDF::URI('http://work.example.org/o')),
             )
           ])
+          expect(solutions.variable_names).to eq expected.variable_names
+          expect(solutions).to eq expected
           expect(solutions[0]["x"]).to eq nodes["r2"]
+          expect(solutions.variable_names).to eq %i(x hpage name age mbox triple)
+        end
+
+        it "parses results missing variables" do
+          xml = File.read("spec/fixtures/results2.xml")
+          nodes = {}
+          solutions = SPARQL::Client::parse_xml_bindings(xml, nodes, library: library)
+          expected = RDF::Query::Solutions.new([
+            RDF::Query::Solution.new(v: RDF::Literal(1))
+          ])
+          expected.variable_names = %i(v w)
+          expect(solutions.variable_names).to eq %i(v w)
+          expect(solutions).to eq expected
         end
 
         it "parses boolean true results correctly" do
@@ -433,6 +448,7 @@ describe SPARQL::Client do
         )
       ])
       expect(solutions[0]["x"]).to eq nodes["r2"]
+      expect(solutions.variable_names).to eq %i(x hpage name age mbox triple)
     end
 
     it "parses boolean true results correctly" do
@@ -465,6 +481,7 @@ describe SPARQL::Client do
       expect(solutions[2]["x"]).to eq nodes["b0"]
       expect(solutions[6]["x"]).to eq nodes["b1"]
       expect(solutions[7]["x"]).to eq nodes["b2"]
+      expect(solutions.variable_names).to eq %i(x literal)
     end
   end
 
@@ -493,6 +510,7 @@ describe SPARQL::Client do
       expect(solutions[8]["x"]).to eq nodes["b3"]
       expect(solutions[9]["x"]).to eq nodes["b4"]
       expect(solutions[10]["x"]).to eq nodes["b5"]
+      expect(solutions.variable_names).to eq %i(x literal)
     end
   end
 end

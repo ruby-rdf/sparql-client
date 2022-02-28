@@ -430,7 +430,13 @@ module SPARQL
             end
             RDF::Query::Solution.new(row)
           end
-          RDF::Query::Solutions.new(solutions)
+          solns = RDF::Query::Solutions.new(solutions)
+
+          # Set variable names explicitly
+          if json.fetch('head', {}).has_key?('vars')
+            solns.variable_names = json['head']['vars'].map(&:to_sym)
+          end
+          solns
       end
     end
 
@@ -526,37 +532,47 @@ module SPARQL
       if defined?(::Nokogiri) && library == :nokogiri
         xml = Nokogiri::XML(xml).root unless xml.is_a?(Nokogiri::XML::Document)
         case
-          when boolean = xml.xpath("//sparql:boolean", XMLNS)[0]
-            boolean.text == 'true'
-          when results = xml.xpath("//sparql:results", XMLNS)[0]
-            solutions = results.elements.map do |result|
-              row = {}
-              result.elements.each do |binding|
-                name  = binding.attr('name').to_sym
-                value = binding.elements.first
-                row[name] = parse_xml_value(value, nodes)
-              end
-              RDF::Query::Solution.new(row)
+        when boolean = xml.xpath("//sparql:boolean", XMLNS)[0]
+          boolean.text == 'true'
+        when results = xml.xpath("//sparql:results", XMLNS)[0]
+          solutions = results.elements.map do |result|
+            row = {}
+            result.elements.each do |binding|
+              name  = binding.attr('name').to_sym
+              value = binding.elements.first
+              row[name] = parse_xml_value(value, nodes)
             end
-            RDF::Query::Solutions.new(solutions)
+            RDF::Query::Solution.new(row)
+          end
+          solns = RDF::Query::Solutions.new(solutions)
+
+          # Set variable names explicitly
+          var_names = xml.xpath("//sparql:head/sparql:variable/@name", XMLNS)
+          solns.variable_names = var_names.map(&:to_s)
+          solns
         end
       else
         # REXML
         xml = REXML::Document.new(xml).root unless xml.is_a?(REXML::Element)
         case
-          when boolean = xml.elements['boolean']
-            boolean.text == 'true'
-          when results = xml.elements['results']
-            solutions = results.elements.map do |result|
-              row = {}
-              result.elements.each do |binding|
-                name  = binding.attributes['name'].to_sym
-                value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
-                row[name] = parse_xml_value(value, nodes)
-              end
-              RDF::Query::Solution.new(row)
+        when boolean = xml.elements['boolean']
+          boolean.text == 'true'
+        when results = xml.elements['results']
+          solutions = results.elements.map do |result|
+            row = {}
+            result.elements.each do |binding|
+              name  = binding.attributes['name'].to_sym
+              value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
+              row[name] = parse_xml_value(value, nodes)
             end
-            RDF::Query::Solutions.new(solutions)
+            RDF::Query::Solution.new(row)
+          end
+          solns = RDF::Query::Solutions.new(solutions)
+
+          # Set variable names explicitly
+          var_names = xml.elements['head'].elements.map {|e| e.attributes['name']}
+          solns.variable_names = var_names.map(&:to_sym)
+          solns
         end
       end
     end
@@ -590,7 +606,7 @@ module SPARQL
     # @return [RDF::Enumerable]
     def parse_rdf_serialization(response, **options)
       options = {content_type: response.content_type} unless options[:content_type]
-      if reader = RDF::Reader.for(options)
+      if reader = RDF::Reader.for(**options)
         reader.new(response.body)
       else
         raise RDF::ReaderError, "no RDF reader was found for #{options}."

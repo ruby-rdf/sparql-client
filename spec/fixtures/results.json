@@ -8,7 +8,8 @@
             "hpage",
             "name",
             "age",
-            "mbox"
+            "mbox",
+            "triple"
         ]
     },
     "results": {
