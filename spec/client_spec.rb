@@ -146,6 +146,11 @@ describe SPARQL::Client do
       expect(result[:name].to_s).to eq "東京"
     end
 
+    it "handles successful response with default graph specified", :focus => true do
+      client = SPARQL::Client.new('http://dbpedia.org/sparql', graph: "https://example.org/")
+      client.query(query)
+    end
+
     it "generates IOError when querying closed client" do
       subject.close
       expect{ subject.query(ask_query) }.to raise_error IOError
