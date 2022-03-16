@@ -6,7 +6,7 @@
     <variable name="name"/>
     <variable name="age"/>
     <variable name="mbox"/>
-    <variable name="friend"/>
+    <variable name="triple"/>
   </head>
   <results>
     <result>

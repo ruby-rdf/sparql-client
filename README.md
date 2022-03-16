@@ -2,7 +2,7 @@
 
 This is a [Ruby][] implementation of a [SPARQL][] client for [RDF.rb][].
 
-* <https://ruby-rdf.github.com/sparql-client/>
+* <https://ruby-rdf.github.io/sparql-client/>
 
 [![Gem Version](https://badge.fury.io/rb/sparql-client.png)](https://badge.fury.io/rb/sparql-client)
 [![Build Status](https://github.com/ruby-rdf/sparql-client/workflows/CI/badge.svg?branch=develop)](https://github.com/ruby-rdf/sparql-client/actions?query=workflow%3ACI)
@@ -44,7 +44,7 @@ sparql = SPARQL::Client.new("http://dbpedia.org/sparql", headers: {'User-Agent' 
 
 ```ruby
 require 'sparql/client'
-sparql = SPARQL::Client.new("http://dbpedia.org/sparql", { graph: "http://dbpedia.org" })
+sparql = SPARQL::Client.new("http://dbpedia.org/sparql", graph: "http://dbpedia.org")
 ```
 
 
@@ -117,10 +117,10 @@ sparql.delete_data(data)
 
 ## Documentation
 
-* [SPARQL::Client](https://www.rubydoc.info/github/ruby-rdf/sparql-client/SPARQL/Client)
-  * [SPARQL::Client::Query](https://www.rubydoc.info/github/ruby-rdf/sparql-client/SPARQL/Client/Query)
-  * [SPARQL::Client::Repository](https://www.rubydoc.info/github/ruby-rdf/sparql-client/SPARQL/Client/Repository)
-  * [SPARQL::Client::Update](https://www.rubydoc.info/github/ruby-rdf/sparql-client/SPARQL/Client/Update)
+* [SPARQL::Client](https://ruby-rdf.github.io/sparql-client/SPARQL/Client)
+  * [SPARQL::Client::Query](https://ruby-rdf.github.io/sparql-client/SPARQL/Client/Query)
+  * [SPARQL::Client::Repository](https://ruby-rdf.github.io/sparql-client/SPARQL/Client/Repository)
+  * [SPARQL::Client::Update](https://ruby-rdf.github.io/sparql-client/SPARQL/Client/Update)
 
 ## Dependencies
 
@@ -191,7 +191,7 @@ This repository uses [Git Flow](https://github.com/nvie/gitflow) to mange develo
 
 ## Resources
 
-* <https://ruby-rdf.github.com/sparql-client/>
+* <https://ruby-rdf.github.io/sparql-client/>
 * <https://github.com/ruby-rdf/sparql-client>
 * <https://rubygems.org/gems/sparql-client>
 * <https://raa.ruby-lang.org/project/sparql-client/>
@@ -207,7 +207,7 @@ see <https://unlicense.org/> or the accompanying {file:UNLICENSE} file.
 [SPARQL]:          https://en.wikipedia.org/wiki/SPARQL
 [SPARQL JSON]:     https://www.w3.org/TR/rdf-sparql-json-res/
 [RDF.rb]:          https://rubygems.org/gems/rdf
-[RDF::Repository]: https://rubydoc.info/github/ruby-rdf/rdf/RDF/Repository
+[RDF::Repository]: https://ruby-rdf.github.io/rdf/RDF/Repository
 [DSL]:             https://en.wikipedia.org/wiki/Domain-specific_language
                    "domain-specific language"
 [YARD]:            https://yardoc.org/

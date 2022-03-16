@@ -1,5 +1,12 @@
-?x	?literal
-<http://example/x>	"String-with-dquote\"" 
-_:blank0	"Blank node"
-_:blank1	"String-with-lang"@en
-_:blank1	123
+x	literal
+<http://example/x>	String
+<http://example/x>	"String-with-dquote\""
+_:b0	Blank node
+	Missing 'x'
+	
+<http://example/x>	
+_:b1	"String-with-lang"@en
+_:b2	123
+_:b3	123.0
+_:b4	123.0e1
+_:b5	.1e1
