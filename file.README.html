@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>
+  File: README
+  
+    &mdash; SPARQL::Client - SPARQL Client for RDF.rb
+  
+</title>
+
+  <link rel="stylesheet" href="css/style.css" type="text/css" />
+
+  <link rel="stylesheet" href="css/common.css" type="text/css" />
+
+<script type="text/javascript">
+  pathId = "README";
+  relpath = '';
+</script>
+
+
+  <script type="text/javascript" charset="utf-8" src="js/jquery.js"></script>
+
+  <script type="text/javascript" charset="utf-8" src="js/app.js"></script>
+
+
+  </head>
+  <body>
+    <div class="nav_wrap">
+      <iframe id="nav" src="file_list.html?1"></iframe>
+      <div id="resizer"></div>
+    </div>
+
+    <div id="main" tabindex="-1">
+      <div id="header">
+        <div id="menu">
+  
+    <a href="_index.html">Index</a> &raquo; 
+    <span class="title">File: README</span>
+  
+</div>
+
+        <div id="search">
+  
+    <a class="full_list_link" id="class_list_link"
+        href="class_list.html">
+
+        <svg width="24" height="24">
+          <rect x="0" y="4" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="12" width="24" height="4" rx="1" ry="1"></rect>
+          <rect x="0" y="20" width="24" height="4" rx="1" ry="1"></rect>
+        </svg>
+    </a>
+  
+</div>
+        <div class="clear"></div>
+      </div>
+
+      <div id="content"><div id='filecontents'>
+<h1 id="label-SPARQL+Client+for+RDF.rb">SPARQL Client for RDF.rb</h1>
+
+<p>This is a <a href="https://ruby-lang.org/">Ruby</a> implementation of a <a href="https://en.wikipedia.org/wiki/SPARQL">SPARQL</a> client for <a href="https://rubygems.org/gems/rdf">RDF.rb</a>.</p>
+<ul><li>
+<p><a href="https://ruby-rdf.github.io/sparql-client">ruby-rdf.github.io/sparql-client</a>/</p>
+</li></ul>
+
+<p><a href="https://badge.fury.io/rb/sparql-client"><img src="https://badge.fury.io/rb/sparql-client.png"></a> <a href="https://github.com/ruby-rdf/sparql-client/actions?query=workflow%3ACI"><img src="https://github.com/ruby-rdf/sparql-client/workflows/CI/badge.svg?branch=develop"></a> <a href="https://coveralls.io/github/ruby-rdf/sparql-client?branch=master"><img src="https://coveralls.io/repos/ruby-rdf/sparql-client/badge.svg?branch=master&service=github"></a> <a href="https://gitter.im/ruby-rdf/rdf"><img src="https://badges.gitter.im/ruby-rdf/rdf.png"></a></p>
+
+<h2 id="label-Features">Features</h2>
+<ul><li>
+<p>Executes queries against any SPARQL 1.0/1.1-compatible endpoint over HTTP,  or against an <code>RDF::Queryable</code> instance, using the <code>SPARQL</code> gem.</p>
+</li><li>
+<p>Provides a query builder <a href="https://en.wikipedia.org/wiki/Domain-specific_language">DSL</a> for <code>ASK</code>, <code>SELECT</code>, <code>DESCRIBE</code> and  <code>CONSTRUCT</code> queries.</p>
+</li><li>
+<p>Includes preliminary support for some SPARQL 1.1 Update operations.</p>
+</li><li>
+<p>Supports tuple result sets in both XML, JSON, CSV and TSV formats, with JSON being  the preferred default for content-negotiation purposes.</p>
+</li><li>
+<p>Supports graph results in any RDF serialization format understood by RDF.rb.</p>
+</li><li>
+<p>Returns results using the RDF.rb object model.</p>
+</li><li>
+<p>Supports accessing endpoints as read/write href="https://ruby-rdf.github.io/rdf/RDF/Repository"></a>  instances <span class='object_link'><a href="SPARQL/Client/Repository.html" title="SPARQL::Client::Repository (class)">SPARQL::Client::Repository</a></span>.</p>
+</li></ul>
+
+<h2 id="label-Examples">Examples</h2>
+
+<h3 id="label-Querying+a+remote+SPARQL+endpoint">Querying a remote SPARQL endpoint</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sparql/client</span><span class='tstring_end'>&#39;</span></span>
+<span class='id identifier rubyid_sparql'>sparql</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SPARQL/Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="SPARQL/Client.html#initialize-instance_method" title="SPARQL::Client#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://dbpedia.org/sparql</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="label-Querying+a+remote+SPARQL+endpoint+with+a+custom+User-Agent">Querying a remote SPARQL endpoint with a custom User-Agent</h3>
+
+<p>By default, SPARQL::Client adds a <code>User-Agent</code> field to requests, but applications may choose to provide their own, using the <code>headers</code> option:</p>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sparql/client</span><span class='tstring_end'>&#39;</span></span>
+<span class='id identifier rubyid_sparql'>sparql</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SPARQL/Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="SPARQL/Client.html#initialize-instance_method" title="SPARQL::Client#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://dbpedia.org/sparql</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>headers:</span> <span class='lbrace'>{</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>User-Agent</span><span class='tstring_end'>&#39;</span></span> <span class='op'>=&gt;</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>MyBotName</span><span class='tstring_end'>&#39;</span></span><span class='rbrace'>}</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="label-Querying+a+remote+SPARQL+endpoint+with+a+specified+default+graph">Querying a remote SPARQL endpoint with a specified default graph</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>sparql/client</span><span class='tstring_end'>&#39;</span></span>
+<span class='id identifier rubyid_sparql'>sparql</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SPARQL/Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="SPARQL/Client.html#initialize-instance_method" title="SPARQL::Client#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://dbpedia.org/sparql</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='label'>graph:</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://dbpedia.org</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="label-Querying+a+RDF-3A-3ARepository+instance">Querying a <code>RDF::Repository</code> instance</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_require'>require</span> <span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>rdf/trig</span><span class='tstring_end'>&#39;</span></span>
+<span class='id identifier rubyid_repository'>repository</span> <span class='op'>=</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Repository</span><span class='period'>.</span><span class='id identifier rubyid_load'>load</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://example/dataset.trig</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='id identifier rubyid_sparql'>sparql</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="SPARQL/Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="SPARQL/Client.html#initialize-instance_method" title="SPARQL::Client#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_repository'>repository</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="label-Executing+a+boolean+query+and+outputting+the+result">Executing a boolean query and outputting the result</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># ASK WHERE { ?s ?p ?o }
+</span><span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_sparql'>sparql</span><span class='period'>.</span><span class='id identifier rubyid_ask'>ask</span><span class='period'>.</span><span class='id identifier rubyid_whether'>whether</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_true?'>true?</span>
+<span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span>   <span class='comment'>#=&gt; true or false
+</span></code></pre>
+
+<h3 id="label-Executing+a+tuple+query+and+iterating+over+the+returned+solutions">Executing a tuple query and iterating over the returned solutions</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># SELECT * WHERE { ?s ?p ?o } OFFSET 100 LIMIT 10
+</span><span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='id identifier rubyid_sparql'>sparql</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_offset'>offset</span><span class='lparen'>(</span><span class='int'>100</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_limit'>limit</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span>
+
+<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_each_solution'>each_solution</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_solution'>solution</span><span class='op'>|</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_solution'>solution</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-Executing+a+graph+query+and+iterating+over+the+returned+statements">Executing a graph query and iterating over the returned statements</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># CONSTRUCT { ?s ?p ?o } WHERE { ?s ?p ?o } LIMIT 10
+</span><span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='id identifier rubyid_sparql'>sparql</span><span class='period'>.</span><span class='id identifier rubyid_construct'>construct</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_limit'>limit</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span>
+
+<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_each_statement'>each_statement</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_statement'>statement</span><span class='op'>|</span>
+  <span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_statement'>statement</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span>
+<span class='kw'>end</span>
+</code></pre>
+
+<h3 id="label-Executing+an+arbitrary+textual+SPARQL+query+string">Executing an arbitrary textual SPARQL query string</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='id identifier rubyid_result'>result</span> <span class='op'>=</span> <span class='id identifier rubyid_sparql'>sparql</span><span class='period'>.</span><span class='id identifier rubyid_query'>query</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>ASK WHERE { ?s ?p ?o }</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+
+<span class='id identifier rubyid_puts'>puts</span> <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_inspect'>inspect</span>   <span class='comment'>#=&gt; true or false
+</span></code></pre>
+
+<h3 id="label-Inserting+data+into+a+graph">Inserting data into a graph</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># INSERT DATA { &lt;http://example.org/jhacker&gt; &lt;http://xmlns.com/foaf/0.1/name&gt; &quot;J. Random Hacker&quot; .}
+</span><span class='id identifier rubyid_data'>data</span> <span class='op'>=</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Graph</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_graph'>graph</span><span class='op'>|</span>
+  <span class='id identifier rubyid_graph'>graph</span> <span class='op'>&lt;&lt;</span> <span class='lbracket'>[</span><span class='const'>RDF</span><span class='op'>::</span><span class='const'>URI</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http://example.org/jhacker</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>FOAF</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>J. Random Hacker</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+<span class='kw'>end</span>
+<span class='id identifier rubyid_sparql'>sparql</span><span class='period'>.</span><span class='id identifier rubyid_insert_data'>insert_data</span><span class='lparen'>(</span><span class='id identifier rubyid_data'>data</span><span class='rparen'>)</span>
+</code></pre>
+
+<h3 id="label-Deleting+data+from+a+graph">Deleting data from a graph</h3>
+
+<pre class="code ruby"><code class="ruby"><span class='comment'># DELETE DATA { &lt;http://example.org/jhacker&gt; &lt;http://xmlns.com/foaf/0.1/name&gt; &quot;J. Random Hacker&quot; .}
+</span><span class='id identifier rubyid_data'>data</span> <span class='op'>=</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Graph</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_graph'>graph</span><span class='op'>|</span>
+  <span class='id identifier rubyid_graph'>graph</span> <span class='op'>&lt;&lt;</span> <span class='lbracket'>[</span><span class='const'>RDF</span><span class='op'>::</span><span class='const'>URI</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http://example.org/jhacker</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>FOAF</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>J. Random Hacker</span><span class='tstring_end'>&quot;</span></span><span class='rbracket'>]</span>
+<span class='kw'>end</span>
+<span class='id identifier rubyid_sparql'>sparql</span><span class='period'>.</span><span class='id identifier rubyid_delete_data'>delete_data</span><span class='lparen'>(</span><span class='id identifier rubyid_data'>data</span><span class='rparen'>)</span>
+</code></pre>
+
+<h2 id="label-Documentation">Documentation</h2>
+<ul><li>
+<p><a href="https://ruby-rdf.github.io/sparql-client/SPARQL/Client">SPARQL::Client</a></p>
+</li><li>
+<p><a href="https://ruby-rdf.github.io/sparql-client/SPARQL/Client/Query">SPARQL::Client::Query</a></p>
+</li><li>
+<p><a href="https://ruby-rdf.github.io/sparql-client/SPARQL/Client/Repository">SPARQL::Client::Repository</a></p>
+</li><li>
+<p><a href="https://ruby-rdf.github.io/sparql-client/SPARQL/Client/Update">SPARQL::Client::Update</a></p>
+</li></ul>
+
+<h2 id="label-Dependencies">Dependencies</h2>
+<ul><li>
+<p><a href="https://ruby-lang.org/">Ruby</a> (&gt;= 2.6)</p>
+</li><li>
+<p><a href="https://rubygems.org/gems/rdf">RDF.rb</a> (~&gt; 3.2)</p>
+</li><li>
+<p><a href="https://rubygems.org/gems/net-http-persistent">Net::HTTP::Persistent</a> (~&gt; 4.0, &gt;= 4.0.1)</p>
+</li><li>
+<p>Soft dependency on <a href="https://rubygems.org/gems/sparql">SPARQL</a> (~&gt; 3.2)</p>
+</li><li>
+<p>Soft dependency on <a href="https://rubygems.org/gems/nokogiri">Nokogiri</a> (&gt;= 1.12)</p>
+</li></ul>
+
+<h2 id="label-Installation">Installation</h2>
+
+<p>The recommended installation method is via <a href="https://rubygems.org/">RubyGems</a>. To install the latest official release of the <code>SPARQL::Client</code> gem, do:</p>
+
+<pre class="code ruby"><code class="ruby">% [sudo] gem install sparql-client
+</code></pre>
+
+<h2 id="label-Download">Download</h2>
+
+<p>To get a local working copy of the development repository, do:</p>
+
+<pre class="code ruby"><code class="ruby">% git clone git://github.com/ruby-rdf/sparql-client.git
+</code></pre>
+
+<p>Alternatively, download the latest development version as a tarball as follows:</p>
+
+<pre class="code ruby"><code class="ruby">% wget https://github.com/ruby-rdf/sparql-client/tarball/master
+</code></pre>
+
+<h2 id="label-Mailing+List">Mailing List</h2>
+<ul><li>
+<p><a href="https://lists.w3.org/Archives/Public/public-rdf-ruby">lists.w3.org/Archives/Public/public-rdf-ruby</a>/</p>
+</li></ul>
+
+<h2 id="label-Authors">Authors</h2>
+<ul><li>
+<p><a href="https://github.com/artob">Arto Bendiken</a> - <a href="https://ar.to">ar.to</a>/</p>
+</li><li>
+<p><a href="https://github.com/bhuga">Ben Lavender</a> - <a href="https://bhuga.net">bhuga.net</a>/</p>
+</li><li>
+<p><a href="https://github.com/gkellogg">Gregg Kellogg</a> - <a href="https://greggkellogg.net">greggkellogg.net</a>/</p>
+</li></ul>
+
+<h2 id="label-Contributors">Contributors</h2>
+<ul><li>
+<p><a href="https://github.com/bad">Christoph Badura</a> - <a href="https://github.com/bad">github.com/bad</a></p>
+</li><li>
+<p><a href="https://github.com/jamespjh">James Hetherington</a> - <a href="https://twitter.com/jamespjh">twitter.com/jamespjh</a></p>
+</li><li>
+<p><a href="https://github.com/cldwalker">Gabriel Horner</a> - <a href="https://tagaholic.me">tagaholic.me</a>/</p>
+</li><li>
+<p><a href="https://github.com/njh">Nicholas Humfrey</a> - <a href="https://www.aelius.com/njh">www.aelius.com/njh</a>/</p>
+</li><li>
+<p><a href="https://github.com/fumi">Fumihiro Kato</a> - <a href="https://fumi.me">fumi.me</a>/</p>
+</li><li>
+<p><a href="https://github.com/drankard">David Nielsen</a> - <a href="https://github.com/drankard">github.com/drankard</a></p>
+</li><li>
+<p><a href="https://github.com/selvan">Thamaraiselvan Poomalai</a> - <a href="https://softonaut.blogspot.com">softonaut.blogspot.com</a>/</p>
+</li><li>
+<p><a href="https://github.com/mikaa123">Michael Sokol</a> - <a href="https://sokolmichael.com">sokolmichael.com</a>/</p>
+</li><li>
+<p><a href="https://github.com/moustaki">Yves Raimond</a> - <a href="https://moustaki.org">moustaki.org</a>/</p>
+</li><li>
+<p><a href="https://github.com/thoferon">Thomas Feron</a> - <a href="https://github.com/thoferon">github.com/thoferon</a></p>
+</li><li>
+<p><a href="https://github.com/ngottlieb">Nick Gottlieb</a> - <a href="https://www.nicholasgottlieb.com">www.nicholasgottlieb.com</a></p>
+</li></ul>
+
+<h2 id="label-Contributing">Contributing</h2>
+
+<p>This repository uses <a href="https://github.com/nvie/gitflow">Git Flow</a> to mange development and release activity. All submissions <em>must</em> be on a feature branch based on the <em>develop</em> branch to ease staging and integration.</p>
+<ul><li>
+<p>Do your best to adhere to the existing coding conventions and idioms.</p>
+</li><li>
+<p>Don’t use hard tabs, and don’t leave trailing whitespace on any line.</p>
+</li><li>
+<p>Do document every method you add using <a href="https://yardoc.org/">YARD</a> annotations. Read the  <a href="https://rubydoc.info/docs/yard/file/docs/GettingStarted.md">tutorial</a> or just look at the existing code for examples.</p>
+</li><li>
+<p>Don’t touch the <code>.gemspec</code>, <code>VERSION</code> or <code>AUTHORS</code> files. If you need to  change them, do so on your private branch only.</p>
+</li><li>
+<p>Do feel free to add yourself to the <code>CREDITS</code> file and the corresponding  list in the the <code>README</code>. Alphabetical order applies.</p>
+</li><li>
+<p>Do note that in order for us to merge any non-trivial changes (as a rule  of thumb, additions larger than about 15 lines of code), we need an  explicit <a href="https://unlicense.org/#unlicensing-contributions">public domain dedication</a> on record from you,  which you will be asked to agree to on the first commit to a repo within the organization.  Note that the agreement applies to all repos in the <a href="https://github.com/ruby-rdf/">Ruby RDF</a> organization.</p>
+</li></ul>
+
+<h2 id="label-Resources">Resources</h2>
+<ul><li>
+<p><a href="https://ruby-rdf.github.io/sparql-client">ruby-rdf.github.io/sparql-client</a>/</p>
+</li><li>
+<p><a href="https://github.com/ruby-rdf/sparql-client">github.com/ruby-rdf/sparql-client</a></p>
+</li><li>
+<p><a href="https://rubygems.org/gems/sparql-client">rubygems.org/gems/sparql-client</a></p>
+</li><li>
+<p><a href="https://raa.ruby-lang.org/project/sparql-client">raa.ruby-lang.org/project/sparql-client</a>/</p>
+</li><li>
+<p><a href="https://www.ohloh.net/p/rdf">www.ohloh.net/p/rdf</a></p>
+</li></ul>
+
+<h2 id="label-License">License</h2>
+
+<p>This is free and unencumbered public domain software. For more information, see <a href="https://unlicense.org">unlicense.org</a>/ or the accompanying <a href="file.UNLICENSE.html" title="UNLICENSE">UNLICENSE</a> file.</p>
+</div></div>
+
+      <div id="footer">
+  Generated on Wed Mar 16 17:35:10 2022 by
+  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.27 (ruby-3.1.1).
+</div>
+
+    </div>
+  </body>
+</html>
