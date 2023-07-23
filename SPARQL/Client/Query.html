@@ -932,6 +932,30 @@
         <li class="public ">
   <span class="summary_signature">
     
+      <a href="#service-instance_method" title="#service (instance method)">#<strong>service</strong>(endpoint, *patterns, silent: false) {|query| ... } &#x21d2; Query </a>
+    
+
+    
+  </span>
+  
+  
+  
+  
+  
+  
+  
+
+  
+    <span class="summary_desc"><div class='inline'>
+<p>Federated Queries via the SERVICE keyword.</p>
+</div></span>
+  
+</li>
+
+      
+        <li class="public ">
+  <span class="summary_signature">
+    
       <a href="#slice-instance_method" title="#slice (instance method)">#<strong>slice</strong>(start, length)  &#x21d2; Query </a>
     
 
@@ -1952,8 +1976,8 @@
 <p>SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order'>order</span><span class='period'>.</span><span class='id identifier rubyid_asc'>asc</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span>
-<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_asc'>asc</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order'><span class='object_link'><a href="#order-instance_method" title="SPARQL::Client::Query#order (method)">order</a></span></span><span class='period'>.</span><span class='id identifier rubyid_asc'>asc</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_asc'>asc</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -2041,7 +2065,7 @@
 <p>ASK WHERE { ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_ask'>ask</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ask'><span class='object_link'><a href="#ask-class_method" title="SPARQL::Client::Query.ask (method)">ask</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
   </div>
 
@@ -2114,7 +2138,7 @@
 <p>CONSTRUCT { ?s ?p ?o . } WHERE { ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_construct'>construct</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_construct'><span class='object_link'><a href="#construct-class_method" title="SPARQL::Client::Query.construct (method)">construct</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -2202,8 +2226,8 @@
 <p>SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order'>order</span><span class='period'>.</span><span class='id identifier rubyid_desc'>desc</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span>
-<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_desc'>desc</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order'><span class='object_link'><a href="#order-instance_method" title="SPARQL::Client::Query#order (method)">order</a></span></span><span class='period'>.</span><span class='id identifier rubyid_desc'>desc</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_desc'>desc</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -2291,7 +2315,7 @@
 <p>DESCRIBE * WHERE { ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_describe'>describe</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_describe'><span class='object_link'><a href="#describe-class_method" title="SPARQL::Client::Query.describe (method)">describe</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -2383,7 +2407,7 @@
 <p>SELECT DISTINCT ?s WHERE { ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_distinct'>distinct</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_distinct'>distinct</span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
   </div>
 
@@ -2498,13 +2522,13 @@
       <pre class="lines">
 
 
-672
-673
-674
-675</pre>
+740
+741
+742
+743</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 672</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 740</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each_solution'>each_solution</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='ivar'>@solutions</span> <span class='op'>=</span> <span class='id identifier rubyid_result'>result</span>
@@ -2580,12 +2604,12 @@
       <pre class="lines">
 
 
-663
-664
-665</pre>
+731
+732
+733</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 663</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 731</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_each_statement'>each_statement</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_result'>result</span><span class='period'>.</span><span class='id identifier rubyid_each_statement'>each_statement</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
@@ -2645,12 +2669,12 @@
       <pre class="lines">
 
 
-685
-686
-687</pre>
+753
+754
+755</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 685</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 753</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_execute'>execute</span>
   <span class='id identifier rubyid_raise'>raise</span> <span class='const'>NotImplementedError</span>
@@ -2704,12 +2728,12 @@
       <pre class="lines">
 
 
-617
-618
-619</pre>
+685
+686
+687</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 617</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 685</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_expects_statements?'>expects_statements?</span>
   <span class='lbracket'>[</span><span class='symbol'>:construct</span><span class='comma'>,</span> <span class='symbol'>:describe</span><span class='rbracket'>]</span><span class='period'>.</span><span class='id identifier rubyid_include?'>include?</span><span class='lparen'>(</span><span class='id identifier rubyid_form'>form</span><span class='rparen'>)</span>
@@ -2756,12 +2780,12 @@
       <pre class="lines">
 
 
-649
-650
-651</pre>
+717
+718
+719</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 649</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 717</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_false?'>false?</span>
   <span class='op'>!</span><span class='id identifier rubyid_true?'>true?</span>
@@ -2796,7 +2820,7 @@
 <p>ASK WHERE { ?s ?p ?o . FILTER(regex(?s, ‘Abiline, Texas’)) }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_ask'>ask</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_filter'>filter</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>regex(?s, &#39;Abiline, Texas&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ask'><span class='object_link'><a href="#ask-class_method" title="SPARQL::Client::Query.ask (method)">ask</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_filter'>filter</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>regex(?s, &#39;Abiline, Texas&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></code></pre>
     
   </div>
 
@@ -2820,13 +2844,13 @@
       <pre class="lines">
 
 
-631
-632
-633
-634</pre>
+699
+700
+701
+702</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 631</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 699</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_filter'>filter</span><span class='lparen'>(</span><span class='id identifier rubyid_string'>string</span><span class='rparen'>)</span>
   <span class='lparen'>(</span><span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:filters</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>&lt;&lt;</span> <span class='const'><span class='object_link'><a href="Query/Filter.html" title="SPARQL::Client::Query::Filter (class)">Filter</a></span></span><span class='period'>.</span><span class='id identifier rubyid_new'><span class='object_link'><a href="Query/Filter.html#initialize-instance_method" title="SPARQL::Client::Query::Filter#initialize (method)">new</a></span></span><span class='lparen'>(</span><span class='id identifier rubyid_string'>string</span><span class='rparen'>)</span><span class='rparen'>)</span> <span class='kw'>if</span> <span class='id identifier rubyid_string'>string</span> <span class='kw'>and</span> <span class='kw'>not</span> <span class='id identifier rubyid_string'>string</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -2862,7 +2886,7 @@
 <p>SELECT * FROM &lt;a&gt; WHERE { ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='const'>RDF</span><span class='op'>::</span><span class='const'>URI</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_a'>a</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_from'>from</span><span class='lparen'>(</span><span class='const'>RDF</span><span class='op'>::</span><span class='const'>URI</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_a'>a</span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -2950,7 +2974,7 @@
 <p>SELECT * WHERE { GRAPH ?g { ?s ?p ?o . } }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_graph'>graph</span><span class='lparen'>(</span><span class='symbol'>:g</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_graph'>graph</span><span class='lparen'>(</span><span class='symbol'>:g</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -2996,7 +3020,6 @@
       <pre class="lines">
 
 
-326
 327
 328
 329
@@ -3004,10 +3027,11 @@
 331
 332
 333
-334</pre>
+334
+335</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 326</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 327</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_graph'>graph</span><span class='lparen'>(</span><span class='id identifier rubyid_graph_uri_or_var'>graph_uri_or_var</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:graph</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>case</span> <span class='id identifier rubyid_graph_uri_or_var'>graph_uri_or_var</span>
@@ -3052,7 +3076,7 @@
 <p>SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_group_by'>group_by</span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_group_by'>group_by</span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -3154,12 +3178,12 @@
       <pre class="lines">
 
 
-836
-837
-838</pre>
+914
+915
+916</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 836</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 914</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inspect'>inspect</span>
   <span class='id identifier rubyid_sprintf'>sprintf</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#&lt;%s:%#0x(%s)&gt;</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_name'>name</span><span class='comma'>,</span> <span class='id identifier rubyid___id__'>__id__</span><span class='comma'>,</span> <span class='id identifier rubyid_to_s'>to_s</span><span class='rparen'>)</span>
@@ -3195,13 +3219,13 @@
       <pre class="lines">
 
 
-827
-828
-829
-830</pre>
+905
+906
+907
+908</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 827</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 905</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_inspect!'>inspect!</span>
   <span class='id identifier rubyid_warn'>warn</span><span class='lparen'>(</span><span class='id identifier rubyid_inspect'>inspect</span><span class='rparen'>)</span>
@@ -3237,7 +3261,7 @@
 <p>SELECT * WHERE { ?s ?p ?o . } LIMIT 10</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_limit'>limit</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_limit'>limit</span><span class='lparen'>(</span><span class='int'>10</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -3283,12 +3307,12 @@
       <pre class="lines">
 
 
-354
 355
-356</pre>
+356
+357</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 354</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 355</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_limit'>limit</span><span class='lparen'>(</span><span class='id identifier rubyid_length'>length</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_slice'>slice</span><span class='lparen'>(</span><span class='kw'>nil</span><span class='comma'>,</span> <span class='id identifier rubyid_length'>length</span><span class='rparen'>)</span>
@@ -3325,7 +3349,7 @@
 <p>SELECT * WHERE { ?book dc:title ?title . MINUS { ?book dc11:title ?title } }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
   <span class='id identifier rubyid_minus'>minus</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
       
@@ -3336,7 +3360,7 @@
       <pre class="example code"><code><span class='id identifier rubyid_query1'>query1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span>
   <span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
   <span class='id identifier rubyid_filter'>filter</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>langmatches(?title, &#39;en&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_minus'>minus</span><span class='lparen'>(</span><span class='id identifier rubyid_query1'>query1</span><span class='rparen'>)</span></code></pre>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_minus'>minus</span><span class='lparen'>(</span><span class='id identifier rubyid_query1'>query1</span><span class='rparen'>)</span></code></pre>
     
       
         <p class="example_title"><div class='inline'>
@@ -3344,7 +3368,7 @@
 </div></p>
       
       <pre class="example code"><code><span class='id identifier rubyid_query1'>query1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_filter'><span class='object_link'><a href="#filter-instance_method" title="SPARQL::Client::Query#filter (method)">filter</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>langmatches(?title, &#39;en&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_minus'>minus</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_q'>q</span><span class='op'>|</span>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_minus'>minus</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_q'>q</span><span class='op'>|</span>
   <span class='id identifier rubyid_q'>q</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span>
     <span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
     <span class='id identifier rubyid_filter'>filter</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>langmatches(?title, &#39;en&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -3427,7 +3451,7 @@
   <p class="tag_title">See Also:</p>
   <ul class="see">
     
-      <li><a href="https://www.w3.org/TR/sparql11-query/#optionals" target="_parent" title="https://www.w3.org/TR/sparql11-query/#optionals">https://www.w3.org/TR/sparql11-query/#optionals</a></li>
+      <li><a href="https://www.w3.org/TR/sparql11-query/#negation" target="_parent" title="https://www.w3.org/TR/sparql11-query/#negation">https://www.w3.org/TR/sparql11-query/#negation</a></li>
     
   </ul>
 
@@ -3437,33 +3461,33 @@
       <pre class="lines">
 
 
-525
-526
-527
-528
-529
-530
-531
-532
-533
-534
-535
-536
-537
-538
-539
-540
-541
-542
-543
-544
-545
-546
-547
-548</pre>
+593
+594
+595
+596
+597
+598
+599
+600
+601
+602
+603
+604
+605
+606
+607
+608
+609
+610
+611
+612
+613
+614
+615
+616</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 525</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 593</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_minus'>minus</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_patterns'>patterns</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:minuses</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -3484,7 +3508,7 @@
     <span class='comment'># With argument form, all must be patterns, or queries
 </span>    <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:minuses</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_patterns'>patterns</span><span class='rparen'>)</span>
   <span class='kw'>else</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#minus arguments are triple patters or queries, not both.</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#minus arguments are triple patterns or queries, not both.</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
 
   <span class='kw'>self</span>
@@ -3519,7 +3543,7 @@
 <p>SELECT * WHERE { ?s ?p ?o . } OFFSET 100</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_offset'>offset</span><span class='lparen'>(</span><span class='int'>100</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_offset'>offset</span><span class='lparen'>(</span><span class='int'>100</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -3565,12 +3589,12 @@
       <pre class="lines">
 
 
-343
 344
-345</pre>
+345
+346</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 343</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 344</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_offset'>offset</span><span class='lparen'>(</span><span class='id identifier rubyid_start'>start</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_slice'>slice</span><span class='lparen'>(</span><span class='id identifier rubyid_start'>start</span><span class='comma'>,</span> <span class='kw'>nil</span><span class='rparen'>)</span>
@@ -3607,7 +3631,7 @@
 <p>SELECT * WHERE { ?s ?p ?o . OPTIONAL { ?s a ?o . ?s &lt;<a href="http://purl.org/dc/terms/abstract">purl.org/dc/terms/abstract</a>&gt; ?o . } }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
   <span class='id identifier rubyid_optional'>optional</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_abstract'>abstract</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
       
@@ -3615,7 +3639,7 @@
 <p>ASK WHERE { ?s ?p ?o . OPTIONAL { ?s ?p ?o . FILTER(regex(?s, ‘Abiline, Texas’))} }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_ask'>ask</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_optional'>optional</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_ask'><span class='object_link'><a href="#ask-class_method" title="SPARQL::Client::Query.ask (method)">ask</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_optional'>optional</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span>
   <span class='id identifier rubyid_filter'>filter</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>regex(?s, &#39;Abiline, Texas&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
 <span class='kw'>end</span></code></pre>
     
@@ -3706,7 +3730,6 @@
       <pre class="lines">
 
 
-426
 427
 428
 429
@@ -3722,10 +3745,11 @@
 439
 440
 441
-442</pre>
+442
+443</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 426</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 427</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_optional'>optional</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_patterns'>patterns</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:optionals</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_build_patterns'>build_patterns</span><span class='lparen'>(</span><span class='id identifier rubyid_patterns'>patterns</span><span class='rparen'>)</span>
@@ -3778,22 +3802,22 @@
 <p>SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order'>order</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span>
-<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order_by'>order_by</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order'>order</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order_by'>order_by</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span></code></pre>
     
       
         <p class="example_title"><div class='inline'>
 <p>SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ?p</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order_by'>order_by</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order_by'>order_by</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='rparen'>)</span></code></pre>
     
       
         <p class="example_title"><div class='inline'>
 <p>SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o) DESC(?p)</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order_by'>order_by</span><span class='lparen'>(</span><span class='label'>o:</span> <span class='symbol'>:asc</span><span class='comma'>,</span> <span class='label'>p:</span> <span class='symbol'>:desc</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_order_by'>order_by</span><span class='lparen'>(</span><span class='label'>o:</span> <span class='symbol'>:asc</span><span class='comma'>,</span> <span class='label'>p:</span> <span class='symbol'>:desc</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -3899,7 +3923,7 @@
 <p>PREFIX dc: <a href="http://purl.org/dc/elements/1.1">purl.org/dc/elements/1.1</a>/ PREFIX foaf: <a href="http://xmlns.com/foaf/0.1">xmlns.com/foaf/0.1</a>/ SELECT * WHERE { ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span>
   <span class='id identifier rubyid_prefix'>prefix</span><span class='lparen'>(</span><span class='label'>dc:</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>URI</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://purl.org/dc/elements/1.1/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span>
   <span class='id identifier rubyid_prefix'>prefix</span><span class='lparen'>(</span><span class='label'>foaf:</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>URI</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>http://xmlns.com/foaf/0.1/</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='rparen'>)</span><span class='period'>.</span>
   <span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
@@ -3970,7 +3994,7 @@
 <p>PREFIX dc: <a href="http://purl.org/dc/elements/1.1">purl.org/dc/elements/1.1</a>/ PREFIX foaf: <a href="http://xmlns.com/foaf/0.1">xmlns.com/foaf/0.1</a>/ SELECT * WHERE { ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span>
   <span class='id identifier rubyid_prefix'>prefix</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>dc: &lt;http://purl.org/dc/elements/1.1/&gt;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span>
   <span class='id identifier rubyid_prefix'>prefix</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>foaf: &lt;http://xmlns.com/foaf/0.1/&gt;</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span><span class='period'>.</span>
   <span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
@@ -4025,7 +4049,6 @@
       <pre class="lines">
 
 
-393
 394
 395
 396
@@ -4037,10 +4060,11 @@
 402
 403
 404
-405</pre>
+405
+406</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 393</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 394</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_prefix'>prefix</span><span class='lparen'>(</span><span class='id identifier rubyid_val'>val</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:prefixes</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -4085,7 +4109,7 @@
 <p>SELECT REDUCED ?s WHERE { ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reduced'>reduced</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_reduced'>reduced</span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
   </div>
 
@@ -4170,12 +4194,12 @@
       <pre class="lines">
 
 
-679
-680
-681</pre>
+747
+748
+749</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 679</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 747</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_result'>result</span>
   <span class='ivar'>@result</span> <span class='op'>||=</span> <span class='id identifier rubyid_execute'>execute</span>
@@ -4210,21 +4234,21 @@
 <p><code>SELECT * WHERE { ?s ?p ?o . }</code></p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
       
         <p class="example_title"><div class='inline'>
 <p><code>SELECT ?s WHERE {?s ?p ?o .}</code></p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='lparen'>(</span><span class='symbol'>:s</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
       
         <p class="example_title"><div class='inline'>
 <p><code>SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}</code></p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='lparen'>(</span><span class='label'>count:</span> <span class='lbrace'>{</span><span class='label'>uri:</span> <span class='symbol'>:c</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:uri</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>OWL</span><span class='period'>.</span><span class='const'>Class</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='lparen'>(</span><span class='label'>count:</span> <span class='lbrace'>{</span><span class='label'>uri:</span> <span class='symbol'>:c</span><span class='rbrace'>}</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:uri</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='period'>.</span><span class='id identifier rubyid_type'>type</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>OWL</span><span class='period'>.</span><span class='const'>Class</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -4296,6 +4320,238 @@
 </div>
     
       <div class="method_details ">
+  <h3 class="signature " id="service-instance_method">
+  
+    #<strong>service</strong>(endpoint, *patterns, silent: false) {|query| ... } &#x21d2; <tt><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></tt> 
+  
+
+  
+
+  
+</h3><div class="docstring">
+  <div class="discussion">
+    
+<p>Federated Queries via the SERVICE keyword.</p>
+
+<p>Supports limited use of the SERVICE keyword with an endpoint term, a sequence of patterns, a query, or a block.</p>
+
+<p>The block form can be used for more complicated queries, using the <code>select</code> form (note, use either block or argument forms, not both):</p>
+
+
+  </div>
+</div>
+<div class="tags">
+  
+  <div class="examples">
+    <p class="tag_title">Examples:</p>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>SELECT * WHERE { ?s ?p1 ?o1 . SERVICE ?l { ?s ?p2 ?o2 } }</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p1</span><span class='comma'>,</span> <span class='symbol'>:o1</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
+  <span class='id identifier rubyid_service'>service</span><span class='lparen'>(</span><span class='symbol'>:l</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p2</span><span class='comma'>,</span> <span class='symbol'>:o2</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>SELECT * WHERE { ?book <a href="http://purl.org/dc/terms/title">purl.org/dc/terms/title</a> ?title . SERVICE ?l { ?book <a href="http://purl.org/dc/elements/1.1/title">purl.org/dc/elements/1.1/title</a> ?title . FILTER(langmatches(?title, ‘en’)) } }</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_query1'>query1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span>
+  <span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
+  <span class='id identifier rubyid_filter'>filter</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>langmatches(?title, &#39;en&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_service'>service</span><span class='lparen'>(</span><span class='CHAR'>?l</span><span class='comma'>,</span> <span class='id identifier rubyid_query1'>query1</span><span class='rparen'>)</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>SELECT * WHERE { ?book dc:title ?title } SERVICE ?l { ?book dc11:title ?title }</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='id identifier rubyid_query1'>query1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_service'>service</span> <span class='symbol'>:l</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_q'>q</span><span class='op'>|</span>
+  <span class='id identifier rubyid_q'>q</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span>
+    <span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='kw'>end</span></code></pre>
+    
+      
+        <p class="example_title"><div class='inline'>
+<p>SELECT * WHERE { ?s ?p1 ?o1 . SERVICE SILENT ?l { ?s ?p2 ?o2 } }</p>
+</div></p>
+      
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p1</span><span class='comma'>,</span> <span class='symbol'>:o1</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
+  <span class='id identifier rubyid_service'>service</span><span class='lparen'>(</span><span class='symbol'>:l</span><span class='comma'>,</span> <span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p2</span><span class='comma'>,</span> <span class='symbol'>:o2</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='label'>silent:</span> <span class='kw'>true</span><span class='rparen'>)</span></code></pre>
+    
+  </div>
+<p class="tag_title">Parameters:</p>
+<ul class="param">
+  
+    <li>
+      
+        <span class='name'>patterns</span>
+      
+      
+        <span class='type'>(<tt>Array&lt;RDF::Query::Pattern, Array&gt;</tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>splat of zero or more patterns followed by zero or more queries.</p>
+</div>
+      
+    </li>
+  
+    <li>
+      
+        <span class='name'>silent</span>
+      
+      
+        <span class='type'>(<tt>Boolean</tt>)</span>
+      
+      
+        <em class="default">(defaults to: <tt>false</tt>)</em>
+      
+      
+    </li>
+  
+</ul>
+
+<p class="tag_title">Yields:</p>
+<ul class="yield">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="../Client.html#query-instance_method" title="SPARQL::Client#query (method)">query</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>Yield form with or without argument; without an argument, evaluates within the query.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Yield Parameters:</p>
+<ul class="yieldparam">
+  
+    <li>
+      
+        <span class='name'>query</span>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">SPARQL::Client::Query</a></span></tt>)</span>
+      
+      
+      
+        &mdash;
+        <div class='inline'>
+<p>used for adding select clauses.</p>
+</div>
+      
+    </li>
+  
+</ul>
+<p class="tag_title">Returns:</p>
+<ul class="return">
+  
+    <li>
+      
+      
+        <span class='type'>(<tt><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></tt>)</span>
+      
+      
+      
+    </li>
+  
+</ul>
+
+  <p class="tag_title">See Also:</p>
+  <ul class="see">
+    
+      <li><a href="https://www.w3.org/TR/sparql11-federated-query/" target="_parent" title="https://www.w3.org/TR/sparql11-federated-query/">https://www.w3.org/TR/sparql11-federated-query/</a></li>
+    
+  </ul>
+
+</div><table class="source_code">
+  <tr>
+    <td>
+      <pre class="lines">
+
+
+481
+482
+483
+484
+485
+486
+487
+488
+489
+490
+491
+492
+493
+494
+495
+496
+497
+498
+499
+500
+501
+502
+503
+504
+505
+506
+507
+508
+509
+510</pre>
+    </td>
+    <td>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 481</span>
+
+<span class='kw'>def</span> <span class='id identifier rubyid_service'>service</span><span class='lparen'>(</span><span class='id identifier rubyid_endpoint'>endpoint</span><span class='comma'>,</span> <span class='op'>*</span><span class='id identifier rubyid_patterns'>patterns</span><span class='comma'>,</span> <span class='label'>silent:</span> <span class='kw'>false</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+  <span class='id identifier rubyid_service'>service</span> <span class='op'>=</span> <span class='lbrace'>{</span>
+    <span class='label'>endpoint:</span> <span class='lparen'>(</span><span class='id identifier rubyid_endpoint'>endpoint</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Symbol</span><span class='rparen'>)</span> <span class='op'>?</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Query</span><span class='op'>::</span><span class='const'>Variable</span><span class='period'>.</span><span class='id identifier rubyid_new'>new</span><span class='lparen'>(</span><span class='id identifier rubyid_endpoint'>endpoint</span><span class='rparen'>)</span> <span class='op'>:</span> <span class='id identifier rubyid_endpoint'>endpoint</span><span class='rparen'>)</span><span class='comma'>,</span>
+    <span class='label'>silent:</span> <span class='id identifier rubyid_silent'>silent</span><span class='comma'>,</span>
+    <span class='label'>query:</span> <span class='kw'>nil</span>
+  <span class='rbrace'>}</span>
+  <span class='lparen'>(</span><span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:services</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='op'>&lt;&lt;</span> <span class='id identifier rubyid_service'>service</span>
+
+  <span class='kw'>if</span> <span class='id identifier rubyid_block_given?'>block_given?</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#service requires either arguments or a block, not both.</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>unless</span> <span class='id identifier rubyid_patterns'>patterns</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
+    <span class='comment'># Evaluate calls in a new query instance
+</span>    <span class='id identifier rubyid_query'>query</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span>
+    <span class='kw'>case</span> <span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_arity'>arity</span>
+      <span class='kw'>when</span> <span class='int'>1</span> <span class='kw'>then</span> <span class='id identifier rubyid_block'>block</span><span class='period'>.</span><span class='id identifier rubyid_call'>call</span><span class='lparen'>(</span><span class='id identifier rubyid_query'>query</span><span class='rparen'>)</span>
+      <span class='kw'>else</span> <span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_instance_eval'>instance_eval</span><span class='lparen'>(</span><span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
+    <span class='kw'>end</span>
+    <span class='id identifier rubyid_service'>service</span><span class='lbracket'>[</span><span class='symbol'>:query</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_query'>query</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_patterns'>patterns</span><span class='period'>.</span><span class='id identifier rubyid_all?'>all?</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_p'>p</span><span class='op'>|</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'><span class='object_link'><a href="../../SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='rparen'>)</span><span class='rbrace'>}</span>
+    <span class='comment'># With argument form, all must be patterns or queries
+</span>    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#service arguments are triple patterns or a query, not both.</span><span class='tstring_end'>&quot;</span></span> <span class='kw'>if</span> <span class='id identifier rubyid_patterns'>patterns</span><span class='period'>.</span><span class='id identifier rubyid_length'>length</span> <span class='op'>!=</span> <span class='int'>1</span>
+    <span class='id identifier rubyid_service'>service</span><span class='lbracket'>[</span><span class='symbol'>:query</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_patterns'>patterns</span><span class='period'>.</span><span class='id identifier rubyid_first'>first</span>
+  <span class='kw'>elsif</span> <span class='id identifier rubyid_patterns'>patterns</span><span class='period'>.</span><span class='id identifier rubyid_all?'>all?</span> <span class='lbrace'>{</span><span class='op'>|</span><span class='id identifier rubyid_p'>p</span><span class='op'>|</span> <span class='id identifier rubyid_p'>p</span><span class='period'>.</span><span class='id identifier rubyid_is_a?'>is_a?</span><span class='lparen'>(</span><span class='const'>Array</span><span class='rparen'>)</span><span class='rbrace'>}</span>
+    <span class='comment'># With argument form, all must be patterns, or queries
+</span>    <span class='id identifier rubyid_service'>service</span><span class='lbracket'>[</span><span class='symbol'>:query</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_patterns'>patterns</span><span class='rparen'>)</span>
+  <span class='kw'>else</span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#service arguments are triple patterns a query, not both.</span><span class='tstring_end'>&quot;</span></span>
+  <span class='kw'>end</span>
+
+  <span class='kw'>self</span>
+<span class='kw'>end</span></pre>
+    </td>
+  </tr>
+</table>
+</div>
+    
+      <div class="method_details ">
   <h3 class="signature " id="slice-instance_method">
   
     #<strong>slice</strong>(start, length)  &#x21d2; <tt><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></tt> 
@@ -4320,7 +4576,7 @@
 <p>SELECT * WHERE { ?s ?p ?o . } OFFSET 100 LIMIT 10</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='lparen'>(</span><span class='int'>100</span><span class='comma'>,</span> <span class='int'>10</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_slice'>slice</span><span class='lparen'>(</span><span class='int'>100</span><span class='comma'>,</span> <span class='int'>10</span><span class='rparen'>)</span></code></pre>
     
   </div>
 <p class="tag_title">Parameters:</p>
@@ -4370,14 +4626,14 @@
       <pre class="lines">
 
 
-365
 366
 367
 368
-369</pre>
+369
+370</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 365</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 366</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_slice'>slice</span><span class='lparen'>(</span><span class='id identifier rubyid_start'>start</span><span class='comma'>,</span> <span class='id identifier rubyid_length'>length</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:offset</span><span class='rbracket'>]</span> <span class='op'>=</span> <span class='id identifier rubyid_start'>start</span><span class='period'>.</span><span class='id identifier rubyid_to_i'>to_i</span> <span class='kw'>if</span> <span class='id identifier rubyid_start'>start</span>
@@ -4426,12 +4682,12 @@
       <pre class="lines">
 
 
-655
-656
-657</pre>
+723
+724
+725</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 655</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 723</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_solutions'>solutions</span>
   <span class='id identifier rubyid_result'>result</span>
@@ -4480,74 +4736,6 @@
       <pre class="lines">
 
 
-693
-694
-695
-696
-697
-698
-699
-700
-701
-702
-703
-704
-705
-706
-707
-708
-709
-710
-711
-712
-713
-714
-715
-716
-717
-718
-719
-720
-721
-722
-723
-724
-725
-726
-727
-728
-729
-730
-731
-732
-733
-734
-735
-736
-737
-738
-739
-740
-741
-742
-743
-744
-745
-746
-747
-748
-749
-750
-751
-752
-753
-754
-755
-756
-757
-758
-759
-760
 761
 762
 763
@@ -4559,10 +4747,78 @@
 769
 770
 771
-772</pre>
+772
+773
+774
+775
+776
+777
+778
+779
+780
+781
+782
+783
+784
+785
+786
+787
+788
+789
+790
+791
+792
+793
+794
+795
+796
+797
+798
+799
+800
+801
+802
+803
+804
+805
+806
+807
+808
+809
+810
+811
+812
+813
+814
+815
+816
+817
+818
+819
+820
+821
+822
+823
+824
+825
+826
+827
+828
+829
+830
+831
+832
+833
+834
+835
+836
+837
+838
+839
+840</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 693</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 761</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_to_s'>to_s</span>
   <span class='id identifier rubyid_buffer'>buffer</span> <span class='op'>=</span> <span class='lbracket'>[</span><span class='id identifier rubyid_form'>form</span><span class='period'>.</span><span class='id identifier rubyid_to_s'>to_s</span><span class='period'>.</span><span class='id identifier rubyid_upcase'>upcase</span><span class='rbracket'>]</span>
@@ -4686,17 +4942,17 @@
       <pre class="lines">
 
 
-638
-639
-640
-641
-642
-643
-644
-645</pre>
+706
+707
+708
+709
+710
+711
+712
+713</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 638</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 706</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_true?'>true?</span>
   <span class='kw'>case</span> <span class='id identifier rubyid_result'>result</span>
@@ -4738,7 +4994,7 @@
 <p>SELECT * WHERE { ?book dc:title ?title } UNION { ?book dc11:title ?title }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
   <span class='id identifier rubyid_union'>union</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
       
@@ -4749,7 +5005,7 @@
       <pre class="example code"><code><span class='id identifier rubyid_query1'>query1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span>
   <span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
   <span class='id identifier rubyid_filter'>filter</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>langmatches(?title, &#39;en&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_union'>union</span><span class='lparen'>(</span><span class='id identifier rubyid_query1'>query1</span><span class='rparen'>)</span></code></pre>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_union'>union</span><span class='lparen'>(</span><span class='id identifier rubyid_query1'>query1</span><span class='rparen'>)</span></code></pre>
     
       
         <p class="example_title"><div class='inline'>
@@ -4757,7 +5013,7 @@
 </div></p>
       
       <pre class="example code"><code><span class='id identifier rubyid_query1'>query1</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="../../SPARQL.html" title="SPARQL (module)">SPARQL</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="../Client.html" title="SPARQL::Client (class)">Client</a></span></span><span class='op'>::</span><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_filter'><span class='object_link'><a href="#filter-instance_method" title="SPARQL::Client::Query#filter (method)">filter</a></span></span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>langmatches(?title, &#39;en&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
-<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_union'>union</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_q'>q</span><span class='op'>|</span>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'><span class='object_link'><a href="#where-instance_method" title="SPARQL::Client::Query#where (method)">where</a></span></span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span><span class='id identifier rubyid_union'>union</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_q'>q</span><span class='op'>|</span>
   <span class='id identifier rubyid_q'>q</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span>
     <span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:book</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>Vocab</span><span class='op'>::</span><span class='const'>DC11</span><span class='period'>.</span><span class='id identifier rubyid_title'>title</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span><span class='period'>.</span>
     <span class='id identifier rubyid_filter'>filter</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>langmatches(?title, &#39;en&#39;)</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span>
@@ -4840,7 +5096,7 @@
   <p class="tag_title">See Also:</p>
   <ul class="see">
     
-      <li><a href="https://www.w3.org/TR/sparql11-query/#optionals" target="_parent" title="https://www.w3.org/TR/sparql11-query/#optionals">https://www.w3.org/TR/sparql11-query/#optionals</a></li>
+      <li><a href="https://www.w3.org/TR/sparql11-query/#alternatives" target="_parent" title="https://www.w3.org/TR/sparql11-query/#alternatives">https://www.w3.org/TR/sparql11-query/#alternatives</a></li>
     
   </ul>
 
@@ -4850,33 +5106,33 @@
       <pre class="lines">
 
 
-472
-473
-474
-475
-476
-477
-478
-479
-480
-481
-482
-483
-484
-485
-486
-487
-488
-489
-490
-491
-492
-493
-494
-495</pre>
+540
+541
+542
+543
+544
+545
+546
+547
+548
+549
+550
+551
+552
+553
+554
+555
+556
+557
+558
+559
+560
+561
+562
+563</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 472</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 540</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_union'>union</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_patterns'>patterns</span><span class='comma'>,</span> <span class='op'>&amp;</span><span class='id identifier rubyid_block'>block</span><span class='rparen'>)</span>
   <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:unions</span><span class='rbracket'>]</span> <span class='op'>||=</span> <span class='lbracket'>[</span><span class='rbracket'>]</span>
@@ -4897,7 +5153,7 @@
     <span class='comment'># With argument form, all must be patterns, or queries
 </span>    <span class='id identifier rubyid_options'>options</span><span class='lbracket'>[</span><span class='symbol'>:unions</span><span class='rbracket'>]</span> <span class='op'>&lt;&lt;</span> <span class='kw'>self</span><span class='period'>.</span><span class='id identifier rubyid_class'>class</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_patterns'>patterns</span><span class='rparen'>)</span>
   <span class='kw'>else</span>
-    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#union arguments are triple patters or queries, not both.</span><span class='tstring_end'>&quot;</span></span>
+    <span class='id identifier rubyid_raise'>raise</span> <span class='const'>ArgumentError</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>#union arguments are triple patterns or queries, not both.</span><span class='tstring_end'>&quot;</span></span>
   <span class='kw'>end</span>
 
   <span class='kw'>self</span>
@@ -4982,7 +5238,7 @@
 <p>single variable with multiple values</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span>
  <span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='const'>RDF</span><span class='op'>::</span><span class='const'>URI</span><span class='lparen'>(</span><span class='tstring'><span class='tstring_beg'>&#39;</span><span class='tstring_content'>http://purl.org/dc/terms/title</span><span class='tstring_end'>&#39;</span></span><span class='rparen'>)</span><span class='comma'>,</span> <span class='symbol'>:title</span><span class='rbracket'>]</span><span class='rparen'>)</span>
  <span class='period'>.</span><span class='id identifier rubyid_values'>values</span><span class='lparen'>(</span><span class='symbol'>:title</span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>This title</span><span class='tstring_end'>&quot;</span></span><span class='comma'>,</span> <span class='tstring'><span class='tstring_beg'>&quot;</span><span class='tstring_content'>Another title</span><span class='tstring_end'>&quot;</span></span><span class='rparen'>)</span></code></pre>
     
@@ -4991,7 +5247,7 @@
 <p>multiple variables with multiple values</p>
 </div></p>
       
-      <pre class="example code"><code>query.select
+      <pre class="example code"><code>Query.select
  .where([:s, RDF::URI(&#39;http://purl.org/dc/terms/title&#39;), :title],
         [:s, RDF.type, :type])
  .values([:type, :title],
@@ -5003,7 +5259,7 @@
 <p>multiple variables with UNDEF</p>
 </div></p>
       
-      <pre class="example code"><code>query.select
+      <pre class="example code"><code>Query.select
  .where([:s, RDF::URI(&#39;http://purl.org/dc/terms/title&#39;), :title],
         [:s, RDF.type, :type])
  .values([:type, :title],
@@ -5064,40 +5320,40 @@
       <pre class="lines">
 
 
-583
-584
-585
-586
-587
-588
-589
-590
-591
-592
-593
-594
-595
-596
-597
-598
-599
-600
-601
-602
-603
-604
-605
-606
-607
-608
-609
-610
-611
-612
-613</pre>
+651
+652
+653
+654
+655
+656
+657
+658
+659
+660
+661
+662
+663
+664
+665
+666
+667
+668
+669
+670
+671
+672
+673
+674
+675
+676
+677
+678
+679
+680
+681</pre>
     </td>
     <td>
-      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 583</span>
+      <pre class="code"><span class="info file"># File 'lib/sparql/client/query.rb', line 651</span>
 
 <span class='kw'>def</span> <span class='id identifier rubyid_values'>values</span><span class='lparen'>(</span><span class='op'>*</span><span class='id identifier rubyid_args'>args</span><span class='rparen'>)</span>
   <span class='kw'>return</span> <span class='ivar'>@values</span> <span class='kw'>if</span> <span class='id identifier rubyid_args'>args</span><span class='period'>.</span><span class='id identifier rubyid_empty?'>empty?</span>
@@ -5166,23 +5422,23 @@
 <p>SELECT * WHERE { ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_whether'>whether</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_whether'>whether</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span></code></pre>
     
       
         <p class="example_title"><div class='inline'>
 <p>SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_subquery'>subquery</span> <span class='op'>=</span> <span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span>
-<span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_subquery'>subquery</span><span class='rparen'>)</span></code></pre>
+      <pre class="example code"><code><span class='id identifier rubyid_subquery'>subquery</span> <span class='op'>=</span> <span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span>
+<span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='comma'>,</span> <span class='id identifier rubyid_subquery'>subquery</span><span class='rparen'>)</span></code></pre>
     
       
         <p class="example_title"><div class='inline'>
 <p>SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_q'>q</span><span class='op'>|</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span> <span class='op'>|</span><span class='id identifier rubyid_q'>q</span><span class='op'>|</span>
   <span class='id identifier rubyid_q'>q</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span>
 <span class='kw'>end</span></code></pre>
     
@@ -5191,7 +5447,7 @@
 <p>SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o</p>
 </div></p>
       
-      <pre class="example code"><code><span class='id identifier rubyid_query'>query</span><span class='period'>.</span><span class='id identifier rubyid_select'>select</span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span>
+      <pre class="example code"><code><span class='const'><span class='object_link'><a href="" title="SPARQL::Client::Query (class)">Query</a></span></span><span class='period'>.</span><span class='id identifier rubyid_select'><span class='object_link'><a href="#select-class_method" title="SPARQL::Client::Query.select (method)">select</a></span></span><span class='period'>.</span><span class='id identifier rubyid_where'>where</span><span class='lparen'>(</span><span class='lbracket'>[</span><span class='symbol'>:s</span><span class='comma'>,</span> <span class='symbol'>:p</span><span class='comma'>,</span> <span class='symbol'>:o</span><span class='rbracket'>]</span><span class='rparen'>)</span> <span class='kw'>do</span>
   <span class='id identifier rubyid_order'>order</span><span class='lparen'>(</span><span class='symbol'>:o</span><span class='rparen'>)</span>
 <span class='kw'>end</span></code></pre>
     
@@ -5324,9 +5580,9 @@
 </div>
 
       <div id="footer">
-  Generated on Wed Mar 16 17:35:12 2022 by
-  <a href="http://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
-  0.9.27 (ruby-3.1.1).
+  Generated on Sun Jul 23 22:09:11 2023 by
+  <a href="https://yardoc.org" title="Yay! A Ruby Documentation Tool" target="_parent">yard</a>
+  0.9.34 (ruby-3.1.4).
 </div>
 
     </div>
