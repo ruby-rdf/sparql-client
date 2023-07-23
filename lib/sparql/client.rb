@@ -540,7 +540,7 @@ module SPARQL
             result.elements.each do |binding|
               name  = binding.attr('name').to_sym
               value = binding.elements.first
-              row[name] = parse_xml_value(value, nodes)
+              row[name] = parse_xml_value(value, nodes) if value
             end
             RDF::Query::Solution.new(row)
           end
@@ -563,7 +563,7 @@ module SPARQL
             result.elements.each do |binding|
               name  = binding.attributes['name'].to_sym
               value = binding.select { |node| node.kind_of?(::REXML::Element) }.first
-              row[name] = parse_xml_value(value, nodes)
+              row[name] = parse_xml_value(value, nodes) if value
             end
             RDF::Query::Solution.new(row)
           end

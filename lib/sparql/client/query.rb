@@ -111,7 +111,7 @@ class SPARQL::Client
 
     ##
     # @example ASK WHERE { ?s ?p ?o . }
-    #   query.ask.where([:s, :p, :o])
+    #   Query.ask.where([:s, :p, :o])
     #
     # @return [Query]
     # @see    https://www.w3.org/TR/sparql11-query/#ask
@@ -122,13 +122,13 @@ class SPARQL::Client
 
     ##
     # @example `SELECT * WHERE { ?s ?p ?o . }`
-    #   query.select.where([:s, :p, :o])
+    #   Query.select.where([:s, :p, :o])
     #
     # @example `SELECT ?s WHERE {?s ?p ?o .}`
-    #   query.select(:s).where([:s, :p, :o])
+    #   Query.select(:s).where([:s, :p, :o])
     #
     # @example `SELECT COUNT(?uri as ?c) WHERE {?uri a owl:Class}`
-    #   query.select(count: {uri: :c}).where([:uri, RDF.type, RDF::OWL.Class])
+    #   Query.select(count: {uri: :c}).where([:uri, RDF.type, RDF::OWL.Class])
     #
     # @param  [Array<Symbol>, Hash{Symbol => RDF::Query::Variable}] variables
     # @return [Query]
@@ -144,7 +144,7 @@ class SPARQL::Client
 
     ##
     # @example DESCRIBE * WHERE { ?s ?p ?o . }
-    #   query.describe.where([:s, :p, :o])
+    #   Query.describe.where([:s, :p, :o])
     #
     # @param  [Array<Symbol>] variables
     # @return [Query]
@@ -158,7 +158,7 @@ class SPARQL::Client
 
     ##
     # @example CONSTRUCT { ?s ?p ?o . } WHERE { ?s ?p ?o . }
-    #   query.construct([:s, :p, :o]).where([:s, :p, :o])
+    #   Query.construct([:s, :p, :o]).where([:s, :p, :o])
     #
     # @param  [Array<RDF::Query::Pattern, Array>] patterns
     # @return [Query]
@@ -170,7 +170,7 @@ class SPARQL::Client
 
     ##
     # @example SELECT * FROM <a> WHERE \{ ?s ?p ?o . \}
-    #   query.select.from(RDF::URI.new(a)).where([:s, :p, :o])
+    #   Query.select.from(RDF::URI.new(a)).where([:s, :p, :o])
     #
     # @param [RDF::URI] uri
     # @return [Query]
@@ -182,22 +182,22 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE { ?s ?p ?o . }
-    #   query.select.where([:s, :p, :o])
-    #   query.select.whether([:s, :p, :o])
+    #   Query.select.where([:s, :p, :o])
+    #   Query.select.whether([:s, :p, :o])
     #
     # @example SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }
-    #   subquery = query.select.where([:s, :p, :o])
-    #   query.select.where([:s, :p, :o], subquery)
+    #   subquery = Query.select.where([:s, :p, :o])
+    #   Query.select.where([:s, :p, :o], subquery)
     #
     # @example SELECT * WHERE { { SELECT * WHERE { ?s ?p ?o . } } . ?s ?p ?o . }
-    #   query.select.where([:s, :p, :o]) do |q|
+    #   Query.select.where([:s, :p, :o]) do |q|
     #     q.select.where([:s, :p, :o])
     #   end
     #
     # Block form can be used for chaining calls in addition to creating sub-select queries.
     #
     # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o
-    #   query.select.where([:s, :p, :o]) do
+    #   Query.select.where([:s, :p, :o]) do
     #     order(:o)
     #   end
     #
@@ -236,14 +236,14 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o
-    #   query.select.where([:s, :p, :o]).order(:o)
-    #   query.select.where([:s, :p, :o]).order_by(:o)
+    #   Query.select.where([:s, :p, :o]).order(:o)
+    #   Query.select.where([:s, :p, :o]).order_by(:o)
     #
     # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ?o ?p
-    #   query.select.where([:s, :p, :o]).order_by(:o, :p)
+    #   Query.select.where([:s, :p, :o]).order_by(:o, :p)
     #
     # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o) DESC(?p)
-    #   query.select.where([:s, :p, :o]).order_by(o: :asc, p: :desc)
+    #   Query.select.where([:s, :p, :o]).order_by(o: :asc, p: :desc)
     #
     # @param  [Array<Symbol, String>] variables
     # @return [Query]
@@ -257,8 +257,8 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY ASC(?o)
-    #   query.select.where([:s, :p, :o]).order.asc(:o)
-    #   query.select.where([:s, :p, :o]).asc(:o)
+    #   Query.select.where([:s, :p, :o]).order.asc(:o)
+    #   Query.select.where([:s, :p, :o]).asc(:o)
     #
     # @param  [Array<Symbol, String>] var
     # @return [Query]
@@ -270,8 +270,8 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE { ?s ?p ?o . } ORDER BY DESC(?o)
-    #   query.select.where([:s, :p, :o]).order.desc(:o)
-    #   query.select.where([:s, :p, :o]).desc(:o)
+    #   Query.select.where([:s, :p, :o]).order.desc(:o)
+    #   Query.select.where([:s, :p, :o]).desc(:o)
     #
     # @param  [Array<Symbol, String>] var
     # @return [Query]
@@ -283,7 +283,7 @@ class SPARQL::Client
 
     ##
     # @example SELECT ?s WHERE { ?s ?p ?o . } GROUP BY ?s
-    #   query.select(:s).where([:s, :p, :o]).group_by(:s)
+    #   Query.select(:s).where([:s, :p, :o]).group_by(:s)
     #
     # @param  [Array<Symbol, String>] variables
     # @return [Query]
@@ -297,7 +297,7 @@ class SPARQL::Client
 
     ##
     # @example SELECT DISTINCT ?s WHERE { ?s ?p ?o . }
-    #   query.select(:s).distinct.where([:s, :p, :o])
+    #   Query.select(:s).distinct.where([:s, :p, :o])
     #
     # @return [Query]
     # @see    https://www.w3.org/TR/sparql11-query/#modDuplicates
@@ -308,7 +308,7 @@ class SPARQL::Client
 
     ##
     # @example SELECT REDUCED ?s WHERE { ?s ?p ?o . }
-    #   query.select(:s).reduced.where([:s, :p, :o])
+    #   Query.select(:s).reduced.where([:s, :p, :o])
     #
     # @return [Query]
     # @see    https://www.w3.org/TR/sparql11-query/#modDuplicates
@@ -319,7 +319,8 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE { GRAPH ?g { ?s ?p ?o . } }
-    #   query.select.graph(:g).where([:s, :p, :o])
+    #   Query.select.graph(:g).where([:s, :p, :o])
+    #
     # @param  [RDF::Value] graph_uri_or_var
     # @return [Query]
     # @see    https://www.w3.org/TR/sparql11-query/#queryDataset
@@ -335,7 +336,7 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE { ?s ?p ?o . } OFFSET 100
-    #   query.select.where([:s, :p, :o]).offset(100)
+    #   Query.select.where([:s, :p, :o]).offset(100)
     #
     # @param  [Integer, #to_i] start
     # @return [Query]
@@ -346,7 +347,7 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE { ?s ?p ?o . } LIMIT 10
-    #   query.select.where([:s, :p, :o]).limit(10)
+    #   Query.select.where([:s, :p, :o]).limit(10)
     #
     # @param  [Integer, #to_i] length
     # @return [Query]
@@ -357,7 +358,7 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE { ?s ?p ?o . } OFFSET 100 LIMIT 10
-    #   query.select.where([:s, :p, :o]).slice(100, 10)
+    #   Query.select.where([:s, :p, :o]).slice(100, 10)
     #
     # @param  [Integer, #to_i] start
     # @param  [Integer, #to_i] length
@@ -371,7 +372,7 @@ class SPARQL::Client
     ##
     # @overload prefix(prefix: uri)
     #   @example PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE \{ ?s ?p ?o . \}
-    #     query.select.
+    #     Query.select.
     #       prefix(dc: RDF::URI("http://purl.org/dc/elements/1.1/")).
     #       prefix(foaf: RDF::URI("http://xmlns.com/foaf/0.1/")).
     #       where([:s, :p, :o])
@@ -382,7 +383,7 @@ class SPARQL::Client
     #
     # @overload prefix(string)
     #   @example PREFIX dc: <http://purl.org/dc/elements/1.1/> PREFIX foaf: <http://xmlns.com/foaf/0.1/> SELECT * WHERE \{ ?s ?p ?o . \}
-    #     query.select.
+    #     Query.select.
     #       prefix("dc: <http://purl.org/dc/elements/1.1/>").
     #       prefix("foaf: <http://xmlns.com/foaf/0.1/>").
     #       where([:s, :p, :o])
@@ -406,13 +407,13 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE \{ ?s ?p ?o . OPTIONAL \{ ?s a ?o . ?s \<http://purl.org/dc/terms/abstract\> ?o . \} \}
-    #   query.select.where([:s, :p, :o]).
+    #   Query.select.where([:s, :p, :o]).
     #     optional([:s, RDF.type, :o], [:s, RDF::Vocab::DC.abstract, :o])
     #
     # The block form can be used for adding filters:
     #
     # @example ASK WHERE { ?s ?p ?o . OPTIONAL { ?s ?p ?o . FILTER(regex(?s, 'Abiline, Texas'))} }
-    #   query.ask.where([:s, :p, :o]).optional([:s, :p, :o]) do
+    #   Query.ask.where([:s, :p, :o]).optional([:s, :p, :o]) do
     #     filter("regex(?s, 'Abiline, Texas')")
     #   end
     #
@@ -442,21 +443,88 @@ class SPARQL::Client
     end
 
     ##
+    # Federated Queries via the SERVICE keyword.
+    #
+    # Supports limited use of the SERVICE keyword with an endpoint term, a sequence of patterns, a query, or a block.
+    #
+    # @example SELECT * WHERE \{ ?s ?p1 ?o1 . SERVICE ?l \{ ?s ?p2 ?o2 \} \}
+    #   Query.select.where([:s, :p1, :o1]).
+    #     service(:l, [:s, :p2, :o2])
+    #
+    # @example SELECT * WHERE \{ ?book <http://purl.org/dc/terms/title> ?title . SERVICE ?l \{ ?book <http://purl.org/dc/elements/1.1/title> ?title . FILTER(langmatches(?title, 'en')) \} \}
+    #   query1 = SPARQL::Client::Query.select.
+    #     where([:book, RDF::Vocab::DC11.title, :title]).
+    #     filter("langmatches(?title, 'en')")
+    #   Query.select.where([:book, RDF::Vocab::DC.title, :title]).service(?l, query1)
+    #
+    # The block form can be used for more complicated queries, using the `select` form (note, use either block or argument forms, not both):
+    #
+    # @example SELECT * WHERE \{ ?book dc:title ?title \} SERVICE ?l \{ ?book dc11:title ?title \}
+    #   query1 = SPARQL::Client::Query.select.where([:book, RDF::Vocab::DC11.title, :title])
+    #   Query.select.where([:book, RDF::Vocab::DC.title, :title]).service :l do |q|
+    #     q.select.
+    #       where([:book, RDF::Vocab::DC11.title, :title])
+    #   end
+    #
+    # @example SELECT * WHERE \{ ?s ?p1 ?o1 . SERVICE SILENT ?l \{ ?s ?p2 ?o2 \} \}
+    #   Query.select.where([:s, :p1, :o1]).
+    #     service(:l, [:s, :p2, :o2], silent: true)
+    #
+    # @param  [Array<RDF::Query::Pattern, Array>] patterns
+    #   splat of zero or more patterns followed by zero or more queries.
+    # @param [Boolean] silent
+    # @yield [query]
+    #   Yield form with or without argument; without an argument, evaluates within the query.
+    # @yieldparam [SPARQL::Client::Query] query used for adding select clauses.
+    # @return [Query]
+    # @see    https://www.w3.org/TR/sparql11-federated-query/
+    def service(endpoint, *patterns, silent: false, &block)
+      service = {
+        endpoint: (endpoint.is_a?(Symbol) ? RDF::Query::Variable.new(endpoint) : endpoint),
+        silent: silent,
+        query: nil
+      }
+      (options[:services] ||= []) << service
+
+      if block_given?
+        raise ArgumentError, "#service requires either arguments or a block, not both." unless patterns.empty?
+        # Evaluate calls in a new query instance
+        query = self.class.select.where
+        case block.arity
+          when 1 then block.call(query)
+          else query.instance_eval(&block)
+        end
+        service[:query] = query
+      elsif patterns.all? {|p| p.is_a?(SPARQL::Client::Query)}
+        # With argument form, all must be patterns or queries
+        raise ArgumentError, "#service arguments are triple patterns or a query, not both." if patterns.length != 1
+        service[:query] = patterns.first
+      elsif patterns.all? {|p| p.is_a?(Array)}
+        # With argument form, all must be patterns, or queries
+        service[:query] = self.class.select.where(*patterns)
+      else
+        raise ArgumentError, "#service arguments are triple patterns a query, not both."
+      end
+
+      self
+    end
+
+    ##
     # @example SELECT * WHERE \{ ?book dc:title ?title \} UNION \{ ?book dc11:title ?title \}
-    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).
+    #   Query.select.where([:book, RDF::Vocab::DC.title, :title]).
     #     union([:book, RDF::Vocab::DC11.title, :title])
     #
     # @example SELECT * WHERE \{ ?book dc:title ?title \} UNION \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN'))\}
     #   query1 = SPARQL::Client::Query.select.
     #     where([:book, RDF::Vocab::DC11.title, :title]).
     #     filter("langmatches(?title, 'en')")
-    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).union(query1)
+    #   Query.select.where([:book, RDF::Vocab::DC.title, :title]).union(query1)
     #
     # The block form can be used for more complicated queries, using the `select` form (note, use either block or argument forms, not both):
     #
     # @example SELECT * WHERE \{ ?book dc:title ?title \} UNION \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN'))\}
     #   query1 = SPARQL::Client::Query.select.where([:book, RDF::Vocab::DC11.title, :title]).filter("langmatches(?title, 'en')")
-    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).union do |q|
+    #   Query.select.where([:book, RDF::Vocab::DC.title, :title]).union do |q|
     #     q.select.
     #       where([:book, RDF::Vocab::DC11.title, :title]).
     #       filter("langmatches(?title, 'en')")
@@ -468,7 +536,7 @@ class SPARQL::Client
     #   Yield form with or without argument; without an argument, evaluates within the query.
     # @yieldparam [SPARQL::Client::Query] query used for adding select clauses.
     # @return [Query]
-    # @see    https://www.w3.org/TR/sparql11-query/#optionals
+    # @see    https://www.w3.org/TR/sparql11-query/#alternatives
     def union(*patterns, &block)
       options[:unions] ||= []
 
@@ -488,7 +556,7 @@ class SPARQL::Client
         # With argument form, all must be patterns, or queries
         options[:unions] << self.class.select.where(*patterns)
       else
-        raise ArgumentError, "#union arguments are triple patters or queries, not both."
+        raise ArgumentError, "#union arguments are triple patterns or queries, not both."
       end
 
       self
@@ -496,20 +564,20 @@ class SPARQL::Client
 
     ##
     # @example SELECT * WHERE \{ ?book dc:title ?title . MINUS \{ ?book dc11:title ?title \} \}
-    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).
+    #   Query.select.where([:book, RDF::Vocab::DC.title, :title]).
     #     minus([:book, RDF::Vocab::DC11.title, :title])
     #
     # @example SELECT * WHERE \{ ?book dc:title ?title MINUS \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN')) \} \}
     #   query1 = SPARQL::Client::Query.select.
     #     where([:book, RDF::Vocab::DC11.title, :title]).
     #     filter("langmatches(?title, 'en')")
-    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).minus(query1)
+    #   Query.select.where([:book, RDF::Vocab::DC.title, :title]).minus(query1)
     #
     # The block form can be used for more complicated queries, using the `select` form (note, use either block or argument forms, not both):
     #
     # @example SELECT * WHERE \{ ?book dc:title ?title MINUS \{ ?book dc11:title ?title . FILTER(langmatches(lang(?title), 'EN'))\} \}
     #   query1 = SPARQL::Client::Query.select.where([:book, RDF::Vocab::DC11.title, :title]).filter("langmatches(?title, 'en')")
-    #   query.select.where([:book, RDF::Vocab::DC.title, :title]).minus do |q|
+    #   Query.select.where([:book, RDF::Vocab::DC.title, :title]).minus do |q|
     #     q.select.
     #       where([:book, RDF::Vocab::DC11.title, :title]).
     #       filter("langmatches(?title, 'en')")
@@ -521,7 +589,7 @@ class SPARQL::Client
     #   Yield form with or without argument; without an argument, evaluates within the query.
     # @yieldparam [SPARQL::Client::Query] query used for adding select clauses.
     # @return [Query]
-    # @see    https://www.w3.org/TR/sparql11-query/#optionals
+    # @see    https://www.w3.org/TR/sparql11-query/#negation
     def minus(*patterns, &block)
       options[:minuses] ||= []
 
@@ -541,7 +609,7 @@ class SPARQL::Client
         # With argument form, all must be patterns, or queries
         options[:minuses] << self.class.select.where(*patterns)
       else
-        raise ArgumentError, "#minus arguments are triple patters or queries, not both."
+        raise ArgumentError, "#minus arguments are triple patterns or queries, not both."
       end
 
       self
@@ -557,12 +625,12 @@ class SPARQL::Client
     #
     # @overload values(vars, *data)
     #   @example single variable with multiple values
-    #     query.select
+    #     Query.select
     #      .where([:s, RDF::URI('http://purl.org/dc/terms/title'), :title])
     #      .values(:title, "This title", "Another title")
     #
     #   @example multiple variables with multiple values
-    #     query.select
+    #     Query.select
     #      .where([:s, RDF::URI('http://purl.org/dc/terms/title'), :title],
     #             [:s, RDF.type, :type])
     #      .values([:type, :title],
@@ -570,7 +638,7 @@ class SPARQL::Client
     #              [RDF::URI('http://pcdm.org/models#Collection', 'Another title'])
     #
     #   @example multiple variables with UNDEF
-    #     query.select
+    #     Query.select
     #      .where([:s, RDF::URI('http://purl.org/dc/terms/title'), :title],
     #             [:s, RDF.type, :type])
     #      .values([:type, :title],
@@ -626,7 +694,7 @@ class SPARQL::Client
 
     ##
     # @example ASK WHERE { ?s ?p ?o . FILTER(regex(?s, 'Abiline, Texas')) }
-    #   query.ask.where([:s, :p, :o]).filter("regex(?s, 'Abiline, Texas')")
+    #   Query.ask.where([:s, :p, :o]).filter("regex(?s, 'Abiline, Texas')")
     # @return [Query]
     def filter(string)
       ((options[:filters] ||= []) << Filter.new(string)) if string and not string.empty?
@@ -796,6 +864,16 @@ class SPARQL::Client
       if options[:filters]
         buffer += options[:filters].map(&:to_s)
       end
+
+      if options[:services]
+        options[:services].each do |service|
+          buffer << 'SERVICE'
+          buffer << 'SILENT' if service[:silent]
+          buffer << SPARQL::Client.serialize_value(service[:endpoint])
+          buffer << service[:query].to_s_ggp
+        end
+      end
+
       if options[:values]
         vars = options[:values].first.map {|var| SPARQL::Client.serialize_value(var)}
         buffer << "VALUES (#{vars.join(' ')}) {"

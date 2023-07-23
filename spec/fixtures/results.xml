@@ -25,6 +25,7 @@
       <binding name="mbox">
         <uri>mailto:bob@work.example.org</uri>
       </binding>
+      <binding name="_empty"></binding>
       <binding name="triple">
         <triple>
           <subject><uri>http://work.example.org/s</uri></subject>

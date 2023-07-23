@@ -300,6 +300,42 @@ describe SPARQL::Client::Query do
         expect {subject.select.where([:s, :p, :o]).minus([:s, :p, :o]) {|q| q.where([:s, :p, :o])}}.to raise_error(ArgumentError)
       end
     end
+
+    context "with SERVICE" do
+      it "supports pattern arguments" do
+        expect(subject.select.where([:s, :p1, :o1]).service(:l, [:s, :p2, :o2]).to_s).to eq "SELECT * WHERE { ?s ?p1 ?o1 . SERVICE ?l { ?s ?p2 ?o2 . } }"
+      end
+
+      it "supports pattern arguments with URI endpoint" do
+        expect(subject.select.where([:s, :p1, :o1]).service(RDF::URI("http://example.com/endpoint"), [:s, :p2, :o2]).to_s).to eq "SELECT * WHERE { ?s ?p1 ?o1 . SERVICE <http://example.com/endpoint> { ?s ?p2 ?o2 . } }"
+      end
+
+      it "supports SILENT option" do
+        expect(subject.select.where([:s, :p1, :o1]).service(:l, [:s, :p2, :o2], silent: true).to_s).to eq "SELECT * WHERE { ?s ?p1 ?o1 . SERVICE SILENT ?l { ?s ?p2 ?o2 . } }"
+      end
+
+      it "supports query arguments" do
+        subquery = subject.select.where([:s, :p, :o])
+        expect(subject.select.where([:s, :p, :o]).service(:l, subquery).to_s).to eq "SELECT * WHERE { ?s ?p ?o . SERVICE ?l { ?s ?p ?o . } }"
+      end
+
+      it "supports block" do
+        expect(subject.select.where([:s, :p, :o]).service(:l) {|q| q.where([:s, :p, :o])}.to_s).to eq "SELECT * WHERE { ?s ?p ?o . SERVICE ?l { ?s ?p ?o . } }"
+      end
+
+      it "errors with no subqueries" do
+        expect {subject.select.where([:s, :p, :o]).service(:l)}.to raise_error(ArgumentError)
+      end
+
+      it "rejects mixed arguments" do
+        subquery = subject.select.where([:s, :p, :o])
+        expect {subject.select.where([:s, :p, :o]).service(?l, [:s, :p, :o], subquery)}.to raise_error(ArgumentError)
+      end
+
+      it "rejects arguments and block" do
+        expect {subject.select.where([:s, :p, :o]).service(?l[:s, :p, :o]) {|q| q.where([:s, :p, :o])}}.to raise_error(ArgumentError)
+      end
+    end
   end
 
   context "when building DESCRIBE queries" do
