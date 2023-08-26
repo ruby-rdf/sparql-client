@@ -58,8 +58,8 @@ describe SPARQL::Client do
 
     it "handles successful response with plain header" do
       expect(subject).to receive(:request).and_yield response('text/plain')
-      expect(RDF::Reader).to receive(:for).with(content_type: 'text/plain').and_call_original
-      subject.query(query)
+      expect(RDF::Reader).to receive(:for).with(content_type: 'application/n-triples').and_call_original
+      subject.query(query, content_type: 'application/n-triples')
     end
 
     it "handles successful response with boolean header" do
@@ -109,17 +109,17 @@ describe SPARQL::Client do
     end
 
     it "handles successful response with custom headers" do
-      expect(subject).to receive(:request).with(anything, {"Authorization" => "Basic XXX=="}).
-        and_yield response('text/plain')
-      subject.query(query, headers: {"Authorization" => "Basic XXX=="})
+      expect(subject).to receive(:request).with(anything, {"Authorization" => "Basic XXX==", "Content-Type" => "application/n-triples"}).
+        and_yield response('application/n-triples')
+      subject.query(query, headers: {"Authorization" => "Basic XXX==", "Content-Type" => "application/n-triples"})
     end
 
     it "handles successful response with initial custom headers" do
       options = {headers: {"Authorization" => "Basic XXX=="}, method: :get}
       client = SPARQL::Client.new('http://data.linkedmdb.org/sparql', **options)
-      client.instance_variable_set :@http, double(request: response('text/plain'))
+      client.instance_variable_set :@http, double(request: response('application/n-triples'))
       expect(Net::HTTP::Get).to receive(:new).with(anything, hash_including(options[:headers]))
-      client.query(query)
+      client.query(query, content_type: 'application/n-triples')
     end
 
     it "enables overriding the http method" do
@@ -194,7 +194,7 @@ describe SPARQL::Client do
           to_return(body: '', status: 200, headers: { 'Content-Type' => 'application/n-triples'})
         subject.query(construct_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(headers: {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
+          with(headers: {'Accept'=>'application/n-triples, */*;q=0.1'})
       end
 
       it "uses application/n-triples for DESCRIBE" do
@@ -202,7 +202,7 @@ describe SPARQL::Client do
           to_return(body: '', status: 200, headers: { 'Content-Type' => 'application/n-triples'})
         subject.query(describe_query)
         expect(WebMock).to have_requested(:post, "http://data.linkedmdb.org/sparql").
-          with(headers: {'Accept'=>'application/n-triples, text/plain, */*;q=0.1'})
+          with(headers: {'Accept'=>'application/n-triples, */*;q=0.1'})
       end
 
       it "uses application/sparql-results+json for SELECT" do
